@@ -1,0 +1,38 @@
+name: byrsa_capture
+description: >-
+  Live document edge detection and perspective correction for Flutter, with no
+  dependency on Google Play Services, so the result can ship on F-Droid.
+version: 0.1.0
+repository: https://github.com/dgmtnz/byrsa/tree/main/packages/byrsa_capture
+issue_tracker: https://github.com/dgmtnz/byrsa/issues
+topics:
+  - camera
+  - scanner
+  - document
+  - edge-detection
+
+resolution: workspace
+
+environment:
+  sdk: ^3.6.0
+  flutter: '>=3.24.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+  meta: ^1.15.0
+  plugin_platform_interface: ^2.1.8
+
+dev_dependencies:
+  flutter_lints: ^6.0.0
+  flutter_test:
+    sdk: flutter
+
+flutter:
+  plugin:
+    platforms:
+      android:
+        package: dev.byrsa.byrsa_capture
+        pluginClass: ByrsaCapturePlugin
+      ios:
+        pluginClass: ByrsaCapturePlugin

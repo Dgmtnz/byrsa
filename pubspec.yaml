@@ -4,6 +4,17 @@ publish_to: none
 environment:
   sdk: ^3.6.0
 
+# Native pub workspace — no Melos. See DECISIONS.md D-003.
 workspace:
   - packages/dart_searchable_pdf
+  - packages/byrsa_capture
+  - packages/byrsa_capture/example
+  - packages/byrsa_restore
+  - packages/byrsa_restore/example
+  - packages/byrsa_ocr
+  - packages/byrsa_ocr/example
   - harness
+  - app
+
+dev_dependencies:
+  flutter_lints: ^6.0.0
