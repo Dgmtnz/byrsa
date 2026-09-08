@@ -1,0 +1,6 @@
+# SPDX-FileCopyrightText: 2026 Diego Martínez Fernández
+# SPDX-License-Identifier: CC0-1.0
+#
+# <scope>: <imperative summary>
+#
+# Scopes: capture, restore, ocr, pdf, app, harness, docs, ci

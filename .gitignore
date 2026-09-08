@@ -1,0 +1,39 @@
+# Dart / Flutter
+.dart_tool/
+.packages
+build/
+.flutter-plugins
+.flutter-plugins-dependencies
+# The workspace lock file is committed: a reproducible build (F-Droid, M6)
+# starts with everyone resolving the same versions.
+packages/*/pubspec.lock
+app/pubspec.lock
+harness/pubspec.lock
+.fvm/
+
+# IDE
+.idea/
+.vscode/
+*.iml
+
+# Platform
+**/ios/Pods/
+**/ios/.symlinks/
+**/ios/Flutter/ephemeral/
+**/ios/Flutter/Generated.xcconfig
+**/ios/Flutter/flutter_export_environment.sh
+**/android/.gradle/
+**/android/local.properties
+**/macos/Pods/
+*.xcworkspace/xcuserdata/
+*.xcodeproj/xcuserdata/
+
+# Never commit model blobs (see DECISIONS.md D-013)
+*.onnx
+*.tflite
+*.mlmodel*
+
+# Harness output and private annotations (see harness/README.md)
+harness/out/
+harness/dataset/private/
+

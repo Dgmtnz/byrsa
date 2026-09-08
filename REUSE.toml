@@ -1,0 +1,25 @@
+version = 1
+SPDX-PackageName = "Byrsa"
+SPDX-PackageSupplier = "Diego Martínez Fernández <byrsa@example.invalid>"
+SPDX-PackageDownloadLocation = "https://github.com/dgmtnz/byrsa"
+
+# Files whose format has no comment syntax, or where a header would be noise.
+# Everything else carries its own SPDX header — see CONTRIBUTING.md.
+
+[[annotations]]
+path = ["**/*.json", "**/*.yaml", "**/*.yml", "**/*.lock", "**/*.arb", ".gitignore", ".gitmessage", ".fvmrc", "**/.gitignore", "**/*.gradle", "**/*.properties", "**/*.xml", "**/*.plist", "**/*.podspec", "**/*.entitlements", "**/*.xcconfig"]
+precedence = "aggregate"
+SPDX-FileCopyrightText = "2026 Diego Martínez Fernández"
+SPDX-License-Identifier = "CC0-1.0"
+
+[[annotations]]
+path = ["**/*.md", "docs/**", "plan-escaner-open-source-flutter.md"]
+precedence = "aggregate"
+SPDX-FileCopyrightText = "2026 Diego Martínez Fernández"
+SPDX-License-Identifier = "CC-BY-4.0"
+
+[[annotations]]
+path = ["harness/dataset/**"]
+precedence = "aggregate"
+SPDX-FileCopyrightText = "2026 Diego Martínez Fernández"
+SPDX-License-Identifier = "CC-BY-4.0"
