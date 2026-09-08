@@ -61,14 +61,16 @@ class _DocumentScreenState extends ConsumerState<DocumentScreen> {
             children: <Widget>[
               if (_busy) const LinearProgressIndicator(),
               if (_status != null)
-                Padding(padding: const EdgeInsets.all(12), child: Text(_status!)),
+                Padding(
+                    padding: const EdgeInsets.all(12), child: Text(_status!)),
               Expanded(
                 child: ListView.builder(
                   itemCount: doc.pages.length,
                   itemBuilder: (context, index) {
                     final page = doc.pages[index];
                     return Semantics(
-                      label: l10n.pageSemanticLabel(index + 1, doc.pages.length),
+                      label:
+                          l10n.pageSemanticLabel(index + 1, doc.pages.length),
                       child: Card(
                         margin: const EdgeInsets.all(12),
                         clipBehavior: Clip.antiAlias,
@@ -78,8 +80,9 @@ class _DocumentScreenState extends ConsumerState<DocumentScreen> {
                             Image.file(
                               File(page.displayPath),
                               fit: BoxFit.contain,
-                              errorBuilder: (_, __, ___) =>
-                                  const Icon(Icons.broken_image_outlined, size: 64),
+                              errorBuilder: (_, __, ___) => const Icon(
+                                  Icons.broken_image_outlined,
+                                  size: 64),
                             ),
                             if (page.hasText)
                               Padding(
@@ -163,6 +166,8 @@ class _DocumentScreenState extends ConsumerState<DocumentScreen> {
     if (mounted) setState(() => _status = l10n.exportedTo(path));
   }
 
-  static String _safeName(String title) =>
-      title.replaceAll(RegExp(r'[^\w\s-]'), '').trim().replaceAll(RegExp(r'\s+'), '-');
+  static String _safeName(String title) => title
+      .replaceAll(RegExp(r'[^\w\s-]'), '')
+      .trim()
+      .replaceAll(RegExp(r'\s+'), '-');
 }

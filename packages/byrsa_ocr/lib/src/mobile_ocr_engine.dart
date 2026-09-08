@@ -53,7 +53,8 @@ class MobileOcrEngine extends ByrsaOcrPlatform {
   }
 
   @override
-  Future<void> prepare({void Function(int received, int total)? onProgress}) async {
+  Future<void> prepare(
+      {void Function(int received, int total)? onProgress}) async {
     if (Platform.isIOS) return;
     // `mobile_ocr` reports completion rather than progress, so the callback
     // gets one honest event instead of a fabricated animation.
@@ -146,10 +147,13 @@ class MobileOcrEngine extends ByrsaOcrPlatform {
     OcrBox box,
     double confidence,
   ) {
-    final tokens = text.split(RegExp(r'\s+')).where((t) => t.isNotEmpty).toList();
+    final tokens =
+        text.split(RegExp(r'\s+')).where((t) => t.isNotEmpty).toList();
     if (tokens.isEmpty) return const <OcrWord>[];
     if (tokens.length == 1) {
-      return <OcrWord>[OcrWord(text: tokens.single, box: box, confidence: confidence)];
+      return <OcrWord>[
+        OcrWord(text: tokens.single, box: box, confidence: confidence)
+      ];
     }
 
     // Character count is a crude proxy for width, but it is the only signal
@@ -157,7 +161,9 @@ class MobileOcrEngine extends ByrsaOcrPlatform {
     // marked here rather than hidden: an engine that returns character boxes
     // takes the branch above and is always better.
     final totalCharacters =
-        tokens.fold<int>(0, (sum, token) => sum + token.length) + tokens.length - 1;
+        tokens.fold<int>(0, (sum, token) => sum + token.length) +
+            tokens.length -
+            1;
     final unit = box.width / totalCharacters;
 
     final words = <OcrWord>[];

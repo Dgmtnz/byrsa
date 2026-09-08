@@ -238,3 +238,161 @@ descargado, plataforma sin soporte). Se salta y se registra en el resultado, no 
 descargados, en un dispositivo flojo y en un iPhone sin ONNX (§4.6) con el mismo código.
 Y hace que el harness pueda medir "con y sin cada etapa" sin ramas especiales, que es
 justo lo que M2 necesita.
+
+---
+
+## D-017 · `byrsa_capture` no depende de `doclens`; se escribe el detector propio
+**Fecha:** 2026-09-08 · **Estado:** ratificar
+**Contradice al plan §4.1, y con motivo verificable**
+
+El plan dice "no lo reimplementes, forkea `doclens`". Al leer `doclens` 0.0.9 aparece
+esto en `android/build.gradle.kts`:
+
+```kotlin
+implementation("com.google.android.gms:play-services-mlkit-document-scanner:16.0.0")
+implementation("com.google.android.gms:play-services-mlkit-text-recognition:19.0.1")
+```
+
+Son dependencias **incondicionales**. Gradle las resuelve siempre, así que cualquier app
+que añada `doclens` mete Play Services en su APK aunque no llame nunca a esos caminos.
+Solo tres ficheros los usan (`NativeUIScanner.kt`, `TextRecognizer.kt`,
+`TextOrientationDetector.kt`); el núcleo —`QuadDetector`, `ImageWarper`, la sesión
+CameraX— no los toca.
+
+**Por qué gana §0.1:** la regla cerrada dice sin Play Services, y §0 gana sobre cualquier
+otra sección del plan. Depender de `doclens` hoy rompería el requisito en el commit uno.
+
+**Qué se hace en su lugar:** `byrsa_capture` lleva su propio plugin —CameraX y
+AVFoundation— con detector clásico propio, y se abre el issue upstream proponiendo un
+*flavor* de Gradle que haga ML Kit opcional
+(`docs/upstream/doclens-play-services.md`). Si se acepta, volver a depender de `doclens`
+es cambiar un `pubspec.yaml`.
+
+**Coste aceptado:** exactamente las "semanas de ingeniería de cámara" que §0.1 ya decía
+que se pagaban a conciencia.
+
+**Verificado, no supuesto:** `tool/check_no_play_services.sh` sobre el APK del ejemplo da
+0 clases `com.google.android.gms` frente a 1717 referencias `androidx.camera`. Corre en
+CI. Es el séptimo reto técnico de §13.5 y el PR upstream de §12/S6.
+
+---
+
+## D-018 · Una sola fuente (Helvetica) en la capa invisible
+**Fecha:** 2026-09-08 · **Estado:** ratificar
+
+La capa invisible usa Helvetica y nada más. Sin negritas ni cursivas.
+
+**Por qué:** el texto es invisible; el peso tipográfico no se ve. Lo único que importa es
+que el ancho renderizado coincida con la caja, y eso lo resuelve `Tz` con cualquier
+fuente. Cuatro tablas de métricas para un resultado idéntico es peso muerto.
+
+**Lo que sí se añade, porque cuesta una línea y vale mucho:** `debugVisibleText`, que
+pinta la capa en rojo. El fallo típico de esta técnica es invisible por construcción, y
+poder mirarlo es la diferencia entre depurarlo en un minuto o en una tarde.
+
+---
+
+## D-019 · El harness separa ejecutar de puntuar
+**Fecha:** 2026-09-08 · **Estado:** ratificar
+
+El dispositivo ejecuta el pipeline y escribe `run.json`; el harness puntúa ese fichero.
+Nunca ejecuta nada él.
+
+**Por qué:** la aritmética del CER tiene que existir una sola vez y correr en CI de Linux
+hoy, sin dispositivo. Y la app ya emite los tiempos por etapa exactamente en ese formato
+(`PageResult.toHarnessJson`), así que una tirada real en un móvil real produce un fichero
+que el benchmark publicado puntúa sin conversión.
+
+---
+
+## D-020 · La restauración clásica es Dart puro; `opencv_dart` se aplaza
+**Fecha:** 2026-09-08 · **Estado:** ratificar
+
+CLAHE, estimación de fondo y división se implementan a mano sobre `Uint8List`.
+`opencv_dart` (→ `dartcv4`) no entra todavía.
+
+**Por qué:** son unas 200 líneas de aritmética que se testean en un portátil sin
+dispositivo, y evitan ~30 MB de biblioteca nativa por ABI en el camino que tiene que
+funcionar en el móvil más flojo y en una build de F-Droid sin descargas. El riesgo de
+"tamaño de app > 150 MB" de §11 se paga aquí.
+
+**Cuándo reconsiderarlo:** `cv.inpaint` (Telea) para los dedos en el borde (§4.3) sí es
+difícil de escribir a mano. Cuando toque esa etapa, se evalúa con el tamaño medido
+delante.
+
+---
+
+## D-021 · `byrsa_ocr` delega en `mobile_ocr`; no es un plugin nativo
+**Fecha:** 2026-09-08 · **Estado:** ratificar
+
+`byrsa_ocr` no lleva Kotlin ni Swift. Es una capa Dart sobre `mobile_ocr` (MIT), que ya
+hace Vision en iOS y PP-OCRv5 por ONNX en Android, con descarga y verificación propias y
+sin Play Services.
+
+**Por qué:** es literalmente lo que dice el plan (§2, "Base: `ente-io/mobile_ocr`") y lo
+que dice el escalón de reutilizar antes que escribir. Reimplementar PP-OCR —DB
+post-processing, CTC, diccionario— son meses y deja al ecosistema con dos copias a medio
+mantener.
+
+**Bloqueo conocido y declarado:** pub.dev rechaza paquetes con dependencias git, y
+`mobile_ocr` no está en pub.dev. Luego `byrsa_ocr` **no se puede publicar todavía**. Está
+escrito en el `pubspec.yaml`, no escondido. La salida es pedirlo upstream
+(`docs/upstream/mobile-ocr-pub-dev.md`), no reimplementar.
+
+**Lo que sí aporta la capa:** API estable, orden de lectura idéntico en las dos
+plataformas y testeado en Linux, política de confianza en un sitio, cajas por palabra
+—las dos plataformas devuelven un polígono por bloque, y un PDF buscable necesita una
+caja por palabra— y un tipo de resultado sin `dart:ui`, que es lo que permite pasárselo
+directo a `dart_searchable_pdf`.
+
+---
+
+## D-022 · SQL a mano sobre `sqlite3`, sin drift ni `build_runner`
+**Fecha:** 2026-09-08 · **Estado:** ratificar
+**Se aparta de la tabla de stack del plan §3**
+
+**Por qué:** FTS5 hay que escribirlo en SQL de todas formas; el esquema son cuatro
+tablas; y un paso de generación que reescribe ficheros del repositorio es justo lo que no
+quiere una build reproducible de F-Droid (M6). Sin `build_runner` no hay ficheros `.g.dart`
+en el repo ni un paso más en CI.
+
+**Lo que se pierde:** consultas comprobadas en compilación y streams reactivos gratis. Se
+sustituye por un contador de revisión en Riverpod, que son cinco líneas para una
+biblioteca de este tamaño.
+
+**Detalle que sí importa y está testeado:** el índice FTS es *external content*, así que
+página e índice no pueden discrepar; la búsqueda ignora acentos (`remove_diacritics 2`)
+porque nadie escribe tildes en un buscador; y un `"` o un `*` sueltos devuelven cero
+resultados en vez de un error de sintaxis de FTS5 que el usuario tendría que entender.
+
+---
+
+## D-023 · Borrar una carpeta no borra sus documentos
+**Fecha:** 2026-09-08 · **Estado:** ratificar
+
+`folder_id` es `ON DELETE SET NULL`: al borrar una carpeta, sus documentos vuelven a la
+raíz. Las subcarpetas sí caen en cascada.
+
+**Por qué:** perder una carpeta es un accidente; perder los escaneos de dentro es un
+desastre. Y un escáner de documentos guarda cosas que no se pueden volver a hacer.
+
+---
+
+## D-024 · Los modelos se fijan descargándolos, no copiando hashes
+**Fecha:** 2026-09-08 · **Estado:** ratificar
+
+`models.json` tiene los cinco modelos con su SHA-256 real, calculado el 8 de septiembre
+de 2026 con `tool/pin_models.dart`. `--verify` los vuelve a comprobar.
+
+**Por qué:** un hash que nadie ha calculado es un hash que nadie puede defender. Y
+`--verify` es cómo el proyecto se entera de que una URL "estable" ha empezado a servir
+otra cosa.
+
+**Hallazgo del proceso, que cambia el plan:** DocShadow-SD7K exportado a ONNX pesa
+**120.041.674 bytes**, cuatro veces UVDoc. La cuantización no es una optimización de T2,
+es la condición para que se pueda usar. Va a `UNVERIFIED.md` como medición pendiente y a
+los retos técnicos de la solicitud.
+
+**Pendiente:** la licencia de los tres modelos PP-OCRv5 está como `UNAUDITED` a propósito
+(U-14). Poner "Apache-2.0" sin haber leído cada model card sería exactamente el tipo de
+afirmación que este proyecto no hace.

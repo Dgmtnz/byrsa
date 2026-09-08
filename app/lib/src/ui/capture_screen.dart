@@ -42,7 +42,8 @@ class _CaptureScreenState extends ConsumerState<CaptureScreen> {
       return Scaffold(
         appBar: AppBar(title: Text(l10n.scan)),
         body: Center(
-          child: Padding(padding: const EdgeInsets.all(24), child: Text('$_error')),
+          child: Padding(
+              padding: const EdgeInsets.all(24), child: Text('$_error')),
         ),
       );
     }
@@ -85,7 +86,8 @@ class _CaptureScreenState extends ConsumerState<CaptureScreen> {
 
   Future<void> _save() async {
     final library = await ref.read(libraryProvider.future);
-    final title = 'Escaneo ${DateTime.now().toIso8601String().substring(0, 16)}';
+    final title =
+        'Escaneo ${DateTime.now().toIso8601String().substring(0, 16)}';
     final documentId = library.createDocument(title);
     for (final page in _controller.pages) {
       library.addPage(

@@ -72,14 +72,19 @@ class PdfImage {
       }
       final marker = bytes[offset + 1];
       // Standalone markers carry no length.
-      if (marker == 0xD8 || marker == 0x01 || (marker >= 0xD0 && marker <= 0xD7)) {
+      if (marker == 0xD8 ||
+          marker == 0x01 ||
+          (marker >= 0xD0 && marker <= 0xD7)) {
         offset += 2;
         continue;
       }
       final length = (bytes[offset + 2] << 8) | bytes[offset + 3];
       // SOF0..SOF15, excluding DHT (C4), JPG (C8) and DAC (CC).
-      final isStartOfFrame =
-          marker >= 0xC0 && marker <= 0xCF && marker != 0xC4 && marker != 0xC8 && marker != 0xCC;
+      final isStartOfFrame = marker >= 0xC0 &&
+          marker <= 0xCF &&
+          marker != 0xC4 &&
+          marker != 0xC8 &&
+          marker != 0xCC;
       if (isStartOfFrame) {
         final precision = bytes[offset + 4];
         final height = (bytes[offset + 5] << 8) | bytes[offset + 6];

@@ -115,7 +115,9 @@ class ClassicalRestore {
         }
       }
       final pixels = (x1 - x0) * (y1 - y0);
-      if (pixels == 0) return Uint8List.fromList(List<int>.generate(256, (i) => i));
+      if (pixels == 0) {
+        return Uint8List.fromList(List<int>.generate(256, (i) => i));
+      }
 
       // Clip the histogram and spread what was clipped back over every bin,
       // which is the "contrast-limited" half of the name.
@@ -175,7 +177,8 @@ class ClassicalRestore {
   }
 
   /// Separable box blur via running sums: O(pixels), independent of radius.
-  static Uint8List _boxBlur(Uint8List source, int width, int height, int radius) {
+  static Uint8List _boxBlur(
+      Uint8List source, int width, int height, int radius) {
     final horizontal = Uint8List(source.length);
     final window = radius * 2 + 1;
 
@@ -209,7 +212,8 @@ class ClassicalRestore {
 
   /// Separable local maximum. Separable because max is, and a naive square
   /// window is quadratic in the radius, which is exactly the radius we need.
-  static Uint8List _maxFilter(Uint8List source, int width, int height, int radius) {
+  static Uint8List _maxFilter(
+      Uint8List source, int width, int height, int radius) {
     if (radius < 1) return Uint8List.fromList(source);
     final horizontal = Uint8List(source.length);
     for (var y = 0; y < height; y++) {

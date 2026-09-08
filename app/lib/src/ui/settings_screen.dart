@@ -80,7 +80,9 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
     try {
       await const ByrsaOcr().prepare(
         onProgress: (received, total) {
-          if (mounted && total > 0) setState(() => _progress = received / total);
+          if (mounted && total > 0) {
+            setState(() => _progress = received / total);
+          }
         },
       );
       ref.read(libraryRevisionProvider.notifier).state++;

@@ -16,7 +16,8 @@ Uint8List greyPng(int width, int height, {int value = 0xF2}) {
   for (var y = 0; y < height; y++) {
     raw.fillRange(y * (width + 1) + 1, (y + 1) * (width + 1), value);
   }
-  List<int> u32(int v) => <int>[v >> 24 & 0xFF, v >> 16 & 0xFF, v >> 8 & 0xFF, v & 0xFF];
+  List<int> u32(int v) =>
+      <int>[v >> 24 & 0xFF, v >> 16 & 0xFF, v >> 8 & 0xFF, v & 0xFF];
   final table = List<int>.generate(256, (i) {
     var c = i;
     for (var k = 0; k < 8; k++) {
@@ -38,7 +39,14 @@ Uint8List greyPng(int width, int height, {int value = 0xF2}) {
   }
 
   return Uint8List.fromList(<int>[
-    0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A,
+    0x89,
+    0x50,
+    0x4E,
+    0x47,
+    0x0D,
+    0x0A,
+    0x1A,
+    0x0A,
     ...chunk('IHDR', <int>[...u32(width), ...u32(height), 8, 0, 0, 0, 0]),
     ...chunk('IDAT', ZLibEncoder().convert(raw)),
     ...chunk('IEND', const <int>[]),
@@ -94,8 +102,9 @@ void main() {
       );
 
   test('processes a page and reports every stage it ran', () async {
-    final result = await pipeline(recognise: (_) async => fakeOcr(<String>['hola']))
-        .processPage(
+    final result =
+        await pipeline(recognise: (_) async => fakeOcr(<String>['hola']))
+            .processPage(
       originalPath: '${dir.path}/in.jpg',
       outputPath: '${dir.path}/out.raw',
     );
@@ -130,9 +139,11 @@ void main() {
         StageSkipReason.failed);
   });
 
-  test('emits a stage record the evaluation harness can score directly', () async {
-    final result = await pipeline(recognise: (_) async => fakeOcr(<String>['hola mundo']))
-        .processPage(
+  test('emits a stage record the evaluation harness can score directly',
+      () async {
+    final result =
+        await pipeline(recognise: (_) async => fakeOcr(<String>['hola mundo']))
+            .processPage(
       originalPath: '${dir.path}/in.jpg',
       outputPath: '${dir.path}/out.raw',
     );

@@ -108,8 +108,10 @@ class _DocumentTile extends StatelessWidget {
         height: 56,
         child: first == null
             ? const Icon(Icons.description_outlined)
-            : Image.file(File(first.displayPath), fit: BoxFit.cover,
-                errorBuilder: (_, __, ___) => const Icon(Icons.broken_image_outlined)),
+            : Image.file(File(first.displayPath),
+                fit: BoxFit.cover,
+                errorBuilder: (_, __, ___) =>
+                    const Icon(Icons.broken_image_outlined)),
       ),
       title: Text(document.title),
       subtitle: Text(

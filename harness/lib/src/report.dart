@@ -76,7 +76,8 @@ class Scorecard {
     final out = <String, ({double total, int count, bool anySkipped})>{};
     for (final document in run.documents) {
       for (final stage in document.stages) {
-        final previous = out[stage.name] ?? (total: 0.0, count: 0, anySkipped: false);
+        final previous =
+            out[stage.name] ?? (total: 0.0, count: 0, anySkipped: false);
         out[stage.name] = (
           total: previous.total + stage.milliseconds,
           count: previous.count + 1,
@@ -125,7 +126,8 @@ String renderMarkdown(Scorecard card) {
     ..writeln('| Started | ${run.startedAt ?? "—"} |')
     ..writeln('| Pipeline | ${run.pipeline.join(" → ")} |')
     ..writeln('| Documents | ${card.scores.length} |')
-    ..writeln('| Normalisation | ${card.strict ? "strict" : "whitespace-collapsed"} |')
+    ..writeln(
+        '| Normalisation | ${card.strict ? "strict" : "whitespace-collapsed"} |')
     ..writeln()
     ..writeln('> Every number below was measured on **${run.platform}**. '
         'Numbers are not transferable between platforms and this report never '
@@ -181,7 +183,8 @@ String renderMarkdown(Scorecard card) {
     ..writeln()
     ..writeln('## Worst ten documents')
     ..writeln()
-    ..writeln('The point of publishing this table is that it is allowed to look bad.')
+    ..writeln(
+        'The point of publishing this table is that it is allowed to look bad.')
     ..writeln()
     ..writeln('| Document | Category | Conditions | CER | Time |')
     ..writeln('|---|---|---|---|---|');
@@ -216,7 +219,8 @@ String renderCsv(Scorecard card) {
 }
 
 /// Renders the machine-readable form, for diffing two runs.
-String renderJson(Scorecard card) => const JsonEncoder.withIndent('  ').convert({
+String renderJson(Scorecard card) =>
+    const JsonEncoder.withIndent('  ').convert({
       'run': {
         'id': card.run.runId,
         'device': card.run.device,

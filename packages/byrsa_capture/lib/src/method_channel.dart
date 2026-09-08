@@ -13,7 +13,8 @@ import 'quad.dart';
 /// differs between the platforms differs *behind* this class, never in it.
 class MethodChannelByrsaCapture extends ByrsaCapturePlatform {
   final MethodChannel _methods = const MethodChannel('dev.byrsa/capture');
-  final EventChannel _events = const EventChannel('dev.byrsa/capture/detections');
+  final EventChannel _events =
+      const EventChannel('dev.byrsa/capture/detections');
 
   Stream<CaptureDetection>? _detections;
 
@@ -45,15 +46,18 @@ class MethodChannelByrsaCapture extends ByrsaCapturePlatform {
       hint: CaptureHint.values.byName(map['hint'] as String? ?? 'noDocument'),
       sharpness: (map['sharpness'] as num?)?.toDouble() ?? 0,
       brightness: (map['brightness'] as num?)?.toDouble() ?? 0,
-      stableFor: Duration(milliseconds: (map['stableForMs'] as num?)?.toInt() ?? 0),
+      stableFor:
+          Duration(milliseconds: (map['stableForMs'] as num?)?.toInt() ?? 0),
     );
   }
 
   @override
   Future<CapturedPage> capture() async {
-    final result = await _methods.invokeMethod<Map<Object?, Object?>>('capture');
+    final result =
+        await _methods.invokeMethod<Map<Object?, Object?>>('capture');
     if (result == null) {
-      throw PlatformException(code: 'no-capture', message: 'Capture returned nothing.');
+      throw PlatformException(
+          code: 'no-capture', message: 'Capture returned nothing.');
     }
     return CapturedPage.fromJson(result);
   }
@@ -64,13 +68,15 @@ class MethodChannelByrsaCapture extends ByrsaCapturePlatform {
     required CaptureQuad quad,
     double? targetAspectRatio,
   }) async {
-    final path = await _methods.invokeMethod<String>('rectify', <String, Object?>{
+    final path =
+        await _methods.invokeMethod<String>('rectify', <String, Object?>{
       'imagePath': imagePath,
       'quad': quad.toJson(),
       'targetAspectRatio': targetAspectRatio,
     });
     if (path == null) {
-      throw PlatformException(code: 'no-output', message: 'Rectify produced no file.');
+      throw PlatformException(
+          code: 'no-output', message: 'Rectify produced no file.');
     }
     return path;
   }

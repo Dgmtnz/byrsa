@@ -24,8 +24,8 @@ Directory _dataset(Map<String, String> groundTruth) {
       'license': 'CC-BY-4.0',
     });
   });
-  File('${dir.path}/manifest.json')
-      .writeAsStringSync(jsonEncode(<String, Object?>{'version': 1, 'documents': documents}));
+  File('${dir.path}/manifest.json').writeAsStringSync(
+      jsonEncode(<String, Object?>{'version': 1, 'documents': documents}));
   return dir;
 }
 
@@ -62,14 +62,16 @@ void main() {
 
     test('count each edit once', () {
       // One substitution in ten characters.
-      expect(characterErrorRate('0123456789', '012345678X').rate, closeTo(0.1, 1e-9));
+      expect(characterErrorRate('0123456789', '012345678X').rate,
+          closeTo(0.1, 1e-9));
       // One deletion and one insertion out of three words.
       expect(wordErrorRate('a b c', 'a c').rate, closeTo(1 / 3, 1e-9));
     });
 
     test('ignore line-break differences unless asked not to', () {
       expect(characterErrorRate('a\nb', 'a b').rate, 0);
-      expect(characterErrorRate('a\nb', 'a b', strict: true).rate, greaterThan(0));
+      expect(
+          characterErrorRate('a\nb', 'a b', strict: true).rate, greaterThan(0));
     });
 
     test('handle an empty hypothesis as a total miss', () {
@@ -103,7 +105,8 @@ void main() {
     test('reports the platform it was measured on, prominently', () {
       final dir = _dataset(<String, String>{'a': 'hola'});
       addTearDown(() => dir.deleteSync(recursive: true));
-      final card = score(Dataset.load(dir), RunResults.load(_run(dir, <String, String>{'a': 'hola'})));
+      final card = score(Dataset.load(dir),
+          RunResults.load(_run(dir, <String, String>{'a': 'hola'})));
 
       final markdown = renderMarkdown(card);
       expect(markdown, contains('**android**'));

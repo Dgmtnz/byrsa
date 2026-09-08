@@ -4,7 +4,8 @@
 import 'package:byrsa_ocr/byrsa_ocr.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-OcrWord word(String text, double left, double top, {double width = 60, double height = 20, double confidence = 0.9}) =>
+OcrWord word(String text, double left, double top,
+        {double width = 60, double height = 20, double confidence = 0.9}) =>
     OcrWord(
       text: text,
       box: OcrBox(left, top, left + width, top + height),
@@ -27,7 +28,8 @@ void main() {
       expect(lines.map((l) => l.text), <String>['hola mundo', 'adios mundo']);
     });
 
-    test('keeps words on one line when their boxes are not exactly aligned', () {
+    test('keeps words on one line when their boxes are not exactly aligned',
+        () {
       // Real boxes wobble by a few pixels; a strict comparison splits a line in
       // two and the PDF pastes with a stray newline in the middle of a sentence.
       final lines = const ReadingOrder().group(<OcrWord>[

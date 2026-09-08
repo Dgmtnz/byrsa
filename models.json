@@ -1,0 +1,55 @@
+{
+  "comment": "Every model the application can download. One place a reviewer can read the URL, the digest and the licence of each blob, and one diff that shows when any of them changes. Pinned with `dart run tool/pin_models.dart`; ModelStore refuses to install anything unpinned.",
+  "models": [
+    {
+      "id": "uvdoc",
+      "url": "https://huggingface.co/PaddlePaddle/UVDoc_onnx/resolve/main/inference.onnx",
+      "sizeBytes": 31684150,
+      "sha256": "54cab30dc2cf347b4f3d6971c833b1c3d84f5ef17280f1f6d15796bff20e63d6",
+      "license": "Apache-2.0",
+      "source": "https://huggingface.co/PaddlePaddle/UVDoc_onnx",
+      "description": "Page dewarping. Downscales internally to 712x488 and rescales the sampling grid, so do not resize the input yourself.",
+      "pinnedOn": "2026-09-08"
+    },
+    {
+      "id": "docshadow-sd7k",
+      "url": "https://github.com/fabio-sim/DocShadow-ONNX-TensorRT/releases/download/v1.0.0/docshadow_sd7k.onnx",
+      "sizeBytes": 120041674,
+      "sha256": "8c09b9320a0fb3c53806cdf9cb8410b3706c77caed81f4ec1cb0bf2cbd14b049",
+      "license": "MIT",
+      "source": "https://github.com/fabio-sim/DocShadow-ONNX-TensorRT",
+      "description": "Shadow removal, SD7K weights. 120 MB as exported in fp32 — four times UVDoc, and far too large to ship as-is. Quantisation is not an optimisation here, it is the precondition for using it at all.",
+      "pinnedOn": "2026-09-08"
+    },
+    {
+      "id": "ppocr-v5-det",
+      "url": "https://models.ente.io/PP-OCRv5/det.onnx",
+      "sizeBytes": 4748769,
+      "sha256": "d7fe3ea74652890722c0f4d02458b7261d9f5ae6c92904d05707c9eb155c7924",
+      "license": "UNAUDITED",
+      "source": "https://github.com/ente-io/mobile_ocr",
+      "description": "PP-OCRv5 text detector. Downloaded and verified by mobile_ocr itself; listed here so the licence audit has one table to work from.",
+      "pinnedOn": "2026-09-08"
+    },
+    {
+      "id": "ppocr-v5-cls",
+      "url": "https://models.ente.io/PP-OCRv5/cls.onnx",
+      "sizeBytes": 582663,
+      "sha256": "f4bb53707100c5f3d59ba834eb05bb400369f20aed35d4b26807b1bfadd2a70e",
+      "license": "UNAUDITED",
+      "source": "https://github.com/ente-io/mobile_ocr",
+      "description": "PP-OCRv5 orientation classifier.",
+      "pinnedOn": "2026-09-08"
+    },
+    {
+      "id": "ppocr-v5-rec",
+      "url": "https://models.ente.io/PP-OCRv5/rec.onnx",
+      "sizeBytes": 16517247,
+      "sha256": "bf66820f48fa99f779974c4df78e5274a9d8e0458c4137e8c5357e40e2c3faf2",
+      "license": "UNAUDITED",
+      "source": "https://github.com/ente-io/mobile_ocr",
+      "description": "PP-OCRv5 recogniser. The licence of the weights has to be read from the PaddleOCR model card one model at a time; UNAUDITED until that is done and written down.",
+      "pinnedOn": "2026-09-08"
+    }
+  ]
+}

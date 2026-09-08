@@ -7,7 +7,8 @@ import 'package:byrsa_capture/byrsa_capture.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:plugin_platform_interface/plugin_platform_interface.dart';
 
-class FakeCapturePlatform extends ByrsaCapturePlatform with MockPlatformInterfaceMixin {
+class FakeCapturePlatform extends ByrsaCapturePlatform
+    with MockPlatformInterfaceMixin {
   final StreamController<CaptureDetection> _controller =
       StreamController<CaptureDetection>.broadcast();
 
@@ -115,7 +116,8 @@ void main() {
     await controller.capture();
 
     await controller.adjustCorners(0, CaptureQuad.full);
-    expect(controller.pages.first.rectifiedPath, '/tmp/page-1.jpg.rectified.jpg');
+    expect(
+        controller.pages.first.rectifiedPath, '/tmp/page-1.jpg.rectified.jpg');
     expect(platform.rectifyCount, 1);
   });
 

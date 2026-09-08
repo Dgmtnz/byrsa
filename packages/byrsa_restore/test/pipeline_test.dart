@@ -23,7 +23,8 @@ class _Stage implements RestoreStage {
   Future<ImageBuffer> apply(ImageBuffer input) async {
     applied = true;
     if (throws) throw StateError('inference exploded');
-    final out = Uint8List.fromList(input.data.map((v) => (v + delta) & 0xFF).toList());
+    final out =
+        Uint8List.fromList(input.data.map((v) => (v + delta) & 0xFF).toList());
     return ImageBuffer.gray(input.width, input.height, out);
   }
 }
@@ -35,7 +36,8 @@ void main() {
   test('runs stages in order', () async {
     final first = _Stage('a', delta: 1);
     final second = _Stage('b', delta: 10);
-    final result = await RestorePipeline(<RestoreStage>[first, second]).run(flat(0));
+    final result =
+        await RestorePipeline(<RestoreStage>[first, second]).run(flat(0));
 
     expect(result.image.data.first, 11);
     expect(result.outcomes.map((o) => o.id), <String>['a', 'b']);
@@ -45,7 +47,8 @@ void main() {
   test('skips a stage that cannot run, and says why', () async {
     // The whole reason the pipeline exists: the same code has to work on an
     // F-Droid install with no models downloaded.
-    final skipped = _Stage('uvdoc', unavailable: StageSkipReason.modelNotInstalled);
+    final skipped =
+        _Stage('uvdoc', unavailable: StageSkipReason.modelNotInstalled);
     final result = await RestorePipeline(<RestoreStage>[
       _Stage('classical'),
       skipped,
@@ -54,7 +57,8 @@ void main() {
     expect(skipped.applied, isFalse);
     expect(result.outcomes.last.ran, isFalse);
     expect(result.outcomes.last.skipReason, StageSkipReason.modelNotInstalled);
-    expect(result.image.data.first, 1, reason: 'the earlier stage still applied');
+    expect(result.image.data.first, 1,
+        reason: 'the earlier stage still applied');
   });
 
   test('a stage that throws costs its stage, not the capture', () async {

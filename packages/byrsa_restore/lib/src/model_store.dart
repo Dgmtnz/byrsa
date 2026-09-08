@@ -102,7 +102,8 @@ class ModelStore {
         );
       }
 
-      final total = response.contentLength > 0 ? response.contentLength : model.sizeBytes;
+      final total =
+          response.contentLength > 0 ? response.contentLength : model.sizeBytes;
       final sink = temporary.openWrite();
       var received = 0;
       try {
@@ -130,7 +131,8 @@ class ModelStore {
       return target;
     } on SocketException catch (error) {
       if (temporary.existsSync()) await temporary.delete();
-      throw ModelStoreException('network', 'Could not reach ${model.url}: ${error.message}');
+      throw ModelStoreException(
+          'network', 'Could not reach ${model.url}: ${error.message}');
     } finally {
       client.close();
     }

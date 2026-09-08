@@ -43,7 +43,8 @@ class ByrsaApp extends StatelessWidget {
           GlobalCupertinoLocalizations.delegate,
         ],
         supportedLocales: AppLocalizations.supportedLocales,
-        theme: ThemeData(colorSchemeSeed: const Color(0xFF7A4E2D), useMaterial3: true),
+        theme: ThemeData(
+            colorSchemeSeed: const Color(0xFF7A4E2D), useMaterial3: true),
         darkTheme: ThemeData(
           colorSchemeSeed: const Color(0xFF7A4E2D),
           brightness: Brightness.dark,

@@ -27,7 +27,8 @@ void main() {
       pageWithText(db, id, 'hola');
       db.deleteDocument(id);
       expect(db.pagesOf(id), isEmpty);
-      expect(db.search('hola'), isEmpty, reason: 'the index must not outlive the page');
+      expect(db.search('hola'), isEmpty,
+          reason: 'the index must not outlive the page');
     });
   });
 
@@ -40,14 +41,16 @@ void main() {
       expect(db.pagesOf(id).map((p) => p.position), <int>[0, 1, 2]);
     });
 
-    test('reorder in one transaction, never leaving two pages at one position', () {
+    test('reorder in one transaction, never leaving two pages at one position',
+        () {
       final id = db.createDocument('Contrato');
       final a = db.addPage(id, originalPath: 'a.jpg');
       final b = db.addPage(id, originalPath: 'b.jpg');
       final c = db.addPage(id, originalPath: 'c.jpg');
 
       db.reorderPages(id, <int>[c, a, b]);
-      expect(db.pagesOf(id).map((p) => p.originalPath), <String>['c.jpg', 'a.jpg', 'b.jpg']);
+      expect(db.pagesOf(id).map((p) => p.originalPath),
+          <String>['c.jpg', 'a.jpg', 'b.jpg']);
       expect(db.pagesOf(id).map((p) => p.position), <int>[0, 1, 2]);
     });
 
@@ -66,7 +69,8 @@ void main() {
 
     setUp(() {
       documentId = db.createDocument('Factura de la luz');
-      pageWithText(db, documentId, 'Importe total de la facturación: 84,20 EUR');
+      pageWithText(
+          db, documentId, 'Importe total de la facturación: 84,20 EUR');
       pageWithText(db, documentId, 'Consumo en el periodo de enero');
     });
 
@@ -118,11 +122,13 @@ void main() {
       final parent = db.createFolder('Casa');
       final child = db.createFolder('Facturas', parentId: parent);
       expect(db.folders().map((f) => f.name), <String>['Casa']);
-      expect(db.folders(parentId: parent).map((f) => f.name), <String>['Facturas']);
+      expect(db.folders(parentId: parent).map((f) => f.name),
+          <String>['Facturas']);
 
       final documentId = db.createDocument('Luz', folderId: child);
       expect(db.documents(folderId: child).single.id, documentId);
-      expect(db.documents(), isEmpty, reason: 'the root must not show nested documents');
+      expect(db.documents(), isEmpty,
+          reason: 'the root must not show nested documents');
     });
 
     test('deleting a folder does not delete the documents in it', () {

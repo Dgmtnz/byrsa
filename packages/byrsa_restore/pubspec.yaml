@@ -31,11 +31,6 @@ dev_dependencies:
   flutter_test:
     sdk: flutter
 
-flutter:
-  plugin:
-    platforms:
-      android:
-        package: dev.byrsa.byrsa_restore
-        pluginClass: ByrsaRestorePlugin
-      ios:
-        pluginClass: ByrsaRestorePlugin
+# No platform channels: this package is Dart all the way down. Neural stages
+# reach ONNX Runtime through its own FFI plugin, not through native code of
+# ours (DECISIONS.md D-020).

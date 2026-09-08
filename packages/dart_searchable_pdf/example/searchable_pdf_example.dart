@@ -41,7 +41,8 @@ void main(List<String> args) {
   stdout.writeln('wrote ${out.path} (${out.lengthSync()} bytes)');
 
   try {
-    final result = Process.runSync('pdftotext', <String>['-layout', out.path, '-']);
+    final result =
+        Process.runSync('pdftotext', <String>['-layout', out.path, '-']);
     stdout.writeln('--- pdftotext says ---\n${result.stdout}');
   } on ProcessException {
     stdout.writeln('install poppler-utils to read the text back out.');
@@ -56,16 +57,30 @@ Uint8List _blankPage(int width, int height) {
     raw.addAll(List<int>.filled(width, 0xFF));
   }
   return Uint8List.fromList(<int>[
-    0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A,
+    0x89,
+    0x50,
+    0x4E,
+    0x47,
+    0x0D,
+    0x0A,
+    0x1A,
+    0x0A,
     ..._chunk('IHDR', <int>[
-      ...(_u32(width)), ...(_u32(height)), 8, 0, 0, 0, 0,
+      ...(_u32(width)),
+      ...(_u32(height)),
+      8,
+      0,
+      0,
+      0,
+      0,
     ]),
     ..._chunk('IDAT', ZLibEncoder().convert(raw)),
     ..._chunk('IEND', const <int>[]),
   ]);
 }
 
-List<int> _u32(int v) => <int>[v >> 24 & 0xFF, v >> 16 & 0xFF, v >> 8 & 0xFF, v & 0xFF];
+List<int> _u32(int v) =>
+    <int>[v >> 24 & 0xFF, v >> 16 & 0xFF, v >> 8 & 0xFF, v & 0xFF];
 
 List<int> _chunk(String type, List<int> body) {
   final payload = <int>[...type.codeUnits, ...body];

@@ -50,7 +50,8 @@ class ErrorRate {
 
   /// Errors per reference unit. 0 is perfect; values above 1 are possible when
   /// the engine hallucinates more than it reads.
-  double get rate => referenceLength == 0 ? (errors == 0 ? 0 : 1) : errors / referenceLength;
+  double get rate =>
+      referenceLength == 0 ? (errors == 0 ? 0 : 1) : errors / referenceLength;
 
   ErrorRate operator +(ErrorRate other) =>
       ErrorRate(errors + other.errors, referenceLength + other.referenceLength);
@@ -81,8 +82,10 @@ ErrorRate wordErrorRate(
   String hypothesis, {
   bool strict = false,
 }) {
-  List<String> words(String s) =>
-      (strict ? s : normalizeWhitespace(s)).split(' ').where((w) => w.isNotEmpty).toList();
+  List<String> words(String s) => (strict ? s : normalizeWhitespace(s))
+      .split(' ')
+      .where((w) => w.isNotEmpty)
+      .toList();
   final ref = words(reference);
   return ErrorRate(levenshtein(ref, words(hypothesis)), ref.length);
 }

@@ -16,7 +16,8 @@ import 'ocr_types.dart';
 /// benchmark decides whether the fifty-document set contains enough multi-column
 /// pages to justify it.
 class ReadingOrder {
-  const ReadingOrder({this.overlapThreshold = 0.5, this.minimumConfidence = 0.0});
+  const ReadingOrder(
+      {this.overlapThreshold = 0.5, this.minimumConfidence = 0.0});
 
   /// Fraction of shared height above which two words are the same line.
   final double overlapThreshold;
@@ -26,7 +27,8 @@ class ReadingOrder {
 
   List<OcrLine> group(List<OcrWord> words) {
     final kept = words
-        .where((w) => w.confidence >= minimumConfidence && w.text.trim().isNotEmpty)
+        .where((w) =>
+            w.confidence >= minimumConfidence && w.text.trim().isNotEmpty)
         .toList()
       ..sort((a, b) => a.box.top.compareTo(b.box.top));
 

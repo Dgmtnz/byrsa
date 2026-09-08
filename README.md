@@ -64,12 +64,47 @@ harness/    evaluation harness — 50 real documents, CER and timing
 docs/       plan, decisions, evaluation protocol
 ```
 
+## What is already verified
+
+Not a roadmap — these run in CI on every push, and each one is a command you
+can run yourself.
+
+| Claim | How it is checked |
+|---|---|
+| The Android build contains **no** Google Play Services | `tool/check_no_play_services.sh` on the built APK: 0 `com.google.android.gms` classes, 1717 `androidx.camera` references |
+| Searchable PDFs are readable by Poppler, accents included | `pdftotext -layout` round-trip in the test suite |
+| The invisible text layer lines up with the image | rendered word width asserted equal to the OCR box, for narrow, wide and accented words |
+| PDF output is byte-for-byte reproducible | same input, same bytes |
+| Every downloadable model has a real, computed digest | `dart run tool/pin_models.dart --verify` |
+| The documentation makes no unmeasured iOS claim | `tool/check_claims.sh` |
+| 106 tests pass with no device, no models and no network | `flutter test` + `dart test` |
+
+What is **not** verified is listed just as plainly in
+[`UNVERIFIED.md`](UNVERIFIED.md), with the machine and the command that would
+close each row.
+
 ## Building
 
-Requires Flutter (see `.fvmrc`/CI for the pinned version).
+Requires Flutter — the version is pinned in [`.fvmrc`](.fvmrc) and CI reads it
+from there.
 
 ```
-dart pub get                    # workspace-wide, no melos needed
-dart test packages/dart_searchable_pdf   # pure Dart, runs anywhere
-flutter test                    # everything else
+flutter pub get                                   # workspace-wide, no melos
+flutter analyze
+dart test packages/dart_searchable_pdf harness    # pure Dart, runs anywhere
+flutter test packages/byrsa_capture packages/byrsa_restore packages/byrsa_ocr app
+dart run harness/bin/harness.dart validate        # the evaluation dataset
 ```
+
+Poppler (`poppler-utils`) makes the searchable-PDF round-trip tests run rather
+than skip. Install it.
+
+## Reading further
+
+- [`DECISIONS.md`](DECISIONS.md) — every design decision, with its cost. Entries
+  marked `ratificar` are proposals awaiting final review.
+- [`UNVERIFIED.md`](UNVERIFIED.md) — everything not yet measured, as a work order.
+- [`docs/upstream/`](docs/upstream/) — patches and issues owed to the projects
+  this one builds on.
+- [`harness/dataset/README.md`](harness/dataset/README.md) — the fifty-document
+  shot list and the rules on personal data.

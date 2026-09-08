@@ -14,7 +14,8 @@ class StageMeasurement {
     this.skipReason,
   });
 
-  factory StageMeasurement.fromJson(Map<String, Object?> json) => StageMeasurement(
+  factory StageMeasurement.fromJson(Map<String, Object?> json) =>
+      StageMeasurement(
         name: json['name']! as String,
         milliseconds: (json['milliseconds'] as num?)?.toDouble() ?? 0,
         peakMemoryBytes: (json['peakMemoryBytes'] as num?)?.toInt(),

@@ -62,8 +62,8 @@ class _QuadOverlayState extends State<QuadOverlay> {
     return LayoutBuilder(
       builder: (context, constraints) => GestureDetector(
         behavior: HitTestBehavior.opaque,
-        onPanDown: (details) =>
-            setState(() => _dragging = _nearestCorner(quad, details.localPosition, constraints)),
+        onPanDown: (details) => setState(() => _dragging =
+            _nearestCorner(quad, details.localPosition, constraints)),
         onPanUpdate: (details) {
           final index = _dragging;
           if (index == null) return;
@@ -71,7 +71,8 @@ class _QuadOverlayState extends State<QuadOverlay> {
             index,
             CapturePoint(
               (details.localPosition.dx / constraints.maxWidth).clamp(0.0, 1.0),
-              (details.localPosition.dy / constraints.maxHeight).clamp(0.0, 1.0),
+              (details.localPosition.dy / constraints.maxHeight)
+                  .clamp(0.0, 1.0),
             ),
           ));
         },
@@ -82,7 +83,8 @@ class _QuadOverlayState extends State<QuadOverlay> {
     );
   }
 
-  int? _nearestCorner(CaptureQuad quad, Offset position, BoxConstraints constraints) {
+  int? _nearestCorner(
+      CaptureQuad quad, Offset position, BoxConstraints constraints) {
     var best = widget.handleRadius;
     int? found;
     for (var i = 0; i < 4; i++) {
@@ -149,5 +151,7 @@ class _QuadPainter extends CustomPainter {
 
   @override
   bool shouldRepaint(_QuadPainter old) =>
-      old.quad != quad || old.activeCorner != activeCorner || old.color != color;
+      old.quad != quad ||
+      old.activeCorner != activeCorner ||
+      old.color != color;
 }

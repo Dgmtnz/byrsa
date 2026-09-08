@@ -40,7 +40,8 @@ void main(List<String> arguments) {
 
   switch (command) {
     case 'score':
-      final resultsPath = options['results'] ?? _fail('score needs --results <run.json>');
+      final resultsPath =
+          options['results'] ?? _fail('score needs --results <run.json>');
       final dataset = Dataset.load(datasetDir);
       final run = RunResults.load(File(resultsPath));
       final card = score(dataset, run, strict: options.containsKey('strict'));
@@ -93,7 +94,8 @@ Map<String, String?> _parseOptions(List<String> arguments) {
     final argument = arguments[i];
     if (!argument.startsWith('--')) continue;
     final name = argument.substring(2);
-    final hasValue = i + 1 < arguments.length && !arguments[i + 1].startsWith('--');
+    final hasValue =
+        i + 1 < arguments.length && !arguments[i + 1].startsWith('--');
     options[name] = hasValue ? arguments[++i] : null;
   }
   return options;
@@ -119,7 +121,8 @@ List<String> _validate(Directory directory) {
       }
     }
     if (document.publish && document.license == null) {
-      problems.add('${document.id}: marked publishable but declares no licence');
+      problems
+          .add('${document.id}: marked publishable but declares no licence');
     }
     if (document.publish && document.file.startsWith('private/')) {
       problems.add('${document.id}: marked publishable but lives in private/ — '

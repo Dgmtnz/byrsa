@@ -28,7 +28,8 @@ class LibraryDatabase {
 
   void _migrate() {
     _db.execute('PRAGMA foreign_keys = ON');
-    final current = _db.select('PRAGMA user_version').first['user_version'] as int;
+    final current =
+        _db.select('PRAGMA user_version').first['user_version'] as int;
     if (current >= schemaVersion) return;
 
     if (current < 1) {
@@ -60,7 +61,8 @@ class LibraryDatabase {
           height         INTEGER
         );
       ''');
-      _db.execute('CREATE INDEX pages_document ON pages(document_id, position)');
+      _db.execute(
+          'CREATE INDEX pages_document ON pages(document_id, position)');
       _db.execute('CREATE INDEX documents_folder ON documents(folder_id)');
 
       // External-content FTS: the index holds no copy of the text, so a page
@@ -158,8 +160,10 @@ class LibraryDatabase {
         id: id,
         title: row['title'] as String,
         folderId: row['folder_id'] as int?,
-        createdAt: DateTime.fromMillisecondsSinceEpoch(row['created_at'] as int),
-        updatedAt: DateTime.fromMillisecondsSinceEpoch(row['updated_at'] as int),
+        createdAt:
+            DateTime.fromMillisecondsSinceEpoch(row['created_at'] as int),
+        updatedAt:
+            DateTime.fromMillisecondsSinceEpoch(row['updated_at'] as int),
         pages: withPages ? pagesOf(id) : const <ScanPage>[],
       );
     }).toList();
@@ -200,14 +204,23 @@ class LibraryDatabase {
     _db.execute(
       'INSERT INTO pages(document_id, position, original_path, processed_path, text, width, height) '
       'VALUES (?, ?, ?, ?, ?, ?, ?)',
-      <Object?>[documentId, next, originalPath, processedPath, text, width, height],
+      <Object?>[
+        documentId,
+        next,
+        originalPath,
+        processedPath,
+        text,
+        width,
+        height
+      ],
     );
     _touch(documentId);
     return _db.lastInsertRowId;
   }
 
   void setPageText(int pageId, String text) {
-    _db.execute('UPDATE pages SET text = ? WHERE id = ?', <Object?>[text, pageId]);
+    _db.execute(
+        'UPDATE pages SET text = ? WHERE id = ?', <Object?>[text, pageId]);
   }
 
   void setPageProcessed(int pageId, String processedPath) {

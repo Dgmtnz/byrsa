@@ -23,7 +23,8 @@ void main() {
 
       smoother.add(start);
       final result = smoother.add(moved)!;
-      expect(result.topLeft.x, closeTo((start.topLeft.x + moved.topLeft.x) / 2, 1e-12));
+      expect(result.topLeft.x,
+          closeTo((start.topLeft.x + moved.topLeft.x) / 2, 1e-12));
     });
 
     test('jumps rather than sliding when the page really moves', () {
@@ -66,7 +67,8 @@ void main() {
       final tracker = StabilityTracker();
       expect(feed(tracker, null).hint, CaptureHint.noDocument);
       expect(feed(tracker, centred(0.2), frames: 20).hint, CaptureHint.tooFar);
-      expect(feed(tracker, CaptureQuad.full, frames: 20).hint, CaptureHint.cropped);
+      expect(feed(tracker, CaptureQuad.full, frames: 20).hint,
+          CaptureHint.cropped);
       expect(
         feed(tracker, centred(0.6), frames: 20, brightness: 0.05).hint,
         CaptureHint.tooDark,

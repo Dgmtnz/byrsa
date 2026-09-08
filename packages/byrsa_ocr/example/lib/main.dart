@@ -14,10 +14,10 @@ class OcrExampleApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => MaterialApp(
-        title: 'byrsa_ocr',
-        theme: ThemeData(colorSchemeSeed: Colors.deepPurple, useMaterial3: true),
-        home: const OcrScreen(),
-      );
+    title: 'byrsa_ocr',
+    theme: ThemeData(colorSchemeSeed: Colors.deepPurple, useMaterial3: true),
+    home: const OcrScreen(),
+  );
 }
 
 class OcrScreen extends StatefulWidget {
@@ -50,7 +50,8 @@ class _OcrScreenState extends State<OcrScreen> {
     try {
       await _ocr.prepare(
         onProgress: (received, total) => setState(
-          () => _status = 'Downloading models… ${(received * 100 / total).round()}%',
+          () => _status =
+              'Downloading models… ${(received * 100 / total).round()}%',
         ),
       );
       setState(() => _status = null);
@@ -85,16 +86,22 @@ class _OcrScreenState extends State<OcrScreen> {
             Card(
               child: ListTile(
                 title: Text('Engine: ${readiness.engine}'),
-                subtitle: Text(readiness.ready
-                    ? 'Ready'
-                    : '${readiness.reason} '
-                        '(${(readiness.missingBytes / 1024 / 1024).round()} MB)'),
+                subtitle: Text(
+                  readiness.ready
+                      ? 'Ready'
+                      : '${readiness.reason} '
+                            '(${(readiness.missingBytes / 1024 / 1024).round()} MB)',
+                ),
                 trailing: readiness.ready
                     ? const Icon(Icons.check_circle)
-                    : FilledButton(onPressed: _prepare, child: const Text('Download')),
+                    : FilledButton(
+                        onPressed: _prepare,
+                        child: const Text('Download'),
+                      ),
               ),
             ),
-          if (_status != null) Padding(padding: const EdgeInsets.all(8), child: Text(_status!)),
+          if (_status != null)
+            Padding(padding: const EdgeInsets.all(8), child: Text(_status!)),
           const SizedBox(height: 8),
           // Point this at a file the device already has. The package never
           // uploads anything: recognition happens where the file is.
@@ -111,7 +118,9 @@ class _OcrScreenState extends State<OcrScreen> {
               ListTile(
                 dense: true,
                 title: Text(line.text),
-                subtitle: Text('confidence ${line.confidence.toStringAsFixed(2)}'),
+                subtitle: Text(
+                  'confidence ${line.confidence.toStringAsFixed(2)}',
+                ),
               ),
         ],
       ),

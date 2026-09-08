@@ -124,7 +124,10 @@ class StabilityTracker {
 
   static bool _touchesEdge(CaptureQuad quad, {double margin = 0.005}) =>
       quad.corners.any((c) =>
-          c.x <= margin || c.y <= margin || c.x >= 1 - margin || c.y >= 1 - margin);
+          c.x <= margin ||
+          c.y <= margin ||
+          c.x >= 1 - margin ||
+          c.y >= 1 - margin);
 }
 
 /// Result of one [StabilityTracker.update].

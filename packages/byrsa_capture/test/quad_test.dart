@@ -53,7 +53,9 @@ CaptureQuad project({
 
 void main() {
   group('corner ordering', () {
-    test('puts arbitrary corners into top-left, top-right, bottom-right, bottom-left', () {
+    test(
+        'puts arbitrary corners into top-left, top-right, bottom-right, bottom-left',
+        () {
       const points = <CapturePoint>[
         CapturePoint(0.8, 0.9),
         CapturePoint(0.2, 0.1),
@@ -67,7 +69,8 @@ void main() {
       expect(quad.bottomLeft, const CapturePoint(0.2, 0.9));
     });
 
-    test('survives a page rotated past 45°, where naive x+y sorting breaks', () {
+    test('survives a page rotated past 45°, where naive x+y sorting breaks',
+        () {
       // A diamond: no corner is simultaneously leftmost and topmost.
       const points = <CapturePoint>[
         CapturePoint(0.5, 0.1),
@@ -84,7 +87,8 @@ void main() {
     });
 
     test('rejects anything that is not four points', () {
-      expect(() => CaptureQuad.fromPoints(const <CapturePoint>[]), throwsArgumentError);
+      expect(() => CaptureQuad.fromPoints(const <CapturePoint>[]),
+          throwsArgumentError);
     });
   });
 
@@ -166,8 +170,8 @@ void main() {
       final quad = project(width: 210, height: 297, tiltX: 0.6, tiltY: 0.3);
       const frame = 1280 / 960;
 
-      double side(CapturePoint a, CapturePoint b) => math.sqrt(
-          math.pow((a.x - b.x) * frame, 2) + math.pow(a.y - b.y, 2));
+      double side(CapturePoint a, CapturePoint b) =>
+          math.sqrt(math.pow((a.x - b.x) * frame, 2) + math.pow(a.y - b.y, 2));
       final naive = ((side(quad.topLeft, quad.topRight) +
                   side(quad.bottomLeft, quad.bottomRight)) /
               2) /

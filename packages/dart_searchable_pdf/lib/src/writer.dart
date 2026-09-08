@@ -106,7 +106,8 @@ class PdfWriter {
 
 /// Body of the image XObject dictionary for [image].
 String imageDictionary(PdfImage image) {
-  final parms = image.decodeParms == null ? '' : '/DecodeParms ${image.decodeParms} ';
+  final parms =
+      image.decodeParms == null ? '' : '/DecodeParms ${image.decodeParms} ';
   return '/Type /XObject /Subtype /Image '
       '/Width ${image.width} /Height ${image.height} '
       '/ColorSpace ${image.colorSpace} '
@@ -139,7 +140,8 @@ List<int> pageContentStream({
       buffer
         ..write('/F0 ${pdfNum(word.fontSize)} Tf\n')
         ..write('${pdfNum(word.horizontalScale)} Tz\n')
-        ..write('1 0 0 1 ${pdfNum(word.baselineX)} ${pdfNum(word.baselineY)} Tm\n')
+        ..write(
+            '1 0 0 1 ${pdfNum(word.baselineX)} ${pdfNum(word.baselineY)} Tm\n')
         ..write('${pdfLiteralString(word.codes)} Tj\n');
     }
     buffer.write('ET\n');

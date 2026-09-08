@@ -22,7 +22,8 @@ class CapturePoint {
       CapturePoint(x + other.x, y + other.y);
   CapturePoint operator -(CapturePoint other) =>
       CapturePoint(x - other.x, y - other.y);
-  CapturePoint operator *(double factor) => CapturePoint(x * factor, y * factor);
+  CapturePoint operator *(double factor) =>
+      CapturePoint(x * factor, y * factor);
 
   double distanceTo(CapturePoint other) =>
       math.sqrt(math.pow(x - other.x, 2) + math.pow(y - other.y, 2));
@@ -68,7 +69,8 @@ class CaptureQuad {
   /// about 45°, which happens constantly when a page is photographed sideways.
   factory CaptureQuad.fromPoints(List<CapturePoint> points) {
     if (points.length != 4) {
-      throw ArgumentError('A quad needs exactly four points, got ${points.length}.');
+      throw ArgumentError(
+          'A quad needs exactly four points, got ${points.length}.');
     }
     final cx = points.map((p) => p.x).reduce((a, b) => a + b) / 4;
     final cy = points.map((p) => p.y).reduce((a, b) => a + b) / 4;
@@ -95,10 +97,7 @@ class CaptureQuad {
   }
 
   static CaptureQuad fromJson(List<Object?> json) => CaptureQuad.fromPoints(
-        json
-            .cast<Map<Object?, Object?>>()
-            .map(CapturePoint.fromJson)
-            .toList(),
+        json.cast<Map<Object?, Object?>>().map(CapturePoint.fromJson).toList(),
       );
 
   /// The whole frame — what the UI falls back to when nothing is detected.
@@ -230,7 +229,8 @@ class CaptureQuad {
 
   /// Width-to-height ratio of the physical page, given a known [focalLength]
   /// in units of one frame height.
-  double? aspectRatioWithFocal(double focalLength, {double frameAspectRatio = 1}) {
+  double? aspectRatioWithFocal(double focalLength,
+      {double frameAspectRatio = 1}) {
     final vectors = _rectificationVectors(frameAspectRatio);
     if (vectors == null || focalLength <= 0) return null;
     final (:n2, :n3) = vectors;
@@ -285,18 +285,20 @@ class CaptureQuad {
     double frameAspectRatio = 1,
     double assumedFocalLength = typicalPhoneFocalLength,
   }) {
-    final projective = projectiveAspectRatio(frameAspectRatio: frameAspectRatio);
+    final projective =
+        projectiveAspectRatio(frameAspectRatio: frameAspectRatio);
     if (projective != null && projective.isFinite && projective > 0) {
       return projective;
     }
-    final assumed =
-        aspectRatioWithFocal(assumedFocalLength, frameAspectRatio: frameAspectRatio);
+    final assumed = aspectRatioWithFocal(assumedFocalLength,
+        frameAspectRatio: frameAspectRatio);
     if (assumed != null && assumed.isFinite && assumed > 0) return assumed;
 
     double side(CapturePoint a, CapturePoint b) => math.sqrt(
         math.pow((a.x - b.x) * frameAspectRatio, 2) + math.pow(a.y - b.y, 2));
     final width = (side(topLeft, topRight) + side(bottomLeft, bottomRight)) / 2;
-    final height = (side(topLeft, bottomLeft) + side(topRight, bottomRight)) / 2;
+    final height =
+        (side(topLeft, bottomLeft) + side(topRight, bottomRight)) / 2;
     return height <= 0 ? 1 : width / height;
   }
 
@@ -312,6 +314,5 @@ class CaptureQuad {
       other.bottomLeft == bottomLeft;
 
   @override
-  int get hashCode =>
-      Object.hash(topLeft, topRight, bottomRight, bottomLeft);
+  int get hashCode => Object.hash(topLeft, topRight, bottomRight, bottomLeft);
 }

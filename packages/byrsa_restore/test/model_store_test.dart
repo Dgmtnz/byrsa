@@ -80,7 +80,8 @@ void main() {
           .having((e) => e.code, 'code', 'checksum-mismatch')),
     );
     expect(store.isInstalled('uvdoc'), isFalse);
-    expect(cache.listSync(), isEmpty, reason: 'no half-downloaded file left behind');
+    expect(cache.listSync(), isEmpty,
+        reason: 'no half-downloaded file left behind');
   });
 
   test('refuses to install a model nobody has pinned', () async {
@@ -98,7 +99,8 @@ void main() {
 
     await expectLater(
       store.install('uvdoc'),
-      throwsA(isA<ModelStoreException>().having((e) => e.code, 'code', 'unpinned')),
+      throwsA(
+          isA<ModelStoreException>().having((e) => e.code, 'code', 'unpinned')),
     );
   });
 
@@ -116,7 +118,8 @@ void main() {
 
     await expectLater(
       store.install('uvdoc'),
-      throwsA(isA<ModelStoreException>().having((e) => e.code, 'code', 'http-404')),
+      throwsA(
+          isA<ModelStoreException>().having((e) => e.code, 'code', 'http-404')),
     );
   });
 
@@ -124,7 +127,8 @@ void main() {
     final store = ModelStore(
       directory: cache,
       catalog: ModelCatalog.parse(
-        catalogJson('http://example.invalid/uvdoc.onnx', 'c' * 64, size: 31000000),
+        catalogJson('http://example.invalid/uvdoc.onnx', 'c' * 64,
+            size: 31000000),
       ),
     );
     expect(store.downloadSizeFor(<String>['uvdoc']), 31000000);
@@ -134,12 +138,18 @@ void main() {
     test('flags models that may not be shipped yet', () {
       final catalog = ModelCatalog.parse(jsonEncode({
         'models': [
-          {'id': 'pinned', 'url': 'https://x/1', 'license': 'MIT', 'sha256': 'd' * 64},
+          {
+            'id': 'pinned',
+            'url': 'https://x/1',
+            'license': 'MIT',
+            'sha256': 'd' * 64
+          },
           {'id': 'unpinned', 'url': 'https://x/2', 'license': 'MIT'},
           {'id': 'unaudited', 'url': 'https://x/3', 'sha256': 'e' * 64},
         ]
       }));
-      expect(catalog.blockers.map((m) => m.id), <String>['unpinned', 'unaudited']);
+      expect(
+          catalog.blockers.map((m) => m.id), <String>['unpinned', 'unaudited']);
     });
 
     test('names the models it knows when asked for one it does not', () {

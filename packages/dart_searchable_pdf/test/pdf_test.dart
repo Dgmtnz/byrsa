@@ -72,7 +72,8 @@ void main() {
           int.parse(RegExp(r'startxref\s+(\d+)').firstMatch(text)!.group(1)!);
       expect(text.substring(startXref, startXref + 4), 'xref');
 
-      final size = int.parse(RegExp(r'/Size (\d+)').firstMatch(text)!.group(1)!);
+      final size =
+          int.parse(RegExp(r'/Size (\d+)').firstMatch(text)!.group(1)!);
       final entries = RegExp(r'^(\d{10}) 00000 n $', multiLine: true)
           .allMatches(text.substring(startXref))
           .map((m) => int.parse(m.group(1)!))
@@ -125,7 +126,8 @@ void main() {
 
     test('rejects what it cannot embed, with a reason', () {
       expect(
-        () => PdfImage.decode(Uint8List.fromList(<int>[1, 2, 3, 4, 5, 6, 7, 8, 9])),
+        () => PdfImage.decode(
+            Uint8List.fromList(<int>[1, 2, 3, 4, 5, 6, 7, 8, 9])),
         throwsA(isA<UnsupportedError>()),
       );
     });

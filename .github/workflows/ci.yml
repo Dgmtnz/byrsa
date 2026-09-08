@@ -1,0 +1,124 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  flutter-version:
+    # One place holds the version (.fvmrc), and every job reads it from there.
+    # A reproducible build starts with nobody answering "which version?" with
+    # "whichever I had installed".
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.read.outputs.version }}
+    steps:
+      - uses: actions/checkout@v4
+      - id: read
+        run: echo "version=$(jq -r .flutter .fvmrc)" >> "$GITHUB_OUTPUT"
+
+  test:
+    needs: flutter-version
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ needs.flutter-version.outputs.version }}
+          channel: stable
+          cache: true
+
+      # Poppler is not a convenience here. It is the reference implementation
+      # the searchable-PDF tests check their output against, and those tests
+      # skip themselves without it — so it is installed, not hoped for.
+      - name: Install Poppler
+        run: sudo apt-get update && sudo apt-get install -y poppler-utils
+
+      - run: flutter pub get
+      - run: flutter analyze
+      - run: dart format --output=none --set-exit-if-changed .
+      - run: flutter test packages/byrsa_capture packages/byrsa_restore packages/byrsa_ocr app
+      - run: dart test packages/dart_searchable_pdf harness
+
+      - name: Dataset manifest is consistent
+        run: dart run harness/bin/harness.dart validate
+
+      - name: Poppler really did run
+        # A skipped test is not a passing test. If the round-trip silently
+        # stopped running, this catches it.
+        run: pdftotext -v
+
+  android:
+    needs: flutter-version
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ needs.flutter-version.outputs.version }}
+          channel: stable
+          cache: true
+
+      - run: flutter pub get
+      - name: Build the capture example
+        working-directory: packages/byrsa_capture/example
+        run: flutter build apk --debug
+
+      - name: No Google Play Services in the build
+        # The single claim the whole distribution strategy rests on (plan
+        # §0.1). It is a test, not a promise.
+        run: >-
+          tool/check_no_play_services.sh
+          packages/byrsa_capture/example/build/app/outputs/flutter-apk/app-debug.apk
+
+      - name: Build the application
+        working-directory: app
+        run: flutter build apk --debug
+
+  ios:
+    needs: flutter-version
+    runs-on: macos-latest
+    # Deliberately allowed to fail. Nobody in the project has a macOS machine,
+    # so this job is the only thing that ever compiles the Swift, and a red job
+    # is information. A missing job would be invisible debt (plan §0.2).
+    continue-on-error: true
+    steps:
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ needs.flutter-version.outputs.version }}
+          channel: stable
+          cache: true
+
+      - run: flutter pub get
+      - name: Build the capture example for iOS
+        working-directory: packages/byrsa_capture/example
+        run: flutter build ios --no-codesign --debug
+      - name: Build the application for iOS
+        working-directory: app
+        run: flutter build ios --no-codesign --debug
+
+  reuse:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Every file declares its licence
+        uses: fsfe/reuse-action@v5
+
+  claims:
+    # Guards the project's own rules about what may be asserted.
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: No unmeasured iOS claims in the documentation
+        run: tool/check_claims.sh

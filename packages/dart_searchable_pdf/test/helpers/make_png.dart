@@ -25,7 +25,13 @@ Uint8List makeGreyPng(int width, int height, {int value = 0xF0}) {
     ..setUint32(0, width)
     ..setUint32(4, height);
   ihdr.add(header.buffer.asUint8List(0, 8));
-  ihdr.add(<int>[8, 0, 0, 0, 0]); // bit depth, greyscale, deflate, adaptive, no interlace
+  ihdr.add(<int>[
+    8,
+    0,
+    0,
+    0,
+    0
+  ]); // bit depth, greyscale, deflate, adaptive, no interlace
   out.add(_chunk('IHDR', ihdr.takeBytes()));
   out.add(_chunk('IDAT', Uint8List.fromList(ZLibEncoder().convert(raw))));
   out.add(_chunk('IEND', Uint8List(0)));

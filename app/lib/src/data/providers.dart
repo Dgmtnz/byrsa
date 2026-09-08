@@ -22,7 +22,8 @@ final storageRootProvider = FutureProvider<Directory>((ref) async {
 
 final libraryProvider = FutureProvider<LibraryDatabase>((ref) async {
   final root = await ref.watch(storageRootProvider.future);
-  final database = LibraryDatabase(sqlite3.open(p.join(root.path, 'library.db')));
+  final database =
+      LibraryDatabase(sqlite3.open(p.join(root.path, 'library.db')));
   ref.onDispose(database.dispose);
   return database;
 });
@@ -41,13 +42,15 @@ final documentsProvider =
   return library.documents(folderId: folderId, withPages: true);
 });
 
-final foldersProvider = FutureProvider.family<List<Folder>, int?>((ref, parentId) async {
+final foldersProvider =
+    FutureProvider.family<List<Folder>, int?>((ref, parentId) async {
   ref.watch(libraryRevisionProvider);
   final library = await ref.watch(libraryProvider.future);
   return library.folders(parentId: parentId);
 });
 
-final documentProvider = FutureProvider.family<ScanDocument?, int>((ref, id) async {
+final documentProvider =
+    FutureProvider.family<ScanDocument?, int>((ref, id) async {
   ref.watch(libraryRevisionProvider);
   final library = await ref.watch(libraryProvider.future);
   return library.document(id);

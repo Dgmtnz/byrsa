@@ -109,7 +109,8 @@ class DocumentPipeline {
           for (final word in page.words)
             PdfWord(
               word.text,
-              PdfRect(word.box.left, word.box.top, word.box.right, word.box.bottom),
+              PdfRect(
+                  word.box.left, word.box.top, word.box.right, word.box.bottom),
             ),
         ],
         dpi: page.dpi,

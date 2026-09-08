@@ -20,7 +20,8 @@ class DatasetDocument {
     required this.license,
   });
 
-  factory DatasetDocument.fromJson(Map<String, Object?> json) => DatasetDocument(
+  factory DatasetDocument.fromJson(Map<String, Object?> json) =>
+      DatasetDocument(
         id: json['id']! as String,
         file: json['file']! as String,
         groundTruth: json['groundTruth']! as String,

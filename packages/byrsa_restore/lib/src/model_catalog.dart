@@ -24,7 +24,8 @@ class ModelDescriptor {
     this.source,
   });
 
-  factory ModelDescriptor.fromJson(Map<String, Object?> json) => ModelDescriptor(
+  factory ModelDescriptor.fromJson(Map<String, Object?> json) =>
+      ModelDescriptor(
         id: json['id']! as String,
         url: json['url']! as String,
         sizeBytes: (json['sizeBytes'] as num?)?.toInt() ?? 0,
@@ -65,7 +66,8 @@ class ModelCatalog {
   factory ModelCatalog.parse(String source) {
     final json = jsonDecode(source) as Map<String, Object?>;
     return ModelCatalog(<String, ModelDescriptor>{
-      for (final entry in (json['models']! as List).cast<Map<String, Object?>>())
+      for (final entry
+          in (json['models']! as List).cast<Map<String, Object?>>())
         entry['id']! as String: ModelDescriptor.fromJson(entry),
     });
   }
@@ -75,7 +77,8 @@ class ModelCatalog {
   ModelDescriptor operator [](String id) {
     final model = models[id];
     if (model == null) {
-      throw ArgumentError('No model "$id" in the catalogue. Known: ${models.keys.join(", ")}');
+      throw ArgumentError(
+          'No model "$id" in the catalogue. Known: ${models.keys.join(", ")}');
     }
     return model;
   }

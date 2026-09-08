@@ -13,10 +13,10 @@ class CaptureExampleApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => MaterialApp(
-        title: 'byrsa_capture',
-        theme: ThemeData(colorSchemeSeed: Colors.teal, useMaterial3: true),
-        home: const CaptureScreen(),
-      );
+    title: 'byrsa_capture',
+    theme: ThemeData(colorSchemeSeed: Colors.teal, useMaterial3: true),
+    home: const CaptureScreen(),
+  );
 }
 
 class CaptureScreen extends StatefulWidget {
@@ -49,7 +49,12 @@ class _CaptureScreenState extends State<CaptureScreen> {
     if (_error != null) {
       return Scaffold(
         appBar: AppBar(title: const Text('byrsa_capture')),
-        body: Center(child: Padding(padding: const EdgeInsets.all(24), child: Text('$_error'))),
+        body: Center(
+          child: Padding(
+            padding: const EdgeInsets.all(24),
+            child: Text('$_error'),
+          ),
+        ),
       );
     }
     return Scaffold(
@@ -60,11 +65,14 @@ class _CaptureScreenState extends State<CaptureScreen> {
             listenable: _controller,
             builder: (context, _) => IconButton(
               tooltip: 'Auto capture',
-              icon: Icon(_controller.autoCapture
-                  ? Icons.motion_photos_auto
-                  : Icons.motion_photos_off),
-              onPressed: () =>
-                  setState(() => _controller.autoCapture = !_controller.autoCapture),
+              icon: Icon(
+                _controller.autoCapture
+                    ? Icons.motion_photos_auto
+                    : Icons.motion_photos_off,
+              ),
+              onPressed: () => setState(
+                () => _controller.autoCapture = !_controller.autoCapture,
+              ),
             ),
           ),
         ],
@@ -90,28 +98,28 @@ class _PageStrip extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => ListenableBuilder(
-        listenable: controller,
-        builder: (context, _) {
-          final pages = controller.pages;
-          if (pages.isEmpty) {
-            return const Center(child: Text('No pages captured yet'));
-          }
-          return ListView.builder(
-            scrollDirection: Axis.horizontal,
-            padding: const EdgeInsets.all(8),
-            itemCount: pages.length,
-            itemBuilder: (context, index) {
-              final page = pages[index];
-              final path = page.rectifiedPath ?? page.originalPath;
-              return Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 4),
-                child: GestureDetector(
-                  onLongPress: () => controller.removePage(index),
-                  child: Image.file(File(path), fit: BoxFit.cover),
-                ),
-              );
-            },
+    listenable: controller,
+    builder: (context, _) {
+      final pages = controller.pages;
+      if (pages.isEmpty) {
+        return const Center(child: Text('No pages captured yet'));
+      }
+      return ListView.builder(
+        scrollDirection: Axis.horizontal,
+        padding: const EdgeInsets.all(8),
+        itemCount: pages.length,
+        itemBuilder: (context, index) {
+          final page = pages[index];
+          final path = page.rectifiedPath ?? page.originalPath;
+          return Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 4),
+            child: GestureDetector(
+              onLongPress: () => controller.removePage(index),
+              child: Image.file(File(path), fit: BoxFit.cover),
+            ),
           );
         },
       );
+    },
+  );
 }

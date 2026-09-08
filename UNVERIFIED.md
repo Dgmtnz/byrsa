@@ -36,6 +36,14 @@ here, not run yet) · `CLOSED` (verified; keep the row with the result).
 |---|---|---|---|---|
 | U-08 | Searchable PDFs select correctly in **Acrobat Reader** | Windows/macOS + Acrobat | open `harness/out/*.pdf`, Ctrl+F a known word | BLOCKED |
 
+## Closed — kept with the result
+
+| # | Claim | How it was closed | Result |
+|---|---|---|---|
+| U-19 | The Android build contains no Google Play Services | `tool/check_no_play_services.sh` on the capture example's debug APK, 2026-09-08 | **0** `com.google.android.gms` / `com.google.mlkit` classes; 1717 `androidx.camera` references. Runs in CI on every push. |
+| U-20 | Searchable PDFs are readable by Poppler, including accented Spanish | `dart test packages/dart_searchable_pdf`, 2026-09-08 | Words, accents and line grouping all round-trip through `pdftotext -layout`. |
+| U-21 | Every model in `models.json` has a real, computed SHA-256 | `dart run tool/pin_models.dart --verify`, 2026-09-08 | 5 of 5 pinned. |
+
 ## Needs a physical Android phone
 
 | # | Claim | Machine needed | Exact command | Status |
@@ -43,7 +51,10 @@ here, not run yet) · `CLOSED` (verified; keep the row with the result).
 | U-09 | Live edge detection frame rate and thermal cost (§4.1, spike A) | mid-range Android | `packages/byrsa_capture/example`, DevTools timeline, 10 min run | OPEN |
 | U-10 | UVDoc inference time and peak RAM on mid-range Android (§4.2, spike B) | mid-range Android | `packages/byrsa_restore/example`, release build | OPEN |
 | U-11 | PP-OCR CER on real Spanish photographs (§4.4, spike C) | mid-range Android | `harness` run over the 50-document set | OPEN |
-| U-12 | Application size after ABI splits and dartcv treeshaking | any Android | `flutter build apk --split-per-abi --analyze-size` | OPEN |
+| U-12 | Application size after ABI splits | any Android | `flutter build apk --split-per-abi --analyze-size` | OPEN |
+| U-22 | DocShadow-SD7K survives quantisation at a usable size **and** quality. It is 120 MB as exported in fp32 — four times UVDoc — so this is not an optimisation, it is the precondition for shipping it at all | mid-range Android | quantise to int8, then `packages/byrsa_restore/example` in release, and the harness for quality | OPEN |
+| U-23 | UVDoc's real curvature ceiling: where dewarping stops helping and starts hurting | mid-range Android + the 50-document set | the harness, with and without the stage | OPEN |
+| U-24 | The Android quad detector's hit rate on real photographs, against its documented ceiling | mid-range Android + the 50-document set | `packages/byrsa_capture/example`, corners annotated by hand | OPEN |
 
 ## Needs only a desktop we already have
 
@@ -60,3 +71,5 @@ here, not run yet) · `CLOSED` (verified; keep the row with the result).
 | U-14 | Exact licence of every PP-OCR model actually distributed | PaddleOCR model cards, one by one | OPEN |
 | U-15 | Acceptable hourly rate for an individual applicant in Spain | NLnet office hour, 30 Sep 2026 | OPEN |
 | U-16 | Is the absence of iOS hardware a problem for the reviewers? | NLnet office hour, 30 Sep 2026 | OPEN |
+| U-25 | Will `doclens` accept making the ML Kit dependency optional? (`docs/upstream/doclens-play-services.md`) | doclens maintainers | DRAFTED, not yet filed |
+| U-26 | Will Ente publish `mobile_ocr` to pub.dev? Until they do, `byrsa_ocr` cannot be published either (`docs/upstream/mobile-ocr-pub-dev.md`) | Ente maintainers | DRAFTED, not yet filed |

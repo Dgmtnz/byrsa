@@ -62,7 +62,8 @@ class OcrBox {
 /// One recognised word.
 @immutable
 class OcrWord {
-  const OcrWord({required this.text, required this.box, required this.confidence});
+  const OcrWord(
+      {required this.text, required this.box, required this.confidence});
 
   final String text;
   final OcrBox box;
@@ -120,8 +121,7 @@ class OcrResult {
 
   final Duration duration;
 
-  List<OcrWord> get words =>
-      <OcrWord>[for (final line in lines) ...line.words];
+  List<OcrWord> get words => <OcrWord>[for (final line in lines) ...line.words];
 
   /// The whole page as text, in reading order, one line per line.
   String get text => lines.map((l) => l.text).join('\n');

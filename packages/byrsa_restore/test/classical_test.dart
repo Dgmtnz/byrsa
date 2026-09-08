@@ -40,7 +40,8 @@ double paperSpread(ImageBuffer image) {
   }
   final mean = values.reduce((a, b) => a + b) / values.length;
   final variance =
-      values.map((v) => math.pow(v - mean, 2)).reduce((a, b) => a + b) / values.length;
+      values.map((v) => math.pow(v - mean, 2)).reduce((a, b) => a + b) /
+          values.length;
   return math.sqrt(variance);
 }
 
@@ -118,7 +119,8 @@ void main() {
         ImageBuffer(width: _width, height: _height, channels: 3, data: data),
       );
 
-      int channel(int x, int y, int c) => restored.data[(y * _width + x) * 3 + c];
+      int channel(int x, int y, int c) =>
+          restored.data[(y * _width + x) * 3 + c];
       expect(channel(70, 130, 0), greaterThan(channel(70, 130, 1) + 40),
           reason: 'the red block must stay red');
       expect(channel(170, 130, 2), greaterThan(channel(170, 130, 1) + 40),
@@ -143,13 +145,15 @@ void main() {
   group('ImageBuffer', () {
     test('rejects a byte count that does not match its geometry', () {
       expect(
-        () => ImageBuffer(width: 4, height: 4, channels: 3, data: Uint8List(10)),
+        () =>
+            ImageBuffer(width: 4, height: 4, channels: 3, data: Uint8List(10)),
         throwsArgumentError,
       );
     });
 
     test('round-trips luma for a grayscale image', () {
-      final image = ImageBuffer.gray(2, 2, Uint8List.fromList(<int>[0, 64, 128, 255]));
+      final image =
+          ImageBuffer.gray(2, 2, Uint8List.fromList(<int>[0, 64, 128, 255]));
       expect(image.toLuma(), image.data);
     });
   });

@@ -14,10 +14,10 @@ class RestoreExampleApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => MaterialApp(
-        title: 'byrsa_restore',
-        theme: ThemeData(colorSchemeSeed: Colors.indigo, useMaterial3: true),
-        home: const RestoreScreen(),
-      );
+    title: 'byrsa_restore',
+    theme: ThemeData(colorSchemeSeed: Colors.indigo, useMaterial3: true),
+    home: const RestoreScreen(),
+  );
 }
 
 /// Shows the classical pipeline working on a synthetic shadowed page, with the
@@ -42,7 +42,8 @@ class _RestoreScreenState extends State<RestoreScreen> {
 
   Future<void> _run() async {
     final input = _shadowedPage(360, 480);
-    final result = await const RestorePipeline(<RestoreStage>[ClassicalStage()]).run(input);
+    final result = await const RestorePipeline(<RestoreStage>[ClassicalStage()])
+        .run(input);
     final before = await _toImage(input);
     final after = await _toImage(result.image);
     if (!mounted) return;
@@ -55,35 +56,46 @@ class _RestoreScreenState extends State<RestoreScreen> {
 
   @override
   Widget build(BuildContext context) => Scaffold(
-        appBar: AppBar(title: const Text('byrsa_restore')),
-        body: _before == null
-            ? const Center(child: CircularProgressIndicator())
-            : Column(
-                children: <Widget>[
-                  Expanded(
-                    child: Row(
-                      children: <Widget>[
-                        Expanded(child: RawImage(image: _before, fit: BoxFit.contain)),
-                        Expanded(child: RawImage(image: _after, fit: BoxFit.contain)),
-                      ],
+    appBar: AppBar(title: const Text('byrsa_restore')),
+    body: _before == null
+        ? const Center(child: CircularProgressIndicator())
+        : Column(
+            children: <Widget>[
+              Expanded(
+                child: Row(
+                  children: <Widget>[
+                    Expanded(
+                      child: RawImage(image: _before, fit: BoxFit.contain),
                     ),
-                  ),
-                  for (final outcome in _result!.outcomes)
-                    ListTile(
-                      title: Text(outcome.id),
-                      subtitle: Text(outcome.ran
-                          ? '${outcome.duration.inMilliseconds} ms'
-                          : 'skipped: ${outcome.skipReason!.name}'),
+                    Expanded(
+                      child: RawImage(image: _after, fit: BoxFit.contain),
                     ),
-                ],
+                  ],
+                ),
               ),
-      );
+              for (final outcome in _result!.outcomes)
+                ListTile(
+                  title: Text(outcome.id),
+                  subtitle: Text(
+                    outcome.ran
+                        ? '${outcome.duration.inMilliseconds} ms'
+                        : 'skipped: ${outcome.skipReason!.name}',
+                  ),
+                ),
+            ],
+          ),
+  );
 
   static ImageBuffer _shadowedPage(int width, int height) {
     final data = Uint8List(width * height);
     for (var y = 0; y < height; y++) {
       for (var x = 0; x < width; x++) {
-        final text = (y % 20) < 7 && y > 30 && y < height - 30 && x > 30 && x < width - 30;
+        final text =
+            (y % 20) < 7 &&
+            y > 30 &&
+            y < height - 30 &&
+            x > 30 &&
+            x < width - 30;
         final shade = 0.45 + 0.55 * (x / width);
         data[y * width + x] = ((text ? 45 : 246) * shade).round();
       }

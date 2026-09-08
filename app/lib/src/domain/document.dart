@@ -51,7 +51,8 @@ class ScanPage {
   String get displayPath => processedPath ?? originalPath;
   bool get hasText => (text ?? '').trim().isNotEmpty;
 
-  ScanPage copyWith({String? processedPath, String? text, int? position}) => ScanPage(
+  ScanPage copyWith({String? processedPath, String? text, int? position}) =>
+      ScanPage(
         id: id,
         documentId: documentId,
         position: position ?? this.position,
