@@ -1,0 +1,5 @@
+{
+  "version": 1,
+  "comment": "Empty until the 50 documents are photographed. See README.md for the shot list. `dart run harness validate` checks this file.",
+  "documents": []
+}
