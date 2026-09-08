@@ -76,13 +76,13 @@ project will answer with the harness rather than with adjectives.
 
 | What | Value |
 |---|---|
-| Tests passing, no device, no models, no network | **110** |
+| Tests passing, no device, no models, no network | **113** |
 | `flutter analyze` across the workspace | 0 issues |
-| `reuse lint` | 377 / 377 files compliant |
+| `reuse lint` | 386 / 386 files compliant |
 | `dart format --set-exit-if-changed` | clean |
 
 Breakdown: `dart_searchable_pdf` 30 (including Poppler round-trips),
-`byrsa_capture` 32, `byrsa_restore` 19, `byrsa_ocr` 10, `byrsa` (app) 19,
+`byrsa_capture` 32, `byrsa_restore` 19, `byrsa_ocr` 10, `byrsa` (app) 22,
 `harness` 9.
 
 ### Correctness properties asserted, not just exercised
@@ -109,6 +109,9 @@ plan predicted:
   returns no results instead of an error.
 - **A model whose digest does not match is deleted**, and an unpinned model is
   refused outright.
+- **Text and word boxes are stored together.** A page with text but no boxes
+  searches inside the application and exports an image-only PDF; the two states
+  are distinguishable rather than inferred.
 
 ### Not measured, and not claimed
 

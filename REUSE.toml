@@ -55,7 +55,7 @@ SPDX-License-Identifier = "Apache-2.0"
 # reaches this file.
 
 [[annotations]]
-path = ["harness/dataset/**"]
+path = ["harness/dataset/**", "harness/example/dataset/**"]
 precedence = "closest"
 SPDX-FileCopyrightText = "2026 Diego Martínez Fernández"
 SPDX-License-Identifier = "CC-BY-4.0"

@@ -13,6 +13,46 @@ class Folder {
   final int? parentId;
 }
 
+/// One recognised word and where it sits on the page, in image pixels.
+///
+/// Stored alongside the text because a searchable PDF needs a box per word.
+/// Text alone gives you search inside the application and an image-only PDF
+/// outside it, which is half the promise.
+@immutable
+class PageWord {
+  const PageWord({
+    required this.text,
+    required this.left,
+    required this.top,
+    required this.right,
+    required this.bottom,
+  });
+
+  factory PageWord.fromJson(Map<String, Object?> json) => PageWord(
+        text: json['t']! as String,
+        left: (json['l']! as num).toDouble(),
+        top: (json['o']! as num).toDouble(),
+        right: (json['r']! as num).toDouble(),
+        bottom: (json['b']! as num).toDouble(),
+      );
+
+  final String text;
+  final double left;
+  final double top;
+  final double right;
+  final double bottom;
+
+  /// Short keys on purpose: a dense page is a few thousand words, and this is
+  /// stored once per page in the database.
+  Map<String, Object?> toJson() => <String, Object?>{
+        't': text,
+        'l': left,
+        'o': top,
+        'r': right,
+        'b': bottom,
+      };
+}
+
 /// One page of a document.
 @immutable
 class ScanPage {
@@ -23,6 +63,7 @@ class ScanPage {
     required this.originalPath,
     this.processedPath,
     this.text,
+    this.words = const <PageWord>[],
     this.width,
     this.height,
   });
@@ -45,13 +86,25 @@ class ScanPage {
   /// Recognised text, if OCR has run.
   final String? text;
 
+  /// Word boxes, if OCR has run. Empty when the page was recognised by an
+  /// older version that only kept the text.
+  final List<PageWord> words;
+
   final int? width;
   final int? height;
 
   String get displayPath => processedPath ?? originalPath;
   bool get hasText => (text ?? '').trim().isNotEmpty;
 
-  ScanPage copyWith({String? processedPath, String? text, int? position}) =>
+  /// Whether this page can produce a genuinely searchable PDF page.
+  bool get hasWordBoxes => words.isNotEmpty;
+
+  ScanPage copyWith({
+    String? processedPath,
+    String? text,
+    List<PageWord>? words,
+    int? position,
+  }) =>
       ScanPage(
         id: id,
         documentId: documentId,
@@ -59,6 +112,7 @@ class ScanPage {
         originalPath: originalPath,
         processedPath: processedPath ?? this.processedPath,
         text: text ?? this.text,
+        words: words ?? this.words,
         width: width,
         height: height,
       );

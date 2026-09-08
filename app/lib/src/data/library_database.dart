@@ -1,6 +1,8 @@
 // SPDX-FileCopyrightText: 2026 Diego Martínez Fernández
 // SPDX-License-Identifier: GPL-3.0-or-later
 
+import 'dart:convert';
+
 import 'package:sqlite3/common.dart';
 
 import '../domain/document.dart';
@@ -57,6 +59,7 @@ class LibraryDatabase {
           original_path  TEXT NOT NULL,
           processed_path TEXT,
           text           TEXT,
+          words          TEXT,
           width          INTEGER,
           height         INTEGER
         );
@@ -193,6 +196,7 @@ class LibraryDatabase {
     required String originalPath,
     String? processedPath,
     String? text,
+    List<PageWord> words = const <PageWord>[],
     int? width,
     int? height,
   }) {
@@ -218,9 +222,24 @@ class LibraryDatabase {
     return _db.lastInsertRowId;
   }
 
-  void setPageText(int pageId, String text) {
+  /// Stores the result of recognising a page.
+  ///
+  /// Text and word boxes are written together, always: a page with text but no
+  /// boxes searches inside the application and exports an image-only PDF, and
+  /// discovering that months later is worse than not having recognised it.
+  void setPageOcr(int pageId, String text, List<PageWord> words) {
     _db.execute(
-        'UPDATE pages SET text = ? WHERE id = ?', <Object?>[text, pageId]);
+      'UPDATE pages SET text = ?, words = ? WHERE id = ?',
+      <Object?>[text, _encodeWords(words), pageId],
+    );
+  }
+
+  /// Text only, for a caller that has no boxes to offer.
+  void setPageText(int pageId, String text) {
+    _db.execute('UPDATE pages SET text = ? WHERE id = ?', <Object?>[
+      text,
+      pageId,
+    ]);
   }
 
   void setPageProcessed(int pageId, String processedPath) {
@@ -235,7 +254,8 @@ class LibraryDatabase {
 
   List<ScanPage> pagesOf(int documentId) => _db
       .select(
-        'SELECT id, document_id, position, original_path, processed_path, text, width, height '
+        'SELECT id, document_id, position, original_path, processed_path, '
+        'text, words, width, height '
         'FROM pages WHERE document_id = ? ORDER BY position',
         <Object?>[documentId],
       )
@@ -246,6 +266,7 @@ class LibraryDatabase {
             originalPath: row['original_path'] as String,
             processedPath: row['processed_path'] as String?,
             text: row['text'] as String?,
+            words: _decodeWords(row['words'] as String?),
             width: row['width'] as int?,
             height: row['height'] as int?,
           ))
@@ -315,6 +336,17 @@ class LibraryDatabase {
         .toList();
     if (terms.isEmpty) return null;
     return terms.map((t) => '"$t"*').join(' AND ');
+  }
+
+  static String? _encodeWords(List<PageWord> words) =>
+      words.isEmpty ? null : jsonEncode(words.map((w) => w.toJson()).toList());
+
+  static List<PageWord> _decodeWords(String? json) {
+    if (json == null || json.isEmpty) return const <PageWord>[];
+    return (jsonDecode(json) as List)
+        .cast<Map<String, Object?>>()
+        .map(PageWord.fromJson)
+        .toList(growable: false);
   }
 
   void _touch(int documentId) {

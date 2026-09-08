@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 import 'package:byrsa/src/data/library_database.dart';
+import 'package:byrsa/src/domain/document.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:sqlite3/sqlite3.dart';
 
@@ -114,6 +115,50 @@ void main() {
 
       db.deletePage(page.id);
       expect(db.search('distinto'), isEmpty);
+    });
+  });
+
+  group('word boxes', () {
+    test('round-trip, so an exported PDF is genuinely searchable', () {
+      final id = db.createDocument('Factura');
+      final pageId = db.addPage(id, originalPath: 'a.jpg');
+      db.setPageOcr(pageId, 'Total 12,40', const <PageWord>[
+        PageWord(text: 'Total', left: 100, top: 200, right: 220, bottom: 240),
+        PageWord(text: '12,40', left: 232, top: 200, right: 360, bottom: 240),
+      ]);
+
+      final page = db.pagesOf(id).single;
+      expect(page.text, 'Total 12,40');
+      expect(page.hasWordBoxes, isTrue);
+      expect(page.words.map((w) => w.text), <String>['Total', '12,40']);
+      expect(page.words.first.right, 220);
+    });
+
+    test('a page recognised without boxes is honest about it', () {
+      // Text alone gives search inside the application and an image-only PDF
+      // outside it. The distinction has to be visible, not inferred.
+      final id = db.createDocument('Factura');
+      final pageId = db.addPage(id, originalPath: 'a.jpg');
+      db.setPageText(pageId, 'Total 12,40');
+
+      final page = db.pagesOf(id).single;
+      expect(page.hasText, isTrue);
+      expect(page.hasWordBoxes, isFalse);
+    });
+
+    test('are searchable through FTS like any other page text', () {
+      final id = db.createDocument('Factura');
+      final pageId = db.addPage(id, originalPath: 'a.jpg');
+      db.setPageOcr(pageId, 'Facturación mensual', const <PageWord>[
+        PageWord(
+          text: 'Facturación',
+          left: 0,
+          top: 0,
+          right: 10,
+          bottom: 10,
+        ),
+      ]);
+      expect(db.search('facturacion'), hasLength(1));
     });
   });
 

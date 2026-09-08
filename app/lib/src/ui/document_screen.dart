@@ -119,7 +119,16 @@ class _DocumentScreenState extends ConsumerState<DocumentScreen> {
       }
       for (final page in document.pages) {
         final result = await ocr.recognise(imagePath: page.displayPath);
-        library.setPageText(page.id, result.text);
+        library.setPageOcr(page.id, result.text, <PageWord>[
+          for (final word in result.words)
+            PageWord(
+              text: word.text,
+              left: word.box.left,
+              top: word.box.top,
+              right: word.box.right,
+              bottom: word.box.bottom,
+            ),
+        ]);
       }
       ref.read(libraryRevisionProvider.notifier).state++;
     } on Object catch (error) {

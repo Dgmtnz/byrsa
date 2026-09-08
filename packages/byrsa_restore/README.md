@@ -30,10 +30,13 @@ and hurting on a full page of body text.
 This tier is the baseline the neural one has to beat. A 30 MB download has to
 earn its place, and the repository's evaluation harness is what decides.
 
-## Tier two: neural, and opt-in
+## Tier two: neural, and opt-in — **not implemented yet**
 
-Quantised ONNX models for page dewarping (UVDoc) and shadow removal
-(DocShadow), downloaded on demand.
+Page dewarping (UVDoc) and shadow removal (DocShadow) as quantised ONNX, landing
+in milestone M3. What exists today is everything around the inference: the
+model manifest, the download-and-verify store, and the pipeline that reports a
+stage it could not run. The inference itself is not written, and this README
+would rather say so than imply otherwise.
 
 **Nothing is bundled and nothing is trusted.** `ModelStore` refuses to install
 a model with no pinned SHA-256, and deletes a file whose digest does not match
@@ -52,7 +55,8 @@ await store.install('uvdoc', onProgress: ...);
 ```dart
 final result = await RestorePipeline([
   const ClassicalStage(),
-  UvdocStage(store),
+  // ...and the neural stages, once M3 lands. Adding one is implementing
+  // RestoreStage; the pipeline needs no change.
 ]).run(image);
 
 for (final outcome in result.outcomes) {
