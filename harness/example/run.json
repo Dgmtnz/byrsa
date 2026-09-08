@@ -1,0 +1,22 @@
+{
+  "run": {
+    "id": "example-run",
+    "device": "invented, for demonstration only",
+    "platform": "android",
+    "build": "byrsa 0.1.0+1, debug",
+    "startedAt": "2026-09-08T18:00:00Z",
+    "pipeline": ["capture", "restore", "ocr"],
+    "notes": "Not a measurement. The texts and timings here are made up."
+  },
+  "documents": [
+    {
+      "id": "receipt-example",
+      "text": "SUPERMERCAD0 EJEMPLO\nCalle Mayor 14, Madrid\nLeche entera 1 L 1,09\nPan de payes 2,45\nAceite de oliva 6,90\nTOTAL 10,44\nGracias por su compra",
+      "outputBytes": 412330,
+      "stages": [
+        {"name": "restore", "milliseconds": 318, "peakMemoryBytes": 184549376},
+        {"name": "ocr", "milliseconds": 742}
+      ]
+    }
+  ]
+}

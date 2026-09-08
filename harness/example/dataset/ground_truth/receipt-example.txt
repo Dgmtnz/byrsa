@@ -1,0 +1,7 @@
+SUPERMERCADO EJEMPLO
+Calle Mayor 14, Madrid
+Leche entera 1 L        1,09
+Pan de payés           2,45
+Aceite de oliva        6,90
+TOTAL                 10,44
+Gracias por su compra

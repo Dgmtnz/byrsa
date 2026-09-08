@@ -1,0 +1,26 @@
+{
+  "version": 1,
+  "comment": "Invented documents, for demonstrating the tool. The real set is 50 photographs; see ../../dataset/README.md.",
+  "documents": [
+    {
+      "id": "receipt-example",
+      "file": "images/receipt-example.txt",
+      "groundTruth": "ground_truth/receipt-example.txt",
+      "category": "receipt",
+      "language": "es",
+      "conditions": ["crumpled", "low-light"],
+      "publish": true,
+      "license": "CC-BY-4.0"
+    },
+    {
+      "id": "book-example",
+      "file": "images/book-example.txt",
+      "groundTruth": "ground_truth/book-example.txt",
+      "category": "book-page",
+      "language": "es",
+      "conditions": ["curved", "gutter-shadow"],
+      "publish": true,
+      "license": "CC-BY-4.0"
+    }
+  ]
+}

@@ -33,6 +33,20 @@ dart run harness/bin/harness.dart score --results out/run.json   # score a run, 
 dart run harness/bin/harness.dart score --results out/run.json --strict   # don't collapse whitespace
 ```
 
+Try it without waiting for the fifty documents:
+
+```
+dart run harness/bin/harness.dart score \
+  --dataset harness/example/dataset \
+  --results harness/example/run.json \
+  --out harness/example/out
+```
+
+Those are invented documents and invented timings — see
+[`example/README.md`](example/README.md). They exist to show the file formats
+and what a report looks like, including what it looks like when a run misses a
+document entirely.
+
 ## What gets reported
 
 - **Character error rate** and **word error rate**, aggregated by total edit

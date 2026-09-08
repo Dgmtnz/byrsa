@@ -1,0 +1,2 @@
+Placeholder standing in for a photograph. The real set holds JPEGs; this
+example keeps the repository free of binaries.
