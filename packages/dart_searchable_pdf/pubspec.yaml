@@ -1,0 +1,25 @@
+name: dart_searchable_pdf
+description: >-
+  Write PDFs with an invisible text layer (text render mode 3) so a scanned
+  page becomes selectable, searchable and readable by screen readers. Pure
+  Dart, no dependencies, no platform channels.
+version: 0.1.0
+repository: https://github.com/dgmtnz/byrsa/tree/main/packages/dart_searchable_pdf
+issue_tracker: https://github.com/dgmtnz/byrsa/issues
+topics:
+  - pdf
+  - ocr
+  - accessibility
+  - scanner
+
+resolution: workspace
+
+environment:
+  sdk: ^3.6.0
+
+dependencies:
+  meta: ^1.15.0
+
+dev_dependencies:
+  lints: ^5.0.0
+  test: ^1.25.0
