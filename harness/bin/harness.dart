@@ -40,12 +40,9 @@ void main(List<String> arguments) {
 
   switch (command) {
     case 'score':
-      final resultsPath = options['results'];
-      if (resultsPath == null) {
-        _fail('score needs --results <run.json>');
-      }
+      final resultsPath = options['results'] ?? _fail('score needs --results <run.json>');
       final dataset = Dataset.load(datasetDir);
-      final run = RunResults.load(File(resultsPath!));
+      final run = RunResults.load(File(resultsPath));
       final card = score(dataset, run, strict: options.containsKey('strict'));
 
       final outDir = Directory(options['out'] ?? 'harness/out')

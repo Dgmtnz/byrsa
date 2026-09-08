@@ -8,6 +8,7 @@
 //   pdftotext -layout example_out.pdf -
 
 import 'dart:io';
+import 'dart:typed_data';
 
 import 'package:dart_searchable_pdf/dart_searchable_pdf.dart';
 
@@ -48,20 +49,20 @@ void main(List<String> args) {
 }
 
 /// A blank white PNG, so the example runs with no input file.
-List<int> _blankPage(int width, int height) {
+Uint8List _blankPage(int width, int height) {
   final raw = <int>[];
   for (var y = 0; y < height; y++) {
     raw.add(0);
     raw.addAll(List<int>.filled(width, 0xFF));
   }
-  return <int>[
+  return Uint8List.fromList(<int>[
     0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A,
     ..._chunk('IHDR', <int>[
       ...(_u32(width)), ...(_u32(height)), 8, 0, 0, 0, 0,
     ]),
     ..._chunk('IDAT', ZLibEncoder().convert(raw)),
     ..._chunk('IEND', const <int>[]),
-  ];
+  ]);
 }
 
 List<int> _u32(int v) => <int>[v >> 24 & 0xFF, v >> 16 & 0xFF, v >> 8 & 0xFF, v & 0xFF];

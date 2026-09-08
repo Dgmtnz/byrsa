@@ -1,0 +1,61 @@
+{
+  "@@locale": "es",
+  "appTitle": "Byrsa",
+  "libraryTitle": "Biblioteca",
+  "searchHint": "Buscar dentro de tus documentos",
+  "noDocuments": "Todavía no hay documentos. Escanea uno.",
+  "noResults": "No hay coincidencias.",
+  "scan": "Escanear",
+  "newFolder": "Nueva carpeta",
+  "folderName": "Nombre de la carpeta",
+  "rename": "Renombrar",
+  "delete": "Eliminar",
+  "cancel": "Cancelar",
+  "save": "Guardar",
+  "settings": "Ajustes",
+  "exportPdf": "Exportar PDF buscable",
+  "exportText": "Exportar texto",
+  "pageCount": "{count, plural, =0{Sin páginas} =1{1 página} other{{count} páginas}}",
+  "searchable": "Buscable",
+  "notSearchable": "Todavía no es buscable",
+  "runOcr": "Reconocer texto",
+  "ocrEngine": "Motor de reconocimiento",
+  "downloadModels": "Descargar modelos de reconocimiento",
+  "downloadModelsExplanation": "Esta es la única vez que Byrsa usa la red. Descarga {megabytes} MB de modelos desde una dirección fija y los verifica contra una huella conocida. Tus documentos no se suben nunca.",
+  "download": "Descargar",
+  "privacyHeading": "Adónde van tus documentos",
+  "privacyBody": "A ningún sitio. Todo ocurre en este dispositivo. La única petición de red que Byrsa puede hacer es descargar los modelos de reconocimiento, y solo cuando tú lo pides.",
+  "exportedTo": "Guardado en {path}",
+  "pageSemanticLabel": "Página {position} de {total}",
+  "@pageCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "@downloadModelsExplanation": {
+    "placeholders": {
+      "megabytes": {
+        "type": "int"
+      }
+    }
+  },
+  "@exportedTo": {
+    "placeholders": {
+      "path": {
+        "type": "String"
+      }
+    }
+  },
+  "@pageSemanticLabel": {
+    "placeholders": {
+      "position": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  }
+}
