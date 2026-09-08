@@ -1,0 +1,41 @@
+name: byrsa_restore
+description: >-
+  On-device document restoration for Flutter: shadow removal and illumination
+  normalisation, plus geometric rectification with quantised ONNX models.
+version: 0.1.0
+repository: https://github.com/dgmtnz/byrsa/tree/main/packages/byrsa_restore
+issue_tracker: https://github.com/dgmtnz/byrsa/issues
+topics:
+  - image-processing
+  - document
+  - onnx
+  - scanner
+
+resolution: workspace
+
+environment:
+  sdk: ^3.6.0
+  flutter: '>=3.24.0'
+
+dependencies:
+  crypto: ^3.0.5
+  flutter:
+    sdk: flutter
+  meta: ^1.15.0
+  path: ^1.9.0
+  path_provider: ^2.1.4
+  plugin_platform_interface: ^2.1.8
+
+dev_dependencies:
+  flutter_lints: ^6.0.0
+  flutter_test:
+    sdk: flutter
+
+flutter:
+  plugin:
+    platforms:
+      android:
+        package: dev.byrsa.byrsa_restore
+        pluginClass: ByrsaRestorePlugin
+      ios:
+        pluginClass: ByrsaRestorePlugin
