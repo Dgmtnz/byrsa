@@ -54,13 +54,40 @@ class FakeCapturePlatform extends ByrsaCapturePlatform
   Future<bool> isSupported() async => true;
 }
 
-CaptureDetection detection(CaptureHint hint) => CaptureDetection(
-      quad: CaptureQuad.full,
-      hint: hint,
-      sharpness: 1,
-      brightness: 1,
-      stableFor: const Duration(seconds: 1),
+/// A page filling most of the frame, not touching its edges.
+CaptureQuad page({double dx = 0}) => CaptureQuad(
+      CapturePoint(0.15 + dx, 0.15),
+      CapturePoint(0.85 + dx, 0.15),
+      CapturePoint(0.85 + dx, 0.85),
+      CapturePoint(0.15 + dx, 0.85),
     );
+
+/// What the platform side actually sends: geometry and measurements, and a
+/// hint it is not qualified to decide. Everything else is worked out in Dart.
+CaptureDetection detection(
+  CaptureQuad? quad, {
+  double sharpness = 1,
+  double brightness = 1,
+}) =>
+    CaptureDetection(
+      quad: quad,
+      hint: quad == null ? CaptureHint.noDocument : CaptureHint.moving,
+      sharpness: sharpness,
+      brightness: brightness,
+      stableFor: Duration.zero,
+    );
+
+/// Feeds [frames] identical detections and lets the stream drain.
+Future<void> hold(
+  FakeCapturePlatform platform,
+  CaptureDetection event, {
+  int frames = 12,
+}) async {
+  for (var i = 0; i < frames; i++) {
+    platform.emit(event);
+  }
+  await Future<void>.delayed(const Duration(milliseconds: 20));
+}
 
 void main() {
   late FakeCapturePlatform platform;
@@ -86,27 +113,78 @@ void main() {
         <String>['/tmp/page-1.jpg', '/tmp/page-2.jpg']);
   });
 
+  test('decides readiness itself rather than trusting the platform hint',
+      () async {
+    // The native side reports "moving" for every frame it sees a page in; it
+    // has no business deciding when to fire. If the controller passed that
+    // hint through, auto-capture would never happen at all.
+    final controller = ByrsaCaptureController(autoCapture: false);
+    await controller.start();
+
+    platform.emit(detection(page()));
+    await Future<void>.delayed(const Duration(milliseconds: 10));
+    expect(controller.latest!.hint, CaptureHint.moving,
+        reason: 'not settled yet');
+
+    await hold(platform, detection(page()));
+    expect(controller.latest!.hint, CaptureHint.ready);
+  });
+
+  test('fires auto-capture once the scene has settled', () async {
+    final controller = ByrsaCaptureController();
+    await controller.start();
+
+    await hold(platform, detection(page()));
+    expect(platform.captureCount, 1);
+  });
+
+  test('does not auto-capture while the scene keeps moving', () async {
+    final controller = ByrsaCaptureController();
+    await controller.start();
+
+    for (var i = 0; i < 20; i++) {
+      platform.emit(detection(page(dx: i.isEven ? 0 : 0.12)));
+    }
+    await Future<void>.delayed(const Duration(milliseconds: 30));
+    expect(platform.captureCount, 0);
+    expect(controller.latest!.hint, CaptureHint.moving);
+  });
+
+  test('does not auto-capture a steady but blurred scene', () async {
+    final controller = ByrsaCaptureController();
+    await controller.start();
+
+    await hold(platform, detection(page(), sharpness: 0.02));
+    expect(platform.captureCount, 0);
+    expect(controller.latest!.hint, CaptureHint.blurry);
+  });
+
+  test('needs the scene to settle again before a second page', () async {
+    final controller = ByrsaCaptureController();
+    await controller.start();
+
+    await hold(platform, detection(page()));
+    expect(platform.captureCount, 1);
+
+    // One more frame of the same scene must not fire again immediately.
+    platform.emit(detection(page()));
+    await Future<void>.delayed(const Duration(milliseconds: 20));
+    expect(platform.captureCount, 1);
+  });
+
   test('takes one page when auto-capture and a tap arrive together', () async {
     // Both paths firing at once is the normal case, not a rare race: the user
     // taps exactly when the scene settles.
     final controller = ByrsaCaptureController();
     await controller.start();
-    platform.captureDelay = const Duration(milliseconds: 20);
+    platform.captureDelay = const Duration(milliseconds: 40);
 
-    platform.emit(detection(CaptureHint.ready));
-    await Future<void>.delayed(Duration.zero);
+    platform.emit(detection(page()));
+    unawaited(hold(platform, detection(page())));
     await controller.capture();
-    await Future<void>.delayed(const Duration(milliseconds: 50));
+    await Future<void>.delayed(const Duration(milliseconds: 80));
 
     expect(platform.captureCount, 1);
-  });
-
-  test('does not auto-capture while the scene is still moving', () async {
-    final controller = ByrsaCaptureController();
-    await controller.start();
-    platform.emit(detection(CaptureHint.moving));
-    await Future<void>.delayed(const Duration(milliseconds: 10));
-    expect(platform.captureCount, 0);
   });
 
   test('re-warps from the original frame when corners are corrected', () async {

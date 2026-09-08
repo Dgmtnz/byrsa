@@ -21,14 +21,24 @@ class ByrsaCaptureController extends ChangeNotifier {
     ByrsaCapturePlatform? platform,
     CaptureOptions options = const CaptureOptions(),
     QuadSmoother? smoother,
+    StabilityTracker? stability,
     this.autoCapture = true,
   })  : _platform = platform ?? ByrsaCapturePlatform.instance,
         _options = options,
-        _smoother = smoother ?? QuadSmoother();
+        _smoother = smoother ?? QuadSmoother(),
+        _stability = stability ?? StabilityTracker();
 
   final ByrsaCapturePlatform _platform;
   final CaptureOptions _options;
   final QuadSmoother _smoother;
+
+  /// Decides when the scene is worth capturing.
+  ///
+  /// This lives in Dart, not in the two native implementations. The platform
+  /// side reports what it can see — a quad, a focus measure, a brightness —
+  /// and every judgement made from that is taken once, here, where it is unit
+  /// tested on a laptop and identical on both platforms.
+  final StabilityTracker _stability;
 
   /// Whether the controller takes the picture by itself once the scene is
   /// steady, sharp and well lit.
@@ -60,18 +70,30 @@ class ByrsaCaptureController extends ChangeNotifier {
 
   void _onDetection(CaptureDetection detection) {
     final smoothed = _smoother.add(detection.quad);
-    _latest = CaptureDetection(
+    final verdict = _stability.update(
       quad: smoothed,
-      hint: detection.hint,
+      frameInterval: _frameInterval,
       sharpness: detection.sharpness,
       brightness: detection.brightness,
-      stableFor: detection.stableFor,
+    );
+
+    _latest = CaptureDetection(
+      quad: smoothed,
+      hint: verdict.hint,
+      sharpness: detection.sharpness,
+      brightness: detection.brightness,
+      stableFor: verdict.stableFor,
     );
     notifyListeners();
-    if (autoCapture && detection.isReady && !_capturing) {
+
+    if (autoCapture && verdict.hint == CaptureHint.ready && !_capturing) {
       unawaited(capture());
     }
   }
+
+  Duration get _frameInterval => Duration(
+        microseconds: (1000000 / _options.detectionsPerSecond).round(),
+      );
 
   /// Takes a page and adds it to the batch.
   ///
@@ -84,7 +106,10 @@ class ByrsaCaptureController extends ChangeNotifier {
     try {
       final page = await _platform.capture();
       _pages.add(page);
+      // Start the stability clock again, so a second page needs the scene to
+      // settle again rather than firing immediately on the same frame.
       _smoother.reset();
+      _stability.reset();
       return page;
     } finally {
       _capturing = false;
@@ -124,6 +149,7 @@ class ByrsaCaptureController extends ChangeNotifier {
       _textureId = null;
     }
     _smoother.reset();
+    _stability.reset();
     notifyListeners();
   }
 

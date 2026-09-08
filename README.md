@@ -77,7 +77,8 @@ can run yourself.
 | PDF output is byte-for-byte reproducible | same input, same bytes |
 | Every downloadable model has a real, computed digest | `dart run tool/pin_models.dart --verify` |
 | The documentation makes no unmeasured iOS claim | `tool/check_claims.sh` |
-| 106 tests pass with no device, no models and no network | `flutter test` + `dart test` |
+| The release application is **48 MB** on arm64, before any model download | `flutter build apk --release --split-per-abi` |
+| 110 tests pass with no device, no models and no network | `flutter test` + `dart test` |
 
 What is **not** verified is listed just as plainly in
 [`UNVERIFIED.md`](UNVERIFIED.md), with the machine and the command that would

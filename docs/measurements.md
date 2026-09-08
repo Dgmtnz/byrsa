@@ -30,10 +30,28 @@ nothing below is a runtime measurement on a phone.
 | `libonnxruntime.so`, armeabi-v7a | 20,008,548 bytes | same |
 | Debug APK, all ABIs, unshrunk | 233 MB | `du -h` |
 
-The debug figure is not a release figure and must not be quoted as one. What it
-does establish is where the weight is: ONNX Runtime's native library is ~28 MB
-per 64-bit ABI before a single model is downloaded, which is the dominant term
-in the application-size risk.
+### Release size — the answer to a risk the plan rated High
+
+`flutter build apk --release --split-per-abi`, on the full application: capture,
+restoration, OCR with ONNX Runtime, and the searchable-PDF writer.
+
+| ABI | Size |
+|---|---|
+| `armeabi-v7a` | **37.4 MB** |
+| `arm64-v8a` | **48.0 MB** |
+| `x86_64` | 55.4 MB |
+
+That is the whole application **before any model is downloaded**, and the same
+`arm64-v8a` APK still contains zero Play Services classes after R8 shrinking.
+
+The plan listed "application size over 150 MB" as a high-probability risk. With
+per-ABI splits it is not close: the phone a user actually installs on takes
+48 MB, and the optional models add 31 MB (UVDoc) or about 22 MB (PP-OCR) only
+when the user asks for them. The dominant term is ONNX Runtime's own native
+library at ~28 MB for arm64, which is the price of doing inference without
+Google Play Services and is worth stating as such.
+
+The debug figure above is not a release figure and must not be quoted as one.
 
 ### Model sizes and digests
 
@@ -58,13 +76,13 @@ project will answer with the harness rather than with adjectives.
 
 | What | Value |
 |---|---|
-| Tests passing, no device, no models, no network | **106** |
+| Tests passing, no device, no models, no network | **110** |
 | `flutter analyze` across the workspace | 0 issues |
 | `reuse lint` | 377 / 377 files compliant |
 | `dart format --set-exit-if-changed` | clean |
 
 Breakdown: `dart_searchable_pdf` 30 (including Poppler round-trips),
-`byrsa_capture` 28, `byrsa_restore` 19, `byrsa_ocr` 10, `byrsa` (app) 19,
+`byrsa_capture` 32, `byrsa_restore` 19, `byrsa_ocr` 10, `byrsa` (app) 19,
 `harness` 9.
 
 ### Correctness properties asserted, not just exercised
@@ -81,7 +99,10 @@ plan predicted:
   sheet at 30°, and the closed form recovers 210/297 to within 1%, beating the
   visible-sides average. It returns `null` for a single-axis tilt, where the
   answer is genuinely undetermined.
-- **Auto-capture refuses a blurred frame** even when the scene is steady.
+- **Auto-capture refuses a blurred frame** even when the scene is steady, and
+  decides readiness in Dart rather than trusting the platform's hint — which is
+  a bug this test caught: the native side only ever reports "moving", so a
+  controller that passed the hint through would never fire at all.
 - **A stage that cannot run is recorded, not hidden**, and a stage that throws
   costs its stage rather than the capture.
 - **Search survives characters that are FTS5 syntax**: a stray `"` or `*`

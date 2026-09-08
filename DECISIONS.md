@@ -396,3 +396,42 @@ los retos técnicos de la solicitud.
 **Pendiente:** la licencia de los tres modelos PP-OCRv5 está como `UNAUDITED` a propósito
 (U-14). Poner "Apache-2.0" sin haber leído cada model card sería exactamente el tipo de
 afirmación que este proyecto no hace.
+
+---
+
+## D-025 · La decisión de disparar la toma se toma en Dart, no en el nativo
+**Fecha:** 2026-09-08 · **Estado:** ratificar
+
+El lado nativo publica lo que ve —quad, nitidez, brillo— y nada más. Quién decide
+que la escena está lista es `StabilityTracker`, en Dart.
+
+**Por qué:** es una decisión con umbrales que hay que afinar, y tenerla dos veces
+(Kotlin y Swift) garantiza que las dos plataformas se comporten distinto y que nadie
+pueda testearla sin un móvil. En Dart se testea en un portátil y es idéntica en las dos.
+
+**Bug real que esto destapó y que ya está cubierto por test:** el controlador reenviaba
+el `hint` del nativo, y el nativo solo emite `noDocument` o `moving` — nunca `ready`. El
+auto-disparo no habría saltado jamás. El test `decides readiness itself rather than
+trusting the platform hint` existe exactamente para que no vuelva a pasar.
+
+---
+
+## D-026 · Splits por ABI desde el principio, no como optimización tardía
+**Fecha:** 2026-09-08 · **Estado:** firme · **Medido** · **Origen:** plan §11
+
+`flutter build apk --release --split-per-abi` sobre la app completa:
+
+| ABI | Tamaño |
+|---|---|
+| `armeabi-v7a` | 37,4 MB |
+| `arm64-v8a` | **48,0 MB** |
+| `x86_64` | 55,4 MB |
+
+Eso es la app entera —captura, restauración, OCR con ONNX Runtime y escritor de PDF—
+**antes de descargar ningún modelo**, y el APK de arm64 sigue sin una sola clase de Play
+Services después del shrinking de R8.
+
+**Consecuencia para el plan:** §11 daba "tamaño > 150 MB" como riesgo de probabilidad
+alta. Con splits no está ni cerca. El término dominante es la biblioteca nativa de ONNX
+Runtime, ~28 MB en arm64, que es el precio de hacer inferencia sin Play Services y
+conviene decirlo así en la solicitud en vez de esconderlo.
