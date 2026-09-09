@@ -14,7 +14,8 @@ plus a reference application that proves they compose end to end.
 |---|---|---|---|
 | [`byrsa_capture`](packages/byrsa_capture) | Live edge detection and perspective correction, no Google Play Services | Apache-2.0 | in development |
 | [`byrsa_restore`](packages/byrsa_restore) | Page rectification (UVDoc) and shadow removal (DocShadow) as quantised ONNX, plus a classical baseline | Apache-2.0 | in development |
-| [`byrsa_ocr`](packages/byrsa_ocr) | On-device OCR behind one Dart API: Apple Vision on iOS, PP-OCR ONNX on Android | Apache-2.0 | in development |
+| [`byrsa_ocr`](packages/byrsa_ocr) | A stable Dart API for on-device OCR — pure Dart, no engine, no Flutter | Apache-2.0 | in development |
+| [`byrsa_ocr_mobile_ocr`](packages/byrsa_ocr_mobile_ocr) | The engine for phones: Apple Vision on iOS, PP-OCR ONNX on Android | Apache-2.0 | in development |
 | [`dart_searchable_pdf`](packages/dart_searchable_pdf) | Pure-Dart PDF invisible text layer (text render mode 3) | Apache-2.0 | in development |
 | [`app`](app) | Byrsa, the reference application | GPL-3.0-or-later | in development |
 | [`harness`](harness) | Reproducible evaluation harness: CER, timing, memory | Apache-2.0 | in development |
@@ -78,7 +79,8 @@ can run yourself.
 | Every downloadable model has a real, computed digest | `dart run tool/pin_models.dart --verify` |
 | The documentation makes no unmeasured iOS claim | `tool/check_claims.sh` |
 | The release application is **48 MB** on arm64, before any model download | `flutter build apk --release --split-per-abi` |
-| 113 tests pass with no device, no models and no network | `flutter test` + `dart test` |
+| 122 tests pass with no device, no models and no network | `flutter test` + `dart test` |
+| `dart_searchable_pdf` and `byrsa_ocr` are publishable to pub.dev | `dart pub publish --dry-run`, in CI |
 
 What is **not** verified is listed just as plainly in
 [`UNVERIFIED.md`](UNVERIFIED.md), with the machine and the command that would
@@ -92,8 +94,9 @@ from there.
 ```
 flutter pub get                                   # workspace-wide, no melos
 flutter analyze
-dart test packages/dart_searchable_pdf harness    # pure Dart, runs anywhere
-flutter test packages/byrsa_capture packages/byrsa_restore packages/byrsa_ocr app
+dart test packages/dart_searchable_pdf packages/byrsa_ocr harness   # pure Dart
+flutter test packages/byrsa_capture packages/byrsa_restore \
+             packages/byrsa_ocr_mobile_ocr app
 dart run harness/bin/harness.dart validate        # the evaluation dataset
 ```
 

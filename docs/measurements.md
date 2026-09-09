@@ -76,14 +76,18 @@ project will answer with the harness rather than with adjectives.
 
 | What | Value |
 |---|---|
-| Tests passing, no device, no models, no network | **113** |
+| Tests passing, no device, no models, no network | **122** |
 | `flutter analyze` across the workspace | 0 issues |
-| `reuse lint` | 386 / 386 files compliant |
+| `reuse lint` | every file compliant |
 | `dart format --set-exit-if-changed` | clean |
 
 Breakdown: `dart_searchable_pdf` 30 (including Poppler round-trips),
-`byrsa_capture` 32, `byrsa_restore` 19, `byrsa_ocr` 10, `byrsa` (app) 22,
-`harness` 9.
+`byrsa_capture` 32, `byrsa_restore` 19, `byrsa_ocr` 13, `byrsa_ocr_mobile_ocr`
+6, `byrsa` (app) 22, `harness` 9.
+
+`dart_searchable_pdf` and `byrsa_ocr` both pass `dart pub publish --dry-run`
+with no warnings, and CI runs that check so a git dependency cannot creep back
+into a publishable package without failing the build.
 
 ### Correctness properties asserted, not just exercised
 

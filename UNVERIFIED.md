@@ -44,6 +44,14 @@ here, not run yet) · `CLOSED` (verified; keep the row with the result).
 | U-20 | Searchable PDFs are readable by Poppler, including accented Spanish | `dart test packages/dart_searchable_pdf`, 2026-09-08 | Words, accents and line grouping all round-trip through `pdftotext -layout`. |
 | U-21 | Every model in `models.json` has a real, computed SHA-256 | `dart run tool/pin_models.dart --verify`, 2026-09-08 | 5 of 5 pinned. |
 
+## Needs someone to read the source, and nothing else
+
+| # | Claim | How to close it | Status |
+|---|---|---|---|
+| U-27 | `doclens` is MIT. The plan says so; nobody in this project has opened its `LICENSE` file | read `LICENSE` in the published archive | OPEN |
+| U-28 | `doclens`'s iOS side uses Apple Vision/VisionKit and not ML Kit — likely, but only the Kotlin was grepped | grep `ios/doclens/Sources` for `MLKit` | OPEN |
+| U-29 | Whether `doclens`'s quad detector beats ours. Only its Gradle file was read, never `QuadDetector.kt` | read it, then measure both over the 50 documents (D-028) | OPEN |
+
 ## Needs a physical Android phone
 
 | # | Claim | Machine needed | Exact command | Status |
@@ -72,4 +80,4 @@ here, not run yet) · `CLOSED` (verified; keep the row with the result).
 | U-15 | Acceptable hourly rate for an individual applicant in Spain | NLnet office hour, 30 Sep 2026 | OPEN |
 | U-16 | Is the absence of iOS hardware a problem for the reviewers? | NLnet office hour, 30 Sep 2026 | OPEN |
 | U-25 | Will `doclens` accept making the ML Kit dependency optional? (`docs/upstream/doclens-play-services.md`) | doclens maintainers | DRAFTED, not yet filed |
-| U-26 | Will Ente publish `mobile_ocr` to pub.dev? Until they do, `byrsa_ocr` cannot be published either (`docs/upstream/mobile-ocr-pub-dev.md`) | Ente maintainers | DRAFTED, not yet filed |
+| U-26 | Will Ente publish `mobile_ocr` to pub.dev? No longer blocks us since D-027, and asked as a favour to the ecosystem rather than a condition (`docs/upstream/mobile-ocr-pub-dev.md`) | Ente maintainers | DRAFTED, not yet filed |

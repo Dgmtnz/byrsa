@@ -3,11 +3,8 @@
 
 import 'dart:io';
 
+import 'package:byrsa_ocr/byrsa_ocr.dart';
 import 'package:mobile_ocr/mobile_ocr.dart';
-
-import 'ocr_types.dart';
-import 'platform_interface.dart';
-import 'reading_order.dart';
 
 /// Implements [ByrsaOcrPlatform] on top of Ente's MIT-licensed `mobile_ocr`
 /// plugin.

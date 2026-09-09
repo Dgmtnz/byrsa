@@ -1,7 +1,7 @@
 name: byrsa_ocr
 description: >-
-  On-device OCR for Flutter behind one stable Dart API: Apple Vision on iOS and
-  PP-OCR ONNX on Android, with no Google Play Services.
+  A stable Dart API for on-device OCR, with reading-order reconstruction and
+  word boxes, independent of which engine does the recognising.
 version: 0.1.0
 repository: https://github.com/dgmtnz/byrsa/tree/main/packages/byrsa_ocr
 issue_tracker: https://github.com/dgmtnz/byrsa/issues
@@ -11,30 +11,18 @@ topics:
   - document
   - scanner
 
-# NOT PUBLISHABLE YET, and the reason is worth stating plainly: pub.dev refuses
-# a package with a git dependency, and `mobile_ocr` — the MIT plugin this
-# delegates to — is not on pub.dev. Reimplementing PP-OCR to work around that
-# would be a worse outcome for everyone than getting it published upstream, so
-# that is the ask we filed. See docs/upstream/mobile-ocr-pub-dev.md.
-publish_to: none
-
 resolution: workspace
 
 environment:
   sdk: ^3.6.0
-  flutter: '>=3.24.0'
 
+# Pure Dart, and deliberately so: no Flutter, no platform channels, no engine.
+# An application picks an engine package; this one holds the API, the types and
+# the logic that should not be written twice. See DECISIONS.md D-027.
 dependencies:
-  flutter:
-    sdk: flutter
   meta: ^1.15.0
-  mobile_ocr:
-    git:
-      url: https://github.com/ente-io/mobile_ocr.git
-      ref: main
   plugin_platform_interface: ^2.1.8
 
 dev_dependencies:
-  flutter_lints: ^6.0.0
-  flutter_test:
-    sdk: flutter
+  lints: ^6.0.0
+  test: ^1.25.0

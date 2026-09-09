@@ -26,16 +26,18 @@ class OcrReadiness {
   final String? reason;
 }
 
-/// One API, two very different engines underneath.
+/// The contract an OCR engine satisfies.
 ///
-/// Apple Vision on iOS because it is part of the system and costs nothing in
-/// binary size; PP-OCR through ONNX Runtime on Android because the only
-/// comparable system option there is ML Kit, which is delivered by Google Play
-/// Services and would make the result unshippable on F-Droid.
+/// Implement it — by extending this class — to plug in a recogniser. Byrsa's
+/// own engine uses Apple Vision on iOS, because it is part of the system and
+/// costs nothing in binary size, and PP-OCR through ONNX Runtime on Android,
+/// because the only comparable system option there is ML Kit, which is
+/// delivered by Google Play Services and would make the result unshippable on
+/// F-Droid.
 ///
-/// The asymmetry is real and this interface does not pretend otherwise: quality
-/// and speed differ, and every number the project publishes says which engine
-/// produced it.
+/// That asymmetry is real and this interface does not paper over it: quality
+/// and speed differ between engines and between platforms, which is why
+/// [OcrResult.engine] travels with every result.
 abstract class ByrsaOcrPlatform extends PlatformInterface {
   ByrsaOcrPlatform() : super(token: _token);
 
@@ -46,7 +48,9 @@ abstract class ByrsaOcrPlatform extends PlatformInterface {
     final instance = _instance;
     if (instance == null) {
       throw StateError(
-        'No byrsa_ocr implementation registered for this platform.',
+        'No OCR engine has been registered. byrsa_ocr is the API, not an '
+        'engine: add an engine package and register it before recognising — '
+        'for phones, `byrsa_ocr_mobile_ocr` and `registerMobileOcrEngine()`.',
       );
     }
     return instance;

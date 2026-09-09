@@ -1,5 +1,5 @@
-name: byrsa_ocr_example
-description: "Demonstrates how to use the byrsa_ocr plugin."
+name: byrsa_ocr_mobile_ocr_example
+description: "Runs byrsa_ocr with the mobile_ocr engine on a device."
 # The following line prevents the package from being accidentally published to
 # pub.dev using `flutter pub publish`. This is preferred for private packages.
 resolution: workspace
@@ -16,16 +16,11 @@ environment:
 # the latest version available on pub.dev. To see which dependencies have newer
 # versions available, run `flutter pub outdated`.
 dependencies:
+  byrsa_ocr: ^0.1.0
+  byrsa_ocr_mobile_ocr:
+    path: ../
   flutter:
     sdk: flutter
-
-  byrsa_ocr:
-    # When depending on this package from a real application you should use:
-    #   byrsa_ocr: ^x.y.z
-    # See https://dart.dev/tools/pub/dependencies#version-constraints
-    # The example app is bundled with the plugin so we use a path dependency on
-    # the parent directory to use the current plugin's version.
-    path: ../
 
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.

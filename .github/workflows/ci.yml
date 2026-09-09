@@ -43,8 +43,20 @@ jobs:
       - run: flutter pub get
       - run: flutter analyze
       - run: dart format --output=none --set-exit-if-changed .
-      - run: flutter test packages/byrsa_capture packages/byrsa_restore packages/byrsa_ocr app
-      - run: dart test packages/dart_searchable_pdf harness
+      - name: Pure-Dart packages, no Flutter needed
+        run: dart test packages/dart_searchable_pdf packages/byrsa_ocr harness
+      - name: Flutter packages and the application
+        run: >-
+          flutter test packages/byrsa_capture packages/byrsa_restore
+          packages/byrsa_ocr_mobile_ocr app
+
+      - name: The publishable packages are still publishable
+        # byrsa_ocr is publishable precisely because the git dependency lives
+        # in byrsa_ocr_mobile_ocr instead (D-027). A change that quietly moves
+        # it back would break adoption without breaking a test.
+        run: |
+          (cd packages/dart_searchable_pdf && dart pub publish --dry-run)
+          (cd packages/byrsa_ocr && dart pub publish --dry-run)
 
       - name: Dataset manifest is consistent
         run: dart run harness/bin/harness.dart validate

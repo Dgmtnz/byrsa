@@ -14,6 +14,8 @@ dependencies:
     path: ../packages/byrsa_capture
   byrsa_ocr:
     path: ../packages/byrsa_ocr
+  byrsa_ocr_mobile_ocr:
+    path: ../packages/byrsa_ocr_mobile_ocr
   byrsa_restore:
     path: ../packages/byrsa_restore
   dart_searchable_pdf:

@@ -22,8 +22,12 @@ solicitud, en `docs/application-notes.md`.
 | §4.1: "no lo reimplementes, forkea `doclens`" | `doclens` 0.0.9 declara `play-services-mlkit-*` como dependencia Gradle **incondicional**. Cualquier app que lo use mete Play Services en el APK. Gana §0.1: `byrsa_capture` lleva detector propio, y el arreglo se propone upstream | D-017 |
 | §11: "tamaño de app > 150 MB", probabilidad alta | **48,0 MB** en `arm64-v8a` release con splits por ABI, app completa, antes de descargar ningún modelo. Con 0 clases de Play Services tras R8 | D-026 |
 | §4.3: "DocShadow-SD7K ONNX" | **120.041.674 bytes** en fp32. La cuantización no es una optimización de T2, es la condición para poder usarlo | D-024 |
-| §2/§4.4: "faltan idiomas y medición" sobre `mobile_ocr` | Además: no está en pub.dev, y pub.dev rechaza dependencias git. Luego `byrsa_ocr` **no se puede publicar** hasta que lo publiquen. Se pide upstream | D-021 |
+| §2/§4.4: "faltan idiomas y medición" sobre `mobile_ocr` | Además: no está en pub.dev, y pub.dev rechaza dependencias git. Resuelto invirtiendo la dependencia: `byrsa_ocr` es la API en Dart puro y **se publica hoy**; el motor vive en `byrsa_ocr_mobile_ocr`, que es el único que carga con el git | D-021, D-027 |
 | §3, tabla de stack: `drift`, `opencv_dart` | Ninguno de los dos entra por ahora: SQL a mano sobre `sqlite3` (FTS5 hay que escribirlo igual, y `build_runner` estorba a una build reproducible) y restauración clásica en Dart puro | D-022, D-020 |
+
+Ninguno de los dos problemas bloquea ya un hito: `byrsa_capture` lleva detector propio y
+`byrsa_ocr` es publicable. Se contribuyen upstream desde esa posición, que es la que
+produce mejores parches y no ata M1 ni M5 al calendario de un tercero (D-028, D-027).
 
 **El séptimo reto técnico de §13.5 ya no hace falta inventarlo.** Es el primero de esa
 tabla, es un hallazgo propio, y el evaluador lo puede reproducir en un comando.

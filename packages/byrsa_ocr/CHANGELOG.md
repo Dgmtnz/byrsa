@@ -7,13 +7,11 @@ SPDX-License-Identifier: CC-BY-4.0
 
 ## 0.1.0 — unreleased
 
-- One Dart API over Apple Vision and PP-OCR ONNX, delegating the
-  platform-specific half to Ente's MIT `mobile_ocr`.
-- Reading-order reconstruction in Dart, identical on both platforms and
-  unit-tested.
-- Word boxes rather than block polygons, so a searchable PDF's selection lines
-  up with the image.
+- A stable API for on-device OCR, with no engine and no Flutter in it. Engines
+  are registered by the application; `byrsa_ocr_mobile_ocr` is the one Byrsa
+  ships.
+- Reading-order reconstruction, identical whatever the engine returned and in
+  whatever order, unit-tested.
+- Types with no `dart:ui` in them, so results feed a pure-Dart PDF writer.
 
-Not publishable to pub.dev until `mobile_ocr` is published there; see the
-pubspec and `docs/upstream/mobile-ocr-pub-dev.md`. No accuracy figure is
-claimed until the benchmark has run on hardware.
+No accuracy figure is claimed until the benchmark has run on hardware.

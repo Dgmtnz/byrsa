@@ -2,10 +2,11 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import 'package:byrsa_ocr/byrsa_ocr.dart';
+import 'package:byrsa_ocr_mobile_ocr/byrsa_ocr_mobile_ocr.dart';
 import 'package:flutter/material.dart';
 
 void main() {
-  registerByrsaOcr();
+  registerMobileOcrEngine();
   runApp(const OcrExampleApp());
 }
 

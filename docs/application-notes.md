@@ -19,6 +19,7 @@ propagates here. Nothing below is an estimate.
 
 | Claim | Evidence | Where |
 |---|---|---|
+| `dart_searchable_pdf` and `byrsa_ocr` are publishable to pub.dev | `dart pub publish --dry-run`, zero warnings, checked in CI | `packages/*/pubspec.yaml` |
 | The Android build contains **zero** Google Play Services classes | 0 `com.google.android.gms`/`com.google.mlkit` strings in the dex, against 1717 `androidx.camera` | `tool/check_no_play_services.sh`, in CI |
 | Searchable PDFs round-trip through Poppler, accents included | 30 tests, including `pdftotext -layout` on generated pages with `Facturación`, `señor`, `ñandú`, `€` | `packages/dart_searchable_pdf/test` |
 | Invisible-layer width matches the OCR box exactly | asserted for narrow, wide and accented words at three box sizes | `text_layer_test.dart` |
@@ -61,6 +62,13 @@ cross-platform OCR plugin for Flutter — is not published there. So no package
 can be built on top of it and published. That caps how far good work travels,
 and it is fixable with four small files.
 
+Both findings are the same finding, which is worth saying out loud in the
+application because it *is* the project's thesis from §1: the free ecosystem's
+building blocks are individually good and collectively uncomposable, and the
+reasons are boring — one line in a Gradle file, one `pub publish` nobody ran.
+Fixing them is not a detour from Byrsa. It is Byrsa's premise demonstrated on
+the two packages closest to it.
+
 ---
 
 ## Upstream contributions (plan §13.3, §12/S6)
@@ -87,8 +95,12 @@ Recorded properly in `DECISIONS.md`; listed here because Annex A has to match.
 2. **T2's quantisation is not an optimisation.** DocShadow at 120 MB fp32
    cannot ship at all unquantised. Say that in *Technical challenges*: it is
    more honest and more competent than "includes quantisation".
-3. **T3 delegates rather than reimplements** (D-021), and its publishing
-   blocker is upstream, not technical.
+3. **T3 delegates rather than reimplements** (D-021), and the publishing
+   blocker that came with that is gone: the API and the engine are separate
+   packages, so `byrsa_ocr` is publishable today and the git dependency is
+   quarantined in a binding package nobody needs to adopt (D-027). The
+   milestone no longer waits on a third party's release calendar — which is a
+   better answer for a reviewer than either "we are blocked" or "we forked it".
 4. **The stack changed in two places** — no `opencv_dart` in the classical path
    (D-020), no drift (D-022) — both to protect application size and
    reproducible builds. Worth one sentence in the budget, because both are

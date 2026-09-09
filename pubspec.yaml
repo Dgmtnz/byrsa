@@ -12,7 +12,8 @@ workspace:
   - packages/byrsa_restore
   - packages/byrsa_restore/example
   - packages/byrsa_ocr
-  - packages/byrsa_ocr/example
+  - packages/byrsa_ocr_mobile_ocr
+  - packages/byrsa_ocr_mobile_ocr/example
   - harness
   - app
 

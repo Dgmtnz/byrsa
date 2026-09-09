@@ -16,5 +16,11 @@ reasoning is versioned alongside the code that depends on it.
 
 | # | Project | What | Status |
 |---|---|---|---|
-| [1](doclens-play-services.md) | `doclens` | Play Services is an unconditional dependency, which makes the plugin unusable for F-Droid | draft, to file |
+| [1](doclens-play-services.md) | `doclens` | Play Services is an unconditional dependency, which makes the plugin unusable for F-Droid. Two pull requests, the first of which removes a dependency without removing a feature | draft, to file |
 | [2](mobile-ocr-pub-dev.md) | `mobile_ocr` | Not on pub.dev, so nothing that depends on it can be published there | draft, to file |
+
+Neither is a blocker for Byrsa any more, and both are written that way on
+purpose. `byrsa_capture` carries its own detector; `byrsa_ocr` keeps the git
+dependency quarantined in a separate package. Asking from a position of not
+needing the favour makes for a better patch and a better ask — and it means
+neither milestone depends on a stranger's calendar.

@@ -435,3 +435,72 @@ Services después del shrinking de R8.
 alta. Con splits no está ni cerca. El término dominante es la biblioteca nativa de ONNX
 Runtime, ~28 MB en arm64, que es el precio de hacer inferencia sin Play Services y
 conviene decirlo así en la solicitud en vez de esconderlo.
+
+---
+
+## D-027 · La dependencia se invierte: `byrsa_ocr` es la API, el motor va aparte
+**Fecha:** 2026-09-09 · **Estado:** ratificar
+**Sustituye al bloqueo declarado en D-021**
+
+`byrsa_ocr` pasa a ser **Dart puro**: sin Flutter, sin canales de plataforma, sin motor.
+Dependencias: `meta` y `plugin_platform_interface`, las dos minúsculas y las dos Dart
+puro. El adaptador sobre `mobile_ocr` se va a un paquete propio,
+`byrsa_ocr_mobile_ocr`, que es el único que declara la dependencia git.
+
+```
+byrsa_ocr                 API + orden de lectura + tipos       PUBLICABLE
+byrsa_ocr_mobile_ocr      Vision (iOS) + PP-OCR ONNX (Android) no publicable, y da igual
+```
+
+**Por qué:** D-021 dejaba T3 bloqueado esperando a que Ente publicara `mobile_ocr`, es
+decir, dependiendo de la agenda de un tercero para cumplir un hito. Esto lo desbloquea
+sin pedirle nada a nadie, y de paso el paquete queda mejor: se puede usar en un servidor,
+en un CLI o en un test, y cualquiera puede enchufar su propio motor extendiendo
+`ByrsaOcrPlatform`. El coste de la restricción de pub.dev pasa de "el paquete que la
+gente quiere adoptar" a "un paquete de pegamento que a nadie le importa".
+
+**Verificado:** `dart pub publish --dry-run` sobre `byrsa_ocr` pasa sin avisos, y corre
+en CI para que un cambio no devuelva la dependencia git a su sitio en silencio.
+
+**Lo que no cambia:** la petición upstream a Ente sigue en pie, pero ahora es un regalo
+al ecosistema y no una condición para nuestro hito. Se pide mejor desde ahí.
+
+---
+
+## D-028 · Con `doclens` no se forkea: se contribuye, y decide el benchmark
+**Fecha:** 2026-09-09 · **Estado:** ratificar
+**Completa D-017, que se queda como está**
+
+Tres decisiones en una:
+
+**1. No se forkea.** §1 del plan dice que la enfermedad del ecosistema es que cada
+intento vive aislado. Forkear un paquete MIT por dos líneas de Gradle es exactamente esa
+enfermedad. Además un fork es rebase para siempre, y publicarlo en pub.dev con otro
+nombre fragmenta lo que este proyecto dice querer unir.
+
+**2. La propuesta upstream son dos PRs, y uno es un regalo.** Al releer los tres
+ficheros que usan ML Kit, no son equivalentes:
+
+| Fichero | Qué hace | Salida |
+|---|---|---|
+| `TextOrientationDetector` | orientación de la página en `AutoOrientation.auto` | **Se sustituye por CV clásica** (perfiles de proyección o histograma de gradientes). Le quitas una dependencia sin quitarle una función |
+| `TextRecognizer` | helper de OCR | Sobra en un plugin de captura; es scope de otro paquete |
+| `NativeUIScanner` | UI nativa de Google | *Es* Play Services. `compileOnly` + guarda por `Class.forName` y regla `-dontwarn` |
+
+Descartadas: el *flavor* de Gradle obliga a `missingDimensionStrategy` en cada consumidor
+y en la receta de F-Droid, frágil; el paquete companion es el límite más limpio pero
+mucha rotación para los usuarios actuales; y stubs vacíos de GMS con `exclude group:`
+para no forkear funciona, existe en el mundo real, y es justo lo que un revisor de
+F-Droid mira con lupa — no.
+
+**3. Qué detector usamos: lo decide el número, no la preferencia.** Hoy `byrsa_capture`
+lleva el suyo (D-017). No sé si el de `doclens` es mejor: hice grep, no leí
+`QuadDetector.kt`. El harness convierte eso en una pregunta barata. **Criterio de corte:
+se miden los dos sobre los 50 documentos en M1/M2.** Si gana `doclens` con claridad, el
+movimiento correcto es depender de él con el PR ya mergeado; si no, nos quedamos con el
+nuestro y el PR sigue siendo una contribución que vale por sí sola. En ningún escenario
+se forkea.
+
+**Pendiente antes de tocar nada:** verificar el fichero `LICENSE` de `doclens` — el plan
+dice MIT y no lo he comprobado — y si el lado iOS usa Vision/VisionKit en vez de ML Kit,
+que es lo probable pero tampoco está verificado (U-27, U-28).

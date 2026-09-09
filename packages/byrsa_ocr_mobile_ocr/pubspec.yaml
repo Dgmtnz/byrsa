@@ -1,0 +1,33 @@
+name: byrsa_ocr_mobile_ocr
+description: >-
+  Binds byrsa_ocr to Ente's mobile_ocr plugin: Apple Vision on iOS, PP-OCR ONNX
+  on Android, with no Google Play Services.
+version: 0.1.0
+repository: https://github.com/dgmtnz/byrsa/tree/main/packages/byrsa_ocr_mobile_ocr
+issue_tracker: https://github.com/dgmtnz/byrsa/issues
+
+# Not publishable, and that is the whole point of this package existing: it
+# quarantines the git dependency that pub.dev refuses, so that `byrsa_ocr` —
+# the part other people want to adopt — stays publishable. See DECISIONS.md
+# D-027.
+publish_to: none
+
+resolution: workspace
+
+environment:
+  sdk: ^3.6.0
+  flutter: '>=3.24.0'
+
+dependencies:
+  byrsa_ocr: ^0.1.0
+  flutter:
+    sdk: flutter
+  mobile_ocr:
+    git:
+      url: https://github.com/ente-io/mobile_ocr.git
+      ref: main
+
+dev_dependencies:
+  flutter_lints: ^6.0.0
+  flutter_test:
+    sdk: flutter

@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import 'package:byrsa_ocr/byrsa_ocr.dart';
-import 'package:flutter_test/flutter_test.dart';
+import 'package:test/test.dart';
 
 OcrWord word(String text, double left, double top,
         {double width = 60, double height = 20, double confidence = 0.9}) =>
