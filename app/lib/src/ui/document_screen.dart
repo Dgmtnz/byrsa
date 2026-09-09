@@ -56,7 +56,14 @@ class _DocumentScreenState extends ConsumerState<DocumentScreen> {
     });
     try {
       final library = await ref.read(libraryProvider.future);
-      final io = ImageIo(filter: ref.read(preferencesProvider).filter);
+      final preferences = ref.read(preferencesProvider);
+      final store = await ref.read(modelStoreProvider.future);
+      final io = ImageIo(
+        filter: preferences.filter,
+        dewarpModelPath: preferences.dewarp && store.isInstalled('uvdoc-grid')
+            ? store.fileFor('uvdoc-grid').path
+            : null,
+      );
       for (final page in pending) {
         final outcome = await io.restoreFile(
           // Always from the perspective-corrected page, never from a previous

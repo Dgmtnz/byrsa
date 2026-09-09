@@ -403,6 +403,30 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Import a photograph'**
   String get importImage;
+
+  /// No description provided for @dewarp.
+  ///
+  /// In en, this message translates to:
+  /// **'Flatten curved pages'**
+  String get dewarp;
+
+  /// No description provided for @dewarpBody.
+  ///
+  /// In en, this message translates to:
+  /// **'A neural model that un-curves a page photographed in a book. {megabytes} MB, licence {license}.'**
+  String dewarpBody(int megabytes, String license);
+
+  /// No description provided for @dewarpReady.
+  ///
+  /// In en, this message translates to:
+  /// **'Downloaded. Curved pages will be flattened.'**
+  String get dewarpReady;
+
+  /// No description provided for @remove.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove'**
+  String get remove;
 }
 
 class _AppLocalizationsDelegate

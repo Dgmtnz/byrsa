@@ -5,6 +5,28 @@ plugins {
 }
 
 android {
+    // Two independent bindings to ONNX Runtime end up in this application, and
+    // both ship a file called libonnxruntime.so:
+    //
+    //   * mobile_ocr, through the Java AAR (onnxruntime-android 1.27.0, 28 MB)
+    //   * byrsa_restore, through the Dart FFI package (its own build, 14 MB)
+    //
+    // Gradle refuses to merge them, and — this is the part worth knowing — it
+    // only refuses in **release**. The debug build packages them happily, so
+    // the failure appears at the exact moment you are trying to ship.
+    //
+    // pickFirsts makes the build work by keeping one. It does not make the
+    // situation safe: whichever binding does not get its own binary is then
+    // calling a library it was not built against. ONNX Runtime's C API is
+    // meant to be stable across versions, so this is expected to work, and
+    // "expected to work" is not a claim this project makes without a device.
+    // See UNVERIFIED.md and DECISIONS.md D-037 for the two real fixes.
+    packaging {
+        jniLibs {
+            pickFirsts += "lib/**/libonnxruntime.so"
+        }
+    }
+
     namespace = "dev.byrsa.byrsa"
     compileSdk = flutter.compileSdkVersion
     ndkVersion = flutter.ndkVersion

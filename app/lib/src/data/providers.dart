@@ -4,6 +4,8 @@
 import 'dart:io';
 
 import 'package:byrsa_ocr/byrsa_ocr.dart';
+import 'package:byrsa_restore/byrsa_restore.dart';
+import 'package:flutter/services.dart' show rootBundle;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
@@ -23,6 +25,21 @@ final storageRootProvider = FutureProvider<Directory>((ref) async {
 
 final scanStorageProvider = FutureProvider<ScanStorage>((ref) async {
   return ScanStorage(await ref.watch(storageRootProvider.future));
+});
+
+/// The model manifest, read from the asset rather than duplicated in code.
+final modelCatalogProvider = FutureProvider<ModelCatalog>((ref) async {
+  return ModelCatalog.parse(await rootBundle.loadString('models.json'));
+});
+
+/// Where downloaded models live. A cache: they can always be fetched again,
+/// and the user is entitled to delete them.
+final modelStoreProvider = FutureProvider<ModelStore>((ref) async {
+  final root = await ref.watch(storageRootProvider.future);
+  return ModelStore(
+    directory: Directory(p.join(root.path, 'models')),
+    catalog: await ref.watch(modelCatalogProvider.future),
+  );
 });
 
 final libraryProvider = FutureProvider<LibraryDatabase>((ref) async {

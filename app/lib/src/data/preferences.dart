@@ -16,6 +16,7 @@ class Preferences {
     this.filter = PageFilter.colour,
     this.autoCapture = true,
     this.recogniseAutomatically = false,
+    this.dewarp = true,
   });
 
   final PageFilter filter;
@@ -28,16 +29,25 @@ class Preferences {
   /// exactly what this project exists not to be.
   final bool recogniseAutomatically;
 
+  /// Whether to flatten curved pages when the model is present.
+  ///
+  /// On by default because it costs nothing when the model has not been
+  /// downloaded — the stage reports itself unavailable and the pipeline
+  /// carries on.
+  final bool dewarp;
+
   Preferences copyWith({
     PageFilter? filter,
     bool? autoCapture,
     bool? recogniseAutomatically,
+    bool? dewarp,
   }) =>
       Preferences(
         filter: filter ?? this.filter,
         autoCapture: autoCapture ?? this.autoCapture,
         recogniseAutomatically:
             recogniseAutomatically ?? this.recogniseAutomatically,
+        dewarp: dewarp ?? this.dewarp,
       );
 }
 
@@ -55,6 +65,7 @@ class PreferencesNotifier extends StateNotifier<Preferences> {
       ),
       autoCapture: database.setting('autoCapture') != 'false',
       recogniseAutomatically: database.setting('autoOcr') == 'true',
+      dewarp: database.setting('dewarp') != 'false',
     );
   }
 
@@ -71,6 +82,11 @@ class PreferencesNotifier extends StateNotifier<Preferences> {
   void setRecogniseAutomatically({required bool enabled}) {
     _database?.setSetting('autoOcr', '$enabled');
     state = state.copyWith(recogniseAutomatically: enabled);
+  }
+
+  void setDewarp({required bool enabled}) {
+    _database?.setSetting('dewarp', '$enabled');
+    state = state.copyWith(dewarp: enabled);
   }
 }
 

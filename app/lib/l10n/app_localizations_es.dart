@@ -182,4 +182,18 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get importImage => 'Importar una foto';
+
+  @override
+  String get dewarp => 'Aplanar páginas curvadas';
+
+  @override
+  String dewarpBody(int megabytes, String license) {
+    return 'Un modelo neuronal que desdobla una página fotografiada en un libro. $megabytes MB, licencia $license.';
+  }
+
+  @override
+  String get dewarpReady => 'Descargado. Las páginas curvadas se aplanarán.';
+
+  @override
+  String get remove => 'Eliminar';
 }

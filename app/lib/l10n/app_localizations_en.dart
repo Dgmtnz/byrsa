@@ -181,4 +181,18 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get importImage => 'Import a photograph';
+
+  @override
+  String get dewarp => 'Flatten curved pages';
+
+  @override
+  String dewarpBody(int megabytes, String license) {
+    return 'A neural model that un-curves a page photographed in a book. $megabytes MB, licence $license.';
+  }
+
+  @override
+  String get dewarpReady => 'Downloaded. Curved pages will be flattened.';
+
+  @override
+  String get remove => 'Remove';
 }

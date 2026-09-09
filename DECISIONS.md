@@ -710,3 +710,74 @@ molestia.
 **El reconocimiento automático viene desactivado a propósito.** En Android la primera
 ejecución descarga modelos, y un escáner que va a la red sin que se lo pidan es justo lo
 que este proyecto existe para no ser.
+
+---
+
+## D-037 · Spike de ONNX en Android: el export de imagen se descarta, y dos runtimes chocan
+**Fecha:** 2026-09-09 · **Estado:** ratificar
+**Todo lo de aquí está medido, no supuesto**
+
+Tres resultados, y los tres cambian el plan.
+
+### 1. El export de UVDoc que traía el plan no sirve para móvil
+
+`PaddlePaddle/UVDoc_onnx` acepta `[N,3,H,W]` con las dimensiones espaciales dinámicas y
+devuelve `[N,3,H',W']` — **tres canales, o sea una imagen rectificada**. Esa era justo la
+ambigüedad que anunciaba §4.2 ("según el export devuelve imagen rectificada o grid").
+
+Ejecutado con onnxruntime en CPU, cuatro hilos:
+
+| Entrada | Tiempo | RSS pico |
+|---|---|---|
+| 712×488 (0,3 MP) | 188 ms | 144 MB |
+| 1600×1200 (1,9 MP) | 258 ms | 209 MB |
+| 2000×1500 (3,0 MP) | 312 ms | 289 MB |
+| 3000×2250 (6,8 MP) | 487 ms | **477 MB** |
+
+El tiempo casi no crece —la red reduce internamente, exactamente como decía el plan— pero
+**la memoria sí**, porque la salida es una imagen del tamaño de la entrada. Y como solo
+puede darte una página tan grande como el tensor que le metas, una página a resolución
+completa exige 477 MB de pico. Eso en un móvil de gama media no es lento, es que el
+sistema mata la app.
+
+### 2. El export de grid sí sirve, y es el que hay que usar
+
+`fredcallagan/uvdoc-grid-onnx` (Apache-2.0, 31,8 MB en dos ficheros): entrada fija
+`[1,3,720,496]`, salida `[1,2,45,31]` en [-1,1]. **173 ms y 127 MB**, y la resolución del
+resultado se decide después, en Dart, con código que sí está testeado.
+
+El remapeo va en `dewarp.dart`, en Dart puro, con diez tests. La convención está anclada
+al código de los autores originales (`bilinear_unwarping` en `tanguymagne/UVDoc` usa
+`align_corners=True` tanto en `F.interpolate` como en `F.grid_sample`), no adivinada — y
+de paso el `example.py` del propio export **diverge** de ella al reescalar el grid con
+`cv2.resize`, que aplana media celda en cada borde. Se sigue a los autores.
+
+### 3. Dos ONNX Runtime en la misma app chocan, y solo se nota en release
+
+`mobile_ocr` trae el AAR de Java (`onnxruntime-android` 1.27.0, 28 MB por ABI);
+`byrsa_restore` trae el paquete Dart de FFI (su propio build, 14 MB). Los dos ponen un
+fichero llamado `libonnxruntime.so`.
+
+```
+Execution failed for task ':app:mergeReleaseNativeLibs'.
+> 2 files found with path 'lib/arm64-v8a/libonnxruntime.so'
+```
+
+**El build de debug los empaqueta sin rechistar y el de release falla.** Es decir: el
+fallo aparece justo cuando vas a publicar.
+
+Mitigación aplicada: `pickFirsts` en el `build.gradle.kts` de la app. Hace que compile;
+**no lo hace seguro**, porque el binding que no se lleva su binario acaba llamando a una
+biblioteca contra la que no se compiló. La API de C de ONNX Runtime es estable entre
+versiones, así que se espera que funcione, y "se espera que funcione" no es una
+afirmación que este proyecto haga sin dispositivo (U-33).
+
+Los dos arreglos de verdad, para cuando haya móvil que lo decida:
+
+1. **Un solo runtime.** Que `byrsa_restore` llame a ONNX por la API de Java a través de un
+   canal, reutilizando el AAR que `mobile_ocr` ya trae. Robusto; el precio es código
+   nativo en un paquete que hoy es Dart puro (contradice D-020 y habría que re-litigarlo).
+2. **Alinear versiones upstream**, para que los dos `.so` sean el mismo build. Depende de
+   dos terceros y no lo controlamos.
+
+`tool/check_native_collisions.sh` existe para que esto se vea, no para arreglarlo.

@@ -8,8 +8,31 @@
       "sha256": "54cab30dc2cf347b4f3d6971c833b1c3d84f5ef17280f1f6d15796bff20e63d6",
       "license": "Apache-2.0",
       "source": "https://huggingface.co/PaddlePaddle/UVDoc_onnx",
-      "description": "Page dewarping. Downscales internally to 712x488 and rescales the sampling grid, so do not resize the input yourself.",
-      "pinnedOn": "2026-09-08"
+      "description": "Page dewarping, image-output export. Kept in the manifest rather than deleted because 'we measured this and rejected it' is more useful than an absence.",
+      "pinnedOn": "2026-09-08",
+      "usable": false,
+      "notUsableReason": "Measured 2026-09-09: this export returns a rectified image at the input resolution, so getting a full-resolution page means feeding a full-resolution tensor. At 3000x2250 that is 487 ms and 477 MB of peak RSS on a desktop CPU — an instant out-of-memory kill on a mid-range phone. Use uvdoc-grid instead, which does the same work in 173 ms and 127 MB and then remaps at any resolution."
+    },
+    {
+      "id": "uvdoc-grid",
+      "files": [
+        {
+          "fileName": "UVDoc_grid.onnx",
+          "url": "https://huggingface.co/fredcallagan/uvdoc-grid-onnx/resolve/main/UVDoc_grid.onnx",
+          "sizeBytes": 242890,
+          "sha256": "044b406398e8accf2b8c896043f22d318221e443bb095c55d184e97f3eb003f7"
+        },
+        {
+          "fileName": "UVDoc_grid.onnx.data",
+          "url": "https://huggingface.co/fredcallagan/uvdoc-grid-onnx/resolve/main/UVDoc_grid.onnx.data",
+          "sizeBytes": 31588352,
+          "sha256": "3a58a04944e59578200d7b0ed02ccb3ade934e9d88efa21454fbb8b53fa40f02"
+        }
+      ],
+      "license": "Apache-2.0",
+      "source": "https://huggingface.co/fredcallagan/uvdoc-grid-onnx",
+      "description": "Page dewarping, grid-output export of UVDoc (ETH Zurich, SIGGRAPH Asia 2023). Input is fixed at 1x3x720x496 RGB divided by 255; output is a 1x2x45x31 coordinate grid in [-1, 1]. The grid is upsampled and the full-resolution page is remapped through it, so quality does not depend on how much memory the network was given. Two files: the .onnx references the .data sidecar by name, so neither may be renamed.",
+      "pinnedOn": "2026-09-09"
     },
     {
       "id": "docshadow-sd7k",

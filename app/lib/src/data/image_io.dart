@@ -27,10 +27,19 @@ class ImageIo {
     this.maxDimension = 3000,
     this.jpegQuality = 92,
     this.filter = PageFilter.colour,
+    this.dewarpModelPath,
   });
 
   /// What the restored page should look like.
   final PageFilter filter;
+
+  /// The UVDoc model, when it has been downloaded and the user wants it.
+  ///
+  /// A path rather than an object because everything downstream runs in an
+  /// isolate. Null simply means the stage reports itself unavailable and the
+  /// pipeline carries on — which is the whole point of recording a skip rather
+  /// than throwing.
+  final String? dewarpModelPath;
 
   /// Longest side the page is processed and stored at.
   ///
@@ -92,6 +101,7 @@ class ImageIo {
         outputPath: outputPath,
         quality: jpegQuality,
         filter: filter,
+        dewarpModelPath: dewarpModelPath,
       ),
     );
 
@@ -150,6 +160,7 @@ class _RestoreRequest {
     required this.outputPath,
     required this.quality,
     required this.filter,
+    required this.dewarpModelPath,
   });
 
   final Uint8List pixels;
@@ -159,6 +170,7 @@ class _RestoreRequest {
   final String outputPath;
   final int quality;
   final PageFilter filter;
+  final String? dewarpModelPath;
 }
 
 class _RestoreReply {
@@ -190,6 +202,10 @@ Future<_RestoreReply> _restoreAndEncode(_RestoreRequest request) async {
   );
 
   final pipeline = RestorePipeline(<RestoreStage>[
+    // Geometry before light: flattening the page first means the paper-colour
+    // estimate is made on a page that is actually flat.
+    if (request.dewarpModelPath != null)
+      UvdocStage(modelFile: File(request.dewarpModelPath!)),
     const ClassicalStage().withFilter(request.filter),
   ]);
   final restored = await pipeline.run(input);

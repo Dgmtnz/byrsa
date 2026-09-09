@@ -19,6 +19,9 @@ environment:
 
 dependencies:
   crypto: ^3.0.5
+  # The spike this was added for is recorded in DECISIONS.md D-037: whether a
+  # second ONNX Runtime can live in the same APK as mobile_ocr's.
+  onnxruntime: ^1.4.1
   flutter:
     sdk: flutter
   meta: ^1.15.0

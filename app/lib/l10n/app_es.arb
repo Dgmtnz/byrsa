@@ -81,5 +81,19 @@
   "autoCaptureBody": "Hace la foto cuando la página está quieta y enfocada.",
   "autoOcr": "Reconocer el texto automáticamente",
   "autoOcrBody": "Ejecuta el reconocimiento en cada página en cuanto se mejora.",
-  "importImage": "Importar una foto"
+  "importImage": "Importar una foto",
+  "dewarp": "Aplanar páginas curvadas",
+  "dewarpBody": "Un modelo neuronal que desdobla una página fotografiada en un libro. {megabytes} MB, licencia {license}.",
+  "dewarpReady": "Descargado. Las páginas curvadas se aplanarán.",
+  "remove": "Eliminar",
+  "@dewarpBody": {
+    "placeholders": {
+      "megabytes": {
+        "type": "int"
+      },
+      "license": {
+        "type": "String"
+      }
+    }
+  }
 }

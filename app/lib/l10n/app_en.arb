@@ -81,5 +81,19 @@
   "autoCaptureBody": "Take the picture when the page is steady and in focus.",
   "autoOcr": "Recognise text automatically",
   "autoOcrBody": "Run recognition on each page as soon as it is enhanced.",
-  "importImage": "Import a photograph"
+  "importImage": "Import a photograph",
+  "dewarp": "Flatten curved pages",
+  "dewarpBody": "A neural model that un-curves a page photographed in a book. {megabytes} MB, licence {license}.",
+  "@dewarpBody": {
+    "placeholders": {
+      "megabytes": {
+        "type": "int"
+      },
+      "license": {
+        "type": "String"
+      }
+    }
+  },
+  "dewarpReady": "Downloaded. Curved pages will be flattened.",
+  "remove": "Remove"
 }

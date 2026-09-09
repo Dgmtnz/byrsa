@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 import 'package:byrsa_ocr/byrsa_ocr.dart';
+import 'package:byrsa_restore/byrsa_restore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -64,6 +65,8 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                 .setRecogniseAutomatically(enabled: value),
           ),
           const Divider(),
+          const _DewarpModelTile(),
+          const Divider(),
           readiness.when(
             loading: () => const ListTile(title: LinearProgressIndicator()),
             error: (error, _) => ListTile(title: Text('$error')),
@@ -107,5 +110,109 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
     } finally {
       if (mounted) setState(() => _progress = null);
     }
+  }
+}
+
+/// Downloading, and removing, the page-flattening model.
+///
+/// Everything the user is told here — the size, the licence — comes from
+/// `models.json`, the same file a reviewer reads. A copy in the interface would
+/// drift from it, and the number that drifts is always the one about how much
+/// of someone's data allowance this costs.
+class _DewarpModelTile extends ConsumerStatefulWidget {
+  const _DewarpModelTile();
+
+  @override
+  ConsumerState<_DewarpModelTile> createState() => _DewarpModelTileState();
+}
+
+class _DewarpModelTileState extends ConsumerState<_DewarpModelTile> {
+  double? _progress;
+  String? _error;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    final store = ref.watch(modelStoreProvider).valueOrNull;
+    final revision = ref.watch(libraryRevisionProvider);
+    if (store == null) return const SizedBox.shrink();
+
+    final model = store.catalog['uvdoc-grid'];
+    final installed = store.isInstalled('uvdoc-grid');
+
+    return Column(
+      children: <Widget>[
+        SwitchListTile(
+          title: Text(l10n.dewarp),
+          subtitle: Text(
+            installed
+                ? l10n.dewarpReady
+                : l10n.dewarpBody(
+                    (model.sizeBytes / 1024 / 1024).round(),
+                    model.license,
+                  ),
+          ),
+          value: ref.watch(preferencesProvider).dewarp,
+          onChanged: (value) =>
+              ref.read(preferencesProvider.notifier).setDewarp(enabled: value),
+        ),
+        if (_error != null)
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            child: Text(_error!,
+                style: TextStyle(color: Theme.of(context).colorScheme.error)),
+          ),
+        if (_progress != null)
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            child: LinearProgressIndicator(value: _progress),
+          )
+        else
+          Padding(
+            padding: const EdgeInsets.only(right: 16, bottom: 8),
+            child: Align(
+              alignment: Alignment.centerRight,
+              child: installed
+                  ? TextButton(
+                      onPressed: () => _remove(store),
+                      child: Text(l10n.remove),
+                    )
+                  : FilledButton(
+                      key: ValueKey<int>(revision),
+                      onPressed: () => _download(store),
+                      child: Text(l10n.download),
+                    ),
+            ),
+          ),
+      ],
+    );
+  }
+
+  Future<void> _download(ModelStore store) async {
+    setState(() {
+      _progress = 0;
+      _error = null;
+    });
+    try {
+      await store.install(
+        'uvdoc-grid',
+        onProgress: (received, total) {
+          if (mounted && total > 0) {
+            setState(() => _progress = received / total);
+          }
+        },
+      );
+      ref.read(libraryRevisionProvider.notifier).state++;
+    } on ModelStoreException catch (error) {
+      // The store's messages already say what went wrong and what to do.
+      if (mounted) setState(() => _error = error.message);
+    } finally {
+      if (mounted) setState(() => _progress = null);
+    }
+  }
+
+  Future<void> _remove(ModelStore store) async {
+    await store.remove('uvdoc-grid');
+    ref.read(libraryRevisionProvider.notifier).state++;
   }
 }

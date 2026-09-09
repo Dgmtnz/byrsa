@@ -44,3 +44,8 @@ dev_dependencies:
 flutter:
   uses-material-design: true
   generate: true
+  assets:
+    # The repository's model manifest, read at run time so the settings screen
+    # can show what a download costs and under what licence — from the same
+    # file a reviewer reads, not a copy that drifts from it.
+    - ../models.json

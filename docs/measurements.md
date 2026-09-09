@@ -143,6 +143,63 @@ File sizes are not reported here because the test pages are synthetic and JPEG
 size is entirely a function of content. That number needs the fifty real
 documents.
 
+## 2026-09-09 — the ONNX spike on Android
+
+The plan calls ONNX its biggest risk. Most of that risk is about iOS, which
+cannot be touched here. This is what Android and a desktop CPU could answer.
+
+### The export the plan named cannot be used on a phone
+
+`PaddlePaddle/UVDoc_onnx` takes `[N,3,H,W]` with dynamic spatial dimensions and
+returns `[N,3,H',W']` — **three channels, so a rectified image**. That is
+exactly the ambiguity plan §4.2 warned about. Run under `onnxruntime` on CPU
+with four threads:
+
+| Input | Time | Peak RSS |
+|---|---|---|
+| 712×488 (0.3 MP) | 188 ms | 144 MB |
+| 1600×1200 (1.9 MP) | 258 ms | 209 MB |
+| 2000×1500 (3.0 MP) | 312 ms | 289 MB |
+| 3000×2250 (6.8 MP) | 487 ms | **477 MB** |
+
+Time barely moves, because the network downscales internally — the plan said so
+and it is true. Memory does move, because the output is an image the size of
+the input, and the model can only give a page as large as the tensor it was
+fed. A full-resolution page therefore costs 477 MB of peak memory, which on a
+mid-range phone is not slow, it is an out-of-memory kill.
+
+### The grid export can
+
+`fredcallagan/uvdoc-grid-onnx`, Apache-2.0, 31.8 MB across two files: fixed
+`[1,3,720,496]` input, `[1,2,45,31]` output in [-1, 1].
+
+| | Time | Peak RSS |
+|---|---|---|
+| Grid export, any output resolution | **173 ms** | **127 MB** |
+
+The resolution of the result is then decided in Dart, by `remapThroughGrid`,
+which has ten tests. The sampling convention is taken from the original
+authors' `bilinear_unwarping` — `align_corners=True` in both the grid upsample
+and the sample — not guessed. The export's own `example.py` diverges from that
+by upsampling with `cv2.resize`, which flattens half a grid cell at every edge;
+the authors' code is the reference here.
+
+### Two ONNX Runtimes collide, and only in release
+
+`mobile_ocr` brings the Java AAR (`onnxruntime-android` 1.27.0, 28 MB per ABI);
+`byrsa_restore` brings the Dart FFI package (its own build, 14 MB). Both ship a
+file called `libonnxruntime.so`.
+
+```
+Execution failed for task ':app:mergeReleaseNativeLibs'.
+> 2 files found with path 'lib/arm64-v8a/libonnxruntime.so'
+```
+
+**The debug build packages both without complaint. Only release fails** — so the
+error arrives at the moment you try to ship. `pickFirsts` makes it build and
+does not make it safe; the two real fixes and the open question are in
+`DECISIONS.md` D-037 and `UNVERIFIED.md` U-33.
+
 ### Test suite
 
 | What | Value |

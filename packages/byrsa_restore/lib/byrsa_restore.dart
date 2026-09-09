@@ -12,7 +12,9 @@
 library;
 
 export 'src/classical.dart' show ClassicalRestore, PageFilter;
+export 'src/dewarp.dart';
 export 'src/image_buffer.dart';
 export 'src/model_catalog.dart';
 export 'src/model_store.dart';
 export 'src/pipeline.dart';
+export 'src/uvdoc_stage.dart';
