@@ -32,6 +32,12 @@ nothing below is a runtime measurement on a phone.
 
 ### Release size — the answer to a risk the plan rated High
 
+Updated 2026-09-09, after adding the page-flattening path: **48.8 MB on
+arm64-v8a**, still with no model downloaded. Adding a second ONNX Runtime
+binding cost 0.8 MB, because it shares the runtime the OCR engine already
+brought.
+
+
 `flutter build apk --release --split-per-abi`, on the full application: capture,
 restoration, OCR with ONNX Runtime, and the searchable-PDF writer.
 
@@ -196,21 +202,61 @@ Execution failed for task ':app:mergeReleaseNativeLibs'.
 ```
 
 **The debug build packages both without complaint. Only release fails** — so the
-error arrives at the moment you try to ship. `pickFirsts` makes it build and
-does not make it safe; the two real fixes and the open question are in
-`DECISIONS.md` D-037 and `UNVERIFIED.md` U-33.
+error arrives at the moment you try to ship.
+
+And the obvious workaround is a trap. Adding `pickFirsts` makes it build, and
+measured, it keeps the Dart package's 14.2 MB library and discards the AAR's
+28 MB one:
+
+| | Before the spike | With `pickFirsts` | Resolved deterministically |
+|---|---|---|---|
+| `arm64-v8a` release | 48.0 MB | 35.0 MB | **48.8 MB** |
+| `armeabi-v7a` release | 37.4 MB | 28.1 MB | 38.3 MB |
+
+The application got 13 MB smaller, which looks like a win and is the alarm.
+`libonnxruntime4j_jni.so` — mobile_ocr's shim, compiled against 1.27.0 — is now
+paired with a different, older runtime. An APK that got smaller is exactly how
+that ships.
+
+The choice is therefore made deterministically instead: the Dart package's
+vendored copy is dropped at its source, so only the AAR's survives and both
+bindings share ONNX Runtime 1.27.0. Verified by unzipping the release APK — the
+27,985,944-byte library is the one present, paired with the JNI shim that was
+built against it.
+
+Which pairing is safer is a judgement, and it is worth stating: ONNX Runtime's
+C API is versioned and backwards compatible, so an FFI binding generated
+against an older header calling a newer library is the survivable direction. A
+JNI shim built for 1.27.0 hunting for symbols in an older build is not.
+
+### And the Dart ONNX package no longer builds in release at all
+
+Behind the collision sits another release-only failure:
+
+```
+:onnxruntime:checkReleaseAarMetadata
+> Dependency 'androidx.fragment:fragment:1.7.1' requires ... version 34 or later.
+  :onnxruntime is currently compiled against android-33.
+```
+
+`onnxruntime_flutter` 1.4.1 pins `compileSdkVersion 33`. Worked around by
+raising the subproject's compileSdk from the application's Gradle files —
+which has to be registered before the `evaluationDependsOn(":app")` that
+Flutter generates, because that one evaluates every plugin project and an
+`afterEvaluate` registered afterwards never runs. The one-line real fix is
+drafted in `docs/upstream/onnxruntime-flutter-compilesdk.md`.
 
 ### Test suite
 
 | What | Value |
 |---|---|
-| Tests passing, no device, no models, no network | **145** |
+| Tests passing, no device, no models, no network | **163** |
 | `flutter analyze` across the workspace | 0 issues |
 | `reuse lint` | every file compliant |
 | `dart format --set-exit-if-changed` | clean |
 
 Breakdown: `dart_searchable_pdf` 30 (including Poppler round-trips),
-`byrsa_capture` 33, `byrsa_restore` 26, `byrsa_ocr` 13, `byrsa_ocr_mobile_ocr`
+`byrsa_capture` 33, `byrsa_restore` 44, `byrsa_ocr` 13, `byrsa_ocr_mobile_ocr`
 6, `byrsa` (app) 37, `harness` 9.
 
 `dart_searchable_pdf` and `byrsa_ocr` both pass `dart pub publish --dry-run`

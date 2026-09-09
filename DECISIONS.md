@@ -766,11 +766,27 @@ Execution failed for task ':app:mergeReleaseNativeLibs'.
 **El build de debug los empaqueta sin rechistar y el de release falla.** Es decir: el
 fallo aparece justo cuando vas a publicar.
 
-Mitigación aplicada: `pickFirsts` en el `build.gradle.kts` de la app. Hace que compile;
-**no lo hace seguro**, porque el binding que no se lleva su binario acaba llamando a una
-biblioteca contra la que no se compiló. La API de C de ONNX Runtime es estable entre
-versiones, así que se espera que funcione, y "se espera que funcione" no es una
-afirmación que este proyecto haga sin dispositivo (U-33).
+**Y el apaño obvio es una trampa.** `pickFirsts` hace que compile, y medido, se queda la
+biblioteca de 14,2 MB del paquete Dart y descarta la de 28 MB del AAR:
+
+| | Antes del spike | Con `pickFirsts` |
+|---|---|---|
+| `arm64-v8a` release | 48,0 MB | 35,0 MB |
+
+La app adelgaza 13 MB, que parece una victoria y es la alarma: el shim JNI de
+`mobile_ocr`, compilado contra la 1.27.0, se queda emparejado con otra biblioteca más
+antigua. Un APK que ha encogido es exactamente la forma en que eso se publica.
+
+Así que la elección se hace **determinista**: se excluye la copia del paquete Dart en su
+propio subproyecto y solo sobrevive la del AAR. Verificado descomprimiendo el APK de
+release: la que queda es la de 27.985.944 bytes, junto al shim que se compiló contra
+ella.
+
+Cuál de los dos emparejamientos es el seguro es un juicio, y conviene decirlo: la API de C
+de ONNX Runtime está versionada y es retrocompatible, así que un binding de FFI generado
+contra una cabecera vieja llamando a una biblioteca nueva es la dirección que sobrevive.
+Un shim JNI compilado para 1.27.0 buscando símbolos en un build anterior, no. Sigue sin
+verificarse en dispositivo (U-33).
 
 Los dos arreglos de verdad, para cuando haya móvil que lo decida:
 
@@ -781,3 +797,34 @@ Los dos arreglos de verdad, para cuando haya móvil que lo decida:
    dos terceros y no lo controlamos.
 
 `tool/check_native_collisions.sh` existe para que esto se vea, no para arreglarlo.
+
+### 4. Y el paquete Dart de ONNX Runtime ya no compila en release
+
+Detrás de la colisión aparece otra:
+
+```
+:onnxruntime:checkReleaseAarMetadata
+> Dependency 'androidx.fragment:fragment:1.7.1' requires ... version 34 or later.
+  :onnxruntime is currently compiled against android-33.
+```
+
+`onnxruntime_flutter` 1.4.1 fija `compileSdkVersion 33`, y AndroidX actual exige 34 o
+más. **Otra vez solo en release.** Desbloqueado subiendo el `compileSdk` del subproyecto
+desde el `build.gradle.kts` de la app, que es el apaño estándar para un plugin que se ha
+quedado atrás y es seguro —`compileSdk` decide a qué APIs puede llamar la biblioteca, no
+en qué dispositivos corre, y su `minSdkVersion 21` no se toca—. El arreglo de verdad es
+una línea en el plugin: `docs/upstream/onnxruntime-flutter-compilesdk.md`.
+
+**Lectura conjunta de 3 y 4:** las dos pegas vienen del mismo sitio. El paquete Dart de
+FFI vendoriza su propio `.so` y va por detrás del toolchain; el AAR oficial que ya trae
+`mobile_ocr` no tiene ninguno de los dos problemas.
+
+Y aun así **no se cambia al AAR**, por una razón que vale la pena escribir porque es la
+que decide: el AAR es de Java y solo existe en Android. En iOS `mobile_ocr` usa Vision, no
+ONNX. Pasar la rectificación a la API de Java significaría **quedarse sin aplanado en
+iOS**, que es exactamente el riesgo de §4.6 pero autoinfligido. El paquete de FFI es hoy
+el único camino que da las dos plataformas, así que los apaños son el precio y quedan
+anotados con su riesgo (U-33), no escondidos.
+
+Si el spike en dispositivo dice que `pickFirsts` no es seguro, la salida es la API de Java
+**como respaldo solo de Android**, no como sustitución.

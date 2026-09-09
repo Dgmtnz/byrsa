@@ -13,7 +13,7 @@ plus a reference application that proves they compose end to end.
 | Package | What it does | Licence | Status |
 |---|---|---|---|
 | [`byrsa_capture`](packages/byrsa_capture) | Live edge detection and perspective correction, no Google Play Services | Apache-2.0 | in development |
-| [`byrsa_restore`](packages/byrsa_restore) | Page rectification (UVDoc) and shadow removal (DocShadow) as quantised ONNX, plus a classical baseline | Apache-2.0 | in development |
+| [`byrsa_restore`](packages/byrsa_restore) | Shadow removal and illumination flattening in pure Dart, plus page dewarping through a UVDoc ONNX grid | Apache-2.0 | in development |
 | [`byrsa_ocr`](packages/byrsa_ocr) | A stable Dart API for on-device OCR — pure Dart, no engine, no Flutter | Apache-2.0 | in development |
 | [`byrsa_ocr_mobile_ocr`](packages/byrsa_ocr_mobile_ocr) | The engine for phones: Apple Vision on iOS, PP-OCR ONNX on Android | Apache-2.0 | in development |
 | [`dart_searchable_pdf`](packages/dart_searchable_pdf) | Pure-Dart PDF invisible text layer (text render mode 3) | Apache-2.0 | in development |
@@ -80,7 +80,7 @@ can run yourself.
 | The documentation makes no unmeasured iOS claim | `tool/check_claims.sh` |
 | The release application is **48 MB** on arm64, before any model download | `flutter build apk --release --split-per-abi` |
 | Restoring a 12 MP page takes **0.6 s**, down from 55.9 s | `dart run tool/bench_restore.dart` |
-| 145 tests pass with no device, no models and no network | `flutter test` + `dart test` |
+| 163 tests pass with no device, no models and no network | `flutter test` + `dart test` |
 | `dart_searchable_pdf` and `byrsa_ocr` are publishable to pub.dev | `dart pub publish --dry-run`, in CI |
 
 What is **not** verified is listed just as plainly in

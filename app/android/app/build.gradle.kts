@@ -15,12 +15,21 @@ android {
     // only refuses in **release**. The debug build packages them happily, so
     // the failure appears at the exact moment you are trying to ship.
     //
-    // pickFirsts makes the build work by keeping one. It does not make the
-    // situation safe: whichever binding does not get its own binary is then
-    // calling a library it was not built against. ONNX Runtime's C API is
-    // meant to be stable across versions, so this is expected to work, and
-    // "expected to work" is not a claim this project makes without a device.
-    // See UNVERIFIED.md and DECISIONS.md D-037 for the two real fixes.
+    // `pickFirsts` alone is a trap. Measured: it keeps the Dart package's
+    // 14.2 MB build and discards the AAR's 28 MB one, which makes the APK look
+    // 13 MB better while leaving mobile_ocr's JNI shim — compiled against
+    // 1.27.0 — paired with a different, older library. An APK that got smaller
+    // is exactly how that ships.
+    //
+    // So the choice is made deterministically instead, in the subprojects block
+    // of ../build.gradle.kts: the Dart package's copy is dropped at its source
+    // and only the AAR's survives. Both bindings then share ONNX Runtime
+    // 1.27.0 — the Java shim gets the library it was built against, and the FFI
+    // package resolves `libonnxruntime.so` by name and finds the newer one,
+    // whose C API is backwards compatible.
+    //
+    // pickFirsts stays as a safety net for the merge itself. It should never
+    // have anything left to choose between.
     packaging {
         jniLibs {
             pickFirsts += "lib/**/libonnxruntime.so"

@@ -17,7 +17,8 @@ reasoning is versioned alongside the code that depends on it.
 | # | Project | What | Status |
 |---|---|---|---|
 | [1](doclens-play-services.md) | `doclens` | Play Services is an unconditional dependency, which makes the plugin unusable for F-Droid. Two pull requests, the first of which removes a dependency without removing a feature | draft, to file |
-| [2](mobile-ocr-pub-dev.md) | `mobile_ocr` | Not on pub.dev, so nothing that depends on it can be published there | draft, to file |
+| [2](mobile-ocr-pub-dev.md) | `mobile_ocr` | Not on pub.dev, so nothing that depends on it can be published there; and it applies the Kotlin Gradle Plugin, which Flutter will stop accepting | draft, to file |
+| [3](onnxruntime-flutter-compilesdk.md) | `onnxruntime_flutter` | `compileSdkVersion 33` breaks every release build against current AndroidX, and its vendored `libonnxruntime.so` collides with the official AAR | draft, to file |
 
 Neither is a blocker for Byrsa any more, and both are written that way on
 purpose. `byrsa_capture` carries its own detector; `byrsa_ocr` keeps the git
