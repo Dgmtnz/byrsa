@@ -116,13 +116,39 @@ class _DocumentScreenState extends ConsumerState<DocumentScreen> {
                 _setFilter(PageFilter.blackAndWhite, document.valueOrNull),
               _ => null,
             },
-            itemBuilder: (context) => <PopupMenuEntry<String>>[
-              PopupMenuItem<String>(
-                  value: 'enhance', child: Text(l10n.enhance)),
-              PopupMenuItem<String>(value: 'ocr', child: Text(l10n.runOcr)),
-              PopupMenuItem<String>(value: 'pdf', child: Text(l10n.exportPdf)),
-              PopupMenuItem<String>(value: 'txt', child: Text(l10n.exportText)),
-            ],
+            itemBuilder: (context) {
+              final filter = ref.watch(preferencesProvider).filter;
+              return <PopupMenuEntry<String>>[
+                PopupMenuItem<String>(value: 'ocr', child: Text(l10n.runOcr)),
+                PopupMenuItem<String>(
+                    value: 'pdf', child: Text(l10n.exportPdf)),
+                PopupMenuItem<String>(
+                    value: 'txt', child: Text(l10n.exportText)),
+                const PopupMenuDivider(),
+                PopupMenuItem<String>(
+                  enabled: false,
+                  child: Text(
+                    l10n.filter,
+                    style: Theme.of(context).textTheme.labelSmall,
+                  ),
+                ),
+                CheckedPopupMenuItem<String>(
+                  value: 'filter-colour',
+                  checked: filter == PageFilter.colour,
+                  child: Text(l10n.filterColour),
+                ),
+                CheckedPopupMenuItem<String>(
+                  value: 'filter-grayscale',
+                  checked: filter == PageFilter.grayscale,
+                  child: Text(l10n.filterGrayscale),
+                ),
+                CheckedPopupMenuItem<String>(
+                  value: 'filter-bw',
+                  checked: filter == PageFilter.blackAndWhite,
+                  child: Text(l10n.filterBlackAndWhite),
+                ),
+              ];
+            },
           ),
         ],
       ),

@@ -54,8 +54,14 @@ class ImageIo {
 
   final int jpegQuality;
 
-  /// Decodes an image file into a buffer the restoration can work on.
-  Future<ImageBuffer> decode(String path) async {
+  /// Decodes an image file to raw RGBA at no more than [maxDimension].
+  ///
+  /// Returns the platform's own layout, alpha and all, and does not touch it.
+  /// Converting to RGB is a loop over every pixel, and every pixel of a 6.8 MP
+  /// page on the interface's isolate is roughly a tenth of a second of frozen
+  /// screen — so that loop belongs in the isolate that does the rest of the
+  /// work, not here.
+  Future<({Uint8List rgba, int width, int height})> decode(String path) async {
     final bytes = await File(path).readAsBytes();
     final buffer = await ui.ImmutableBuffer.fromUint8List(bytes);
     final descriptor = await ui.ImageDescriptor.encoded(buffer);
@@ -79,7 +85,7 @@ class ImageIo {
     if (rgba == null) {
       throw StateError('Could not read the pixels of $path.');
     }
-    return _rgbFromRgba(rgba.buffer.asUint8List(), width, height);
+    return (rgba: rgba.buffer.asUint8List(), width: width, height: height);
   }
 
   /// Restores [inputPath] and writes the result to [outputPath].
@@ -91,16 +97,16 @@ class ImageIo {
     required String outputPath,
   }) async {
     final watch = Stopwatch()..start();
-    final image = await decode(inputPath);
+    final decoded = await decode(inputPath);
     final decodeTime = watch.elapsed;
 
     final result = await compute(
       _restoreAndEncode,
       _RestoreRequest(
-        pixels: image.data,
-        width: image.width,
-        height: image.height,
-        channels: image.channels,
+        pixels: decoded.rgba,
+        width: decoded.width,
+        height: decoded.height,
+        channels: 4,
         outputPath: outputPath,
         quality: jpegQuality,
         filter: filter,
@@ -114,8 +120,8 @@ class ImageIo {
 
     return RestoreOutcome(
       path: outputPath,
-      width: image.width,
-      height: image.height,
+      width: decoded.width,
+      height: decoded.height,
       encoder: result.encoder,
       stages: <StageOutcome>[
         StageOutcome(id: 'decode', duration: decodeTime),
@@ -127,8 +133,8 @@ class ImageIo {
   /// Drops the alpha channel the platform decoder always produces.
   ///
   /// A scan is opaque, and carrying a fourth byte through every later pass
-  /// costs a third more memory traffic for nothing.
-  static ImageBuffer _rgbFromRgba(Uint8List rgba, int width, int height) {
+  /// costs a third more memory traffic for nothing. Runs in the isolate.
+  static ImageBuffer rgbFromRgba(Uint8List rgba, int width, int height) {
     final pixels = width * height;
     final rgb = Uint8List(pixels * 3);
     for (var i = 0; i < pixels; i++) {
@@ -209,12 +215,14 @@ Uint8List _asRgb(ImageBuffer image) {
 
 /// Runs in an isolate: restore, encode, write.
 Future<_RestoreReply> _restoreAndEncode(_RestoreRequest request) async {
-  final input = ImageBuffer(
-    width: request.width,
-    height: request.height,
-    channels: request.channels,
-    data: request.pixels,
-  );
+  final input = request.channels == 4
+      ? ImageIo.rgbFromRgba(request.pixels, request.width, request.height)
+      : ImageBuffer(
+          width: request.width,
+          height: request.height,
+          channels: request.channels,
+          data: request.pixels,
+        );
 
   final pipeline = RestorePipeline(<RestoreStage>[
     // Geometry before light: flattening the page first means the paper-colour
