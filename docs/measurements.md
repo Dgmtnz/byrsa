@@ -72,18 +72,69 @@ not an optimisation inside T2, it is the precondition for the task, and whether
 the model survives int8 with its quality intact is an open question this
 project will answer with the harness rather than with adjectives.
 
+## 2026-09-09 — the restoration was unusable, and now is not
+
+Same machine. The first version of `ClassicalRestore` analysed the image at full
+resolution; the current one analyses a downscaled copy and applies the
+correction in one fused integer pass (DECISIONS.md D-029).
+
+| Image | Before | After | |
+|---|---|---|---|
+| 0.8 MP grayscale | 1,075 ms | 161 ms | |
+| 3 MP grayscale | 2,336 ms | 228 ms | |
+| **12 MP grayscale** | **55,921 ms** | **608 ms** | 92× |
+| 12 MP colour | — | 907 ms | |
+
+The shape matters as much as the number. The old cost grew with the blur
+radius, and the radius grew with the image, so fifteen times the pixels cost
+fifty-two times the time. The new cost is linear: 51 ms per megapixel at 12 MP,
+against 215 ms per megapixel at 0.8 MP where fixed analysis cost still
+dominates.
+
+The analysis grid is a knob, and it behaves like one:
+
+| `analysisWidth` | 12 MP grayscale |
+|---|---|
+| 256 | 383 ms |
+| 512 (default) | 430 ms |
+| 1024 | 721 ms |
+| 2048 | 2,595 ms |
+
+### What one page costs end to end
+
+The path the application actually runs, with the 3000 px cap applied — a 6.8 MP
+colour page:
+
+| Stage | Time |
+|---|---|
+| Decode (`dart:ui`, platform codec) | not separately measured; a pure-Dart JPEG decode of the same size is 1,154 ms, which is why it is not used |
+| Restore | 755 ms |
+| JPEG encode (pure Dart) | 904 ms |
+| **Total** | **~1.7 s** |
+
+Encoding is now the largest single term. Encoding natively would take it to
+roughly 100 ms; it is not done yet because it would put an image codec in a
+package that should not have one, or untested native glue in the application.
+The number is recorded rather than the problem half-fixed.
+
+All of this runs in an isolate, so it is a progress bar rather than a frozen
+interface — a difference invisible in a benchmark and very visible in the hand.
+
+**Not measured:** any of this on a phone. Expect several times slower, and do
+not quote a multiplier until someone has run it (`UNVERIFIED.md`, U-31).
+
 ### Test suite
 
 | What | Value |
 |---|---|
-| Tests passing, no device, no models, no network | **122** |
+| Tests passing, no device, no models, no network | **128** |
 | `flutter analyze` across the workspace | 0 issues |
 | `reuse lint` | every file compliant |
 | `dart format --set-exit-if-changed` | clean |
 
 Breakdown: `dart_searchable_pdf` 30 (including Poppler round-trips),
-`byrsa_capture` 32, `byrsa_restore` 19, `byrsa_ocr` 13, `byrsa_ocr_mobile_ocr`
-6, `byrsa` (app) 22, `harness` 9.
+`byrsa_capture` 33, `byrsa_restore` 22, `byrsa_ocr` 13, `byrsa_ocr_mobile_ocr`
+6, `byrsa` (app) 24, `harness` 9.
 
 `dart_searchable_pdf` and `byrsa_ocr` both pass `dart pub publish --dry-run`
 with no warnings, and CI runs that check so a git dependency cannot creep back
@@ -113,6 +164,14 @@ plan predicted:
   returns no results instead of an error.
 - **A model whose digest does not match is deleted**, and an unpinned model is
   refused outright.
+- **Restoration stays linear in pixels.** One test asserts that four times the
+  pixels costs less than twelve times the time, which is the cheap way to catch
+  a return to the quadratic behaviour that made the first version take a
+  minute.
+- **The analysis grid is a performance knob, not a quality one.** Changing it
+  from 256 to 1024 moves the output by less than six grey levels on average.
+- **A camera refusal is reported as a refusal**, with the permanent case told
+  apart from the retryable one.
 - **Text and word boxes are stored together.** A page with text but no boxes
   searches inside the application and exports an image-only PDF; the two states
   are distinguishable rather than inferred.

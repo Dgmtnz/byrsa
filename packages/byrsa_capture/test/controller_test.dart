@@ -21,8 +21,20 @@ class FakeCapturePlatform extends ByrsaCapturePlatform
   @override
   Stream<CaptureDetection> get detections => _controller.stream;
 
+  CameraPermission permission = CameraPermission.granted;
+
   @override
-  Future<int> start(CaptureOptions options) async => 7;
+  Future<int> start(CaptureOptions options) async {
+    if (permission != CameraPermission.granted) {
+      throw CameraPermissionDenied(
+        permanently: permission == CameraPermission.deniedPermanently,
+      );
+    }
+    return 7;
+  }
+
+  @override
+  Future<CameraPermission> permissionStatus() async => permission;
 
   @override
   Future<void> stop() async {}
@@ -102,6 +114,24 @@ void main() {
     expect(controller.isRunning, isFalse);
     await controller.start();
     expect(controller.textureId, 7);
+  });
+
+  test('surfaces a camera refusal as something an interface can act on',
+      () async {
+    // Declaring CAMERA in a manifest has not been enough since Android 6, and
+    // the failure only appears for new users — never on the phone where the
+    // permission was granted weeks ago.
+    platform.permission = CameraPermission.deniedPermanently;
+    final controller = ByrsaCaptureController(autoCapture: false);
+
+    await expectLater(
+      controller.start(),
+      throwsA(
+        isA<CameraPermissionDenied>()
+            .having((e) => e.permanently, 'permanently', isTrue),
+      ),
+    );
+    expect(controller.isRunning, isFalse);
   });
 
   test('collects pages into a batch, in order', () async {

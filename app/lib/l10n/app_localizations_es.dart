@@ -104,4 +104,27 @@ class AppLocalizationsEs extends AppLocalizations {
   String pageSemanticLabel(int position, int total) {
     return 'Página $position de $total';
   }
+
+  @override
+  String get cameraNeeded => 'Byrsa necesita la cámara';
+
+  @override
+  String get cameraNeededBody =>
+      'El escaneo ocurre entero en este dispositivo. No se sube ninguna foto.';
+
+  @override
+  String get cameraDeniedBody =>
+      'El acceso a la cámara está desactivado para Byrsa. Puedes volver a activarlo en los ajustes del sistema.';
+
+  @override
+  String get tryAgain => 'Reintentar';
+
+  @override
+  String get processing => 'Mejorando…';
+
+  @override
+  String get enhance => 'Mejorar páginas';
+
+  @override
+  String get enhanced => 'Mejorada';
 }

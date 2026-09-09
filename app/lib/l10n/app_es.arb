@@ -57,5 +57,12 @@
         "type": "int"
       }
     }
-  }
+  },
+  "cameraNeeded": "Byrsa necesita la cámara",
+  "cameraNeededBody": "El escaneo ocurre entero en este dispositivo. No se sube ninguna foto.",
+  "cameraDeniedBody": "El acceso a la cámara está desactivado para Byrsa. Puedes volver a activarlo en los ajustes del sistema.",
+  "tryAgain": "Reintentar",
+  "processing": "Mejorando…",
+  "enhance": "Mejorar páginas",
+  "enhanced": "Mejorada"
 }

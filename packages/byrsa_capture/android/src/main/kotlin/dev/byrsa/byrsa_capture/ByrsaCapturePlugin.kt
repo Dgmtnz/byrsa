@@ -3,6 +3,7 @@
 
 package dev.byrsa.byrsa_capture
 
+import android.Manifest
 import android.content.Context
 import android.content.pm.PackageManager
 import androidx.lifecycle.LifecycleOwner
@@ -12,6 +13,7 @@ import io.flutter.embedding.engine.plugins.activity.ActivityPluginBinding
 import io.flutter.plugin.common.EventChannel
 import io.flutter.plugin.common.MethodCall
 import io.flutter.plugin.common.MethodChannel
+import io.flutter.plugin.common.PluginRegistry
 import io.flutter.view.TextureRegistry
 
 /** Android side of `byrsa_capture`. No Google Play Services anywhere below. */
@@ -19,7 +21,8 @@ class ByrsaCapturePlugin :
     FlutterPlugin,
     ActivityAware,
     MethodChannel.MethodCallHandler,
-    EventChannel.StreamHandler {
+    EventChannel.StreamHandler,
+    PluginRegistry.RequestPermissionsResultListener {
 
     private lateinit var methods: MethodChannel
     private lateinit var events: EventChannel
@@ -29,6 +32,9 @@ class ByrsaCapturePlugin :
     private var session: CaptureSession? = null
     private var activityBinding: ActivityPluginBinding? = null
     private var eventSink: EventChannel.EventSink? = null
+
+    /// A `start` call parked while the user answers the permission dialog.
+    private var pendingStart: Pair<MethodCall, MethodChannel.Result>? = null
 
     override fun onAttachedToEngine(binding: FlutterPlugin.FlutterPluginBinding) {
         context = binding.applicationContext
@@ -48,17 +54,54 @@ class ByrsaCapturePlugin :
 
     override fun onAttachedToActivity(binding: ActivityPluginBinding) {
         activityBinding = binding
+        binding.addRequestPermissionsResultListener(this)
     }
 
     override fun onDetachedFromActivityForConfigChanges() = Unit
 
     override fun onReattachedToActivityForConfigChanges(binding: ActivityPluginBinding) {
         activityBinding = binding
+        binding.addRequestPermissionsResultListener(this)
     }
 
     override fun onDetachedFromActivity() {
         session?.stop()
+        activityBinding?.removeRequestPermissionsResultListener(this)
         activityBinding = null
+    }
+
+    /**
+     * Delivers the user's answer to the camera permission dialog.
+     *
+     * A denial is reported as `permission-denied`, and separately as
+     * `permission-denied-permanently` when the system will no longer show the
+     * dialog — the two need different interfaces, because in the second case
+     * asking again does nothing and only Settings will help.
+     */
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray,
+    ): Boolean {
+        if (requestCode != CAMERA_PERMISSION_REQUEST) return false
+        val (call, result) = pendingStart ?: return true
+        pendingStart = null
+
+        val granted = grantResults.isNotEmpty() &&
+            grantResults[0] == PackageManager.PERMISSION_GRANTED
+        if (granted) {
+            startSession(call, result)
+        } else {
+            val activity = activityBinding?.activity
+            val canAskAgain =
+                activity?.shouldShowRequestPermissionRationale(Manifest.permission.CAMERA) == true
+            result.error(
+                if (canAskAgain) "permission-denied" else "permission-denied-permanently",
+                "Byrsa needs the camera to scan a document.",
+                null,
+            )
+        }
+        return true
     }
 
     override fun onListen(arguments: Any?, sink: EventChannel.EventSink?) {
@@ -74,6 +117,27 @@ class ByrsaCapturePlugin :
             "isSupported" -> result.success(
                 context.packageManager.hasSystemFeature(PackageManager.FEATURE_CAMERA_ANY),
             )
+
+            "permissionStatus" -> {
+                val activity = activityBinding?.activity
+                val granted = activity != null &&
+                    activity.checkSelfPermission(Manifest.permission.CAMERA) ==
+                    PackageManager.PERMISSION_GRANTED
+                result.success(
+                    when {
+                        granted -> "granted"
+                        activity == null -> "notAsked"
+                        // Android has no "was it ever asked" flag. If the system
+                        // would no longer show a rationale and it is not
+                        // granted, asking again is a no-op — which is the only
+                        // distinction an interface actually needs.
+                        activity.shouldShowRequestPermissionRationale(
+                            Manifest.permission.CAMERA,
+                        ) -> "notAsked"
+                        else -> "deniedPermanently"
+                    },
+                )
+            }
 
             "start" -> start(call, result)
             "stop" -> {
@@ -118,7 +182,46 @@ class ByrsaCapturePlugin :
         }
     }
 
+    /**
+     * Asks for the camera permission if it is not already granted, then starts.
+     *
+     * Declaring `CAMERA` in the manifest is not enough on Android 6 and later,
+     * and forgetting the runtime request is the kind of bug that never shows up
+     * on a developer's phone — where the permission was granted weeks ago — and
+     * fails for every new user on first launch.
+     */
     private fun start(call: MethodCall, result: MethodChannel.Result) {
+        val activity = activityBinding?.activity
+        if (activity == null) {
+            result.error(
+                "no-activity",
+                "byrsa_capture needs a FlutterActivity to bind the camera lifecycle to.",
+                null,
+            )
+            return
+        }
+        if (activity.checkSelfPermission(Manifest.permission.CAMERA) !=
+            PackageManager.PERMISSION_GRANTED
+        ) {
+            if (pendingStart != null) {
+                result.error(
+                    "permission-pending",
+                    "A camera permission request is already on screen.",
+                    null,
+                )
+                return
+            }
+            pendingStart = call to result
+            activity.requestPermissions(
+                arrayOf(Manifest.permission.CAMERA),
+                CAMERA_PERMISSION_REQUEST,
+            )
+            return
+        }
+        startSession(call, result)
+    }
+
+    private fun startSession(call: MethodCall, result: MethodChannel.Result) {
         val activity = activityBinding?.activity
         if (activity !is LifecycleOwner) {
             result.error(
@@ -152,5 +255,9 @@ class ByrsaCapturePlugin :
             out[index * 2 + 1] = (point["y"] as Number).toFloat()
         }
         return out
+    }
+
+    private companion object {
+        const val CAMERA_PERMISSION_REQUEST = 0x627A
     }
 }

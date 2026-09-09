@@ -3,7 +3,10 @@ include: package:flutter_lints/flutter.yaml
 analyzer:
   errors:
     todo: ignore
+  # Command-line programs in tool/ report to a terminal. `print` is their
+  # interface, not a leftover debug statement.
   exclude:
+    - "tool/**"
     - "**/*.g.dart"
     - "**/*.freezed.dart"
 

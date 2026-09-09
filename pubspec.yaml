@@ -18,6 +18,7 @@ workspace:
   - app
 
 dev_dependencies:
-  # Used by tool/pin_models.dart, which is a workspace-root script.
+  # Used by the scripts in tool/, which are workspace-root programs.
+  byrsa_restore: ^0.1.0
   crypto: ^3.0.5
   flutter_lints: ^6.0.0

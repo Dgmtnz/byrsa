@@ -10,6 +10,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:path/path.dart' as p;
 
 import '../../l10n/app_localizations.dart';
+import '../data/image_io.dart';
 import '../data/providers.dart';
 import '../domain/document.dart';
 
@@ -27,6 +28,49 @@ class DocumentScreen extends ConsumerStatefulWidget {
 class _DocumentScreenState extends ConsumerState<DocumentScreen> {
   String? _status;
   bool _busy = false;
+  bool _restoring = false;
+
+  /// Pages captured but not yet restored are finished off in the background as
+  /// soon as the document is opened.
+  ///
+  /// Capture gives a perspective-corrected page immediately, which is what the
+  /// user should see the instant they tap; flattening the light takes a second
+  /// or two per page and has no business blocking that. So the page appears,
+  /// and then visibly improves.
+  Future<void> _restorePending(ScanDocument document) async {
+    if (_restoring) return;
+    final pending = document.pages.where((page) => !page.restored).toList();
+    if (pending.isEmpty) return;
+
+    final l10n = AppLocalizations.of(context)!;
+    setState(() {
+      _restoring = true;
+      _status = l10n.processing;
+    });
+    try {
+      final library = await ref.read(libraryProvider.future);
+      const io = ImageIo();
+      for (final page in pending) {
+        final outcome = await io.restoreFile(
+          // Always from the perspective-corrected page, never from a previous
+          // restoration: applying the correction twice compounds it.
+          inputPath: page.processedPath ?? page.originalPath,
+          outputPath: '${page.originalPath}.restored.jpg',
+        );
+        library.setPageRestored(page.id, outcome.path);
+        if (mounted) ref.read(libraryRevisionProvider.notifier).state++;
+      }
+    } on Object catch (error) {
+      if (mounted) setState(() => _status = '$error');
+    } finally {
+      if (mounted) {
+        setState(() {
+          _restoring = false;
+          if (_status == l10n.processing) _status = null;
+        });
+      }
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -39,12 +83,15 @@ class _DocumentScreenState extends ConsumerState<DocumentScreen> {
         actions: <Widget>[
           PopupMenuButton<String>(
             onSelected: (value) => switch (value) {
+              'enhance' => _enhanceAll(document.valueOrNull),
               'pdf' => _exportPdf(document.valueOrNull),
               'txt' => _exportText(document.valueOrNull),
               'ocr' => _runOcr(document.valueOrNull),
               _ => null,
             },
             itemBuilder: (context) => <PopupMenuEntry<String>>[
+              PopupMenuItem<String>(
+                  value: 'enhance', child: Text(l10n.enhance)),
               PopupMenuItem<String>(value: 'ocr', child: Text(l10n.runOcr)),
               PopupMenuItem<String>(value: 'pdf', child: Text(l10n.exportPdf)),
               PopupMenuItem<String>(value: 'txt', child: Text(l10n.exportText)),
@@ -57,9 +104,13 @@ class _DocumentScreenState extends ConsumerState<DocumentScreen> {
         error: (error, _) => Center(child: Text('$error')),
         data: (doc) {
           if (doc == null) return const SizedBox.shrink();
+          // Finish any page that was captured but not yet restored.
+          WidgetsBinding.instance.addPostFrameCallback(
+            (_) => _restorePending(doc),
+          );
           return Column(
             children: <Widget>[
-              if (_busy) const LinearProgressIndicator(),
+              if (_busy || _restoring) const LinearProgressIndicator(),
               if (_status != null)
                 Padding(
                     padding: const EdgeInsets.all(12), child: Text(_status!)),
@@ -104,6 +155,19 @@ class _DocumentScreenState extends ConsumerState<DocumentScreen> {
         },
       ),
     );
+  }
+
+  /// Re-runs restoration over every page, from the rectified image.
+  Future<void> _enhanceAll(ScanDocument? document) async {
+    if (document == null) return;
+    final library = await ref.read(libraryProvider.future);
+    for (final page in document.pages) {
+      library.setPageProcessed(
+          page.id, page.processedPath ?? page.originalPath);
+    }
+    ref.read(libraryRevisionProvider.notifier).state++;
+    final refreshed = library.document(document.id);
+    if (refreshed != null) await _restorePending(refreshed);
   }
 
   Future<void> _runOcr(ScanDocument? document) async {

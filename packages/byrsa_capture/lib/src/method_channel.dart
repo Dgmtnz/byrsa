@@ -20,8 +20,20 @@ class MethodChannelByrsaCapture extends ByrsaCapturePlatform {
 
   @override
   Future<int> start(CaptureOptions options) async {
-    final textureId =
-        await _methods.invokeMethod<int>('start', options.toJson());
+    final int? textureId;
+    try {
+      textureId = await _methods.invokeMethod<int>('start', options.toJson());
+    } on PlatformException catch (error) {
+      // Turn the two refusals into one typed exception the interface can act
+      // on. A raw PlatformException reaches the user as a stack trace.
+      if (error.code == 'permission-denied') {
+        throw const CameraPermissionDenied(permanently: false);
+      }
+      if (error.code == 'permission-denied-permanently') {
+        throw const CameraPermissionDenied(permanently: true);
+      }
+      rethrow;
+    }
     if (textureId == null) {
       throw PlatformException(
         code: 'no-texture',
@@ -29,6 +41,15 @@ class MethodChannelByrsaCapture extends ByrsaCapturePlatform {
       );
     }
     return textureId;
+  }
+
+  @override
+  Future<CameraPermission> permissionStatus() async {
+    final name = await _methods.invokeMethod<String>('permissionStatus');
+    return CameraPermission.values.firstWhere(
+      (value) => value.name == name,
+      orElse: () => CameraPermission.notAsked,
+    );
   }
 
   @override

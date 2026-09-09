@@ -62,6 +62,7 @@ class ScanPage {
     required this.position,
     required this.originalPath,
     this.processedPath,
+    this.restored = false,
     this.text,
     this.words = const <PageWord>[],
     this.width,
@@ -80,8 +81,16 @@ class ScanPage {
   /// re-restoring an already processed page compounds the artefacts of both.
   final String originalPath;
 
-  /// The rectified and restored page, when it exists.
+  /// The rectified page, when it exists.
   final String? processedPath;
+
+  /// Whether [processedPath] has been through restoration, not merely warped.
+  ///
+  /// The distinction is what lets the application finish a job it started: a
+  /// page can be perspective-corrected the instant it is captured and have its
+  /// shadows flattened a second later, and something has to remember which
+  /// pages are still waiting.
+  final bool restored;
 
   /// Recognised text, if OCR has run.
   final String? text;

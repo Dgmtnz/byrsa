@@ -79,7 +79,8 @@ can run yourself.
 | Every downloadable model has a real, computed digest | `dart run tool/pin_models.dart --verify` |
 | The documentation makes no unmeasured iOS claim | `tool/check_claims.sh` |
 | The release application is **48 MB** on arm64, before any model download | `flutter build apk --release --split-per-abi` |
-| 122 tests pass with no device, no models and no network | `flutter test` + `dart test` |
+| Restoring a 12 MP page takes **0.6 s**, down from 55.9 s | `dart run tool/bench_restore.dart` |
+| 128 tests pass with no device, no models and no network | `flutter test` + `dart test` |
 | `dart_searchable_pdf` and `byrsa_ocr` are publishable to pub.dev | `dart pub publish --dry-run`, in CI |
 
 What is **not** verified is listed just as plainly in

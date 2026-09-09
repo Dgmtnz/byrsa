@@ -60,6 +60,8 @@ here, not run yet) · `CLOSED` (verified; keep the row with the result).
 | U-10 | UVDoc inference time and peak RAM on mid-range Android (§4.2, spike B) | mid-range Android | `packages/byrsa_restore/example`, release build | OPEN |
 | U-11 | PP-OCR CER on real Spanish photographs (§4.4, spike C) | mid-range Android | `harness` run over the 50-document set | OPEN |
 | U-12 | Application size after ABI splits | any Android | `flutter build apk --split-per-abi --analyze-size` | OPEN |
+| U-30 | The camera permission flow actually works: the prompt appears, a refusal is reported as refused, and a permanent refusal is told apart from a retryable one. Written on both platforms, run on neither | any Android phone, then an iPhone | `packages/byrsa_capture/example`, deny then accept | OPEN |
+| U-31 | How long restoration really takes on a phone. On a desktop it is 755 ms to restore and 904 ms to encode a 6.8 MP page; a mid-range phone should be several times slower and that is a guess, not a measurement | mid-range Android | `tool/bench_restore.dart` logic inside the example app | OPEN |
 | U-22 | DocShadow-SD7K survives quantisation at a usable size **and** quality. It is 120 MB as exported in fp32 — four times UVDoc — so this is not an optimisation, it is the precondition for shipping it at all | mid-range Android | quantise to int8, then `packages/byrsa_restore/example` in release, and the harness for quality | OPEN |
 | U-23 | UVDoc's real curvature ceiling: where dewarping stops helping and starts hurting | mid-range Android + the 50-document set | the harness, with and without the stage | OPEN |
 | U-24 | The Android quad detector's hit rate on real photographs, against its documented ceiling | mid-range Android + the 50-document set | `packages/byrsa_capture/example`, corners annotated by hand | OPEN |
@@ -80,4 +82,5 @@ here, not run yet) · `CLOSED` (verified; keep the row with the result).
 | U-15 | Acceptable hourly rate for an individual applicant in Spain | NLnet office hour, 30 Sep 2026 | OPEN |
 | U-16 | Is the absence of iOS hardware a problem for the reviewers? | NLnet office hour, 30 Sep 2026 | OPEN |
 | U-25 | Will `doclens` accept making the ML Kit dependency optional? (`docs/upstream/doclens-play-services.md`) | doclens maintainers | DRAFTED, not yet filed |
+| U-32 | `mobile_ocr` applies the Kotlin Gradle Plugin, which Flutter warns will stop building in a future release. Today a warning, later a hard break for every dependent | Ente maintainers | FOUND 2026-09-09, to file with the publish request |
 | U-26 | Will Ente publish `mobile_ocr` to pub.dev? No longer blocks us since D-027, and asked as a favour to the ecosystem rather than a condition (`docs/upstream/mobile-ocr-pub-dev.md`) | Ente maintainers | DRAFTED, not yet filed |

@@ -16,7 +16,12 @@ import 'src/platform_interface.dart';
 
 export 'src/capture_result.dart';
 export 'src/controller.dart';
-export 'src/platform_interface.dart' show ByrsaCapturePlatform, CaptureOptions;
+export 'src/platform_interface.dart'
+    show
+        ByrsaCapturePlatform,
+        CameraPermission,
+        CameraPermissionDenied,
+        CaptureOptions;
 export 'src/quad.dart';
 export 'src/stability.dart';
 export 'src/widgets/capture_preview.dart';

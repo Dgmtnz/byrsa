@@ -55,20 +55,45 @@ public class ByrsaCapturePlugin: NSObject, FlutterPlugin, FlutterStreamHandler {
                 .builtInWideAngleCamera, for: .video, position: .back
             ) != nil)
 
+        case "permissionStatus":
+            switch CaptureSession.authorisationStatus() {
+            case .authorized: result("granted")
+            case .notDetermined: result("notAsked")
+            default: result("deniedPermanently")
+            }
+
         case "start":
-            do {
-                let session = self.session ?? CaptureSession(registry: registry)
-                self.session = session
-                let textureId = try session.start(
-                    detectionsPerSecond: arguments["detectionsPerSecond"] as? Int ?? 8,
-                    torch: arguments["torch"] as? Bool ?? false,
-                    sink: { [weak self] payload in self?.eventSink?(payload) }
-                )
-                result(Int(textureId))
-            } catch {
-                result(FlutterError(
-                    code: "start-failed", message: error.localizedDescription, details: nil
-                ))
+            // Ask first. The same contract as Android: `start` is what triggers
+            // the prompt, and a refusal comes back as a code the Dart side can
+            // turn into an explanation rather than a stack trace.
+            let alreadyRefused = CaptureSession.authorisationStatus() == .denied
+                || CaptureSession.authorisationStatus() == .restricted
+            CaptureSession.requestAuthorisation { [weak self] granted in
+                guard let self else { return }
+                guard granted else {
+                    result(FlutterError(
+                        code: alreadyRefused
+                            ? "permission-denied-permanently"
+                            : "permission-denied",
+                        message: "Byrsa needs the camera to scan a document.",
+                        details: nil
+                    ))
+                    return
+                }
+                do {
+                    let session = self.session ?? CaptureSession(registry: self.registry)
+                    self.session = session
+                    let textureId = try session.start(
+                        detectionsPerSecond: arguments["detectionsPerSecond"] as? Int ?? 8,
+                        torch: arguments["torch"] as? Bool ?? false,
+                        sink: { [weak self] payload in self?.eventSink?(payload) }
+                    )
+                    result(Int(textureId))
+                } catch {
+                    result(FlutterError(
+                        code: "start-failed", message: error.localizedDescription, details: nil
+                    ))
+                }
             }
 
         case "stop":

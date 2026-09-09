@@ -45,7 +45,35 @@ final class CaptureSession: NSObject, FlutterTexture,
 
     // MARK: - Lifecycle
 
+    /// Whether the user has already answered the camera prompt, and how.
+    ///
+    /// iOS refuses to configure a capture session without this, and unlike
+    /// Android it does not merely fail — an app that touches the camera with no
+    /// usage description in its Info.plist is terminated.
+    static func authorisationStatus() -> AVAuthorizationStatus {
+        AVCaptureDevice.authorizationStatus(for: .video)
+    }
+
+    /// Asks for camera access, returning what the user chose.
+    static func requestAuthorisation(_ completion: @escaping (Bool) -> Void) {
+        switch authorisationStatus() {
+        case .authorized:
+            completion(true)
+        case .notDetermined:
+            AVCaptureDevice.requestAccess(for: .video) { granted in
+                DispatchQueue.main.async { completion(granted) }
+            }
+        default:
+            // Denied or restricted. Asking again does nothing; only Settings
+            // will help, and the interface has to say so rather than retry.
+            completion(false)
+        }
+    }
+
     func start(detectionsPerSecond: Int, torch: Bool, sink: @escaping DetectionSink) throws -> Int64 {
+        guard Self.authorisationStatus() == .authorized else {
+            throw CaptureError.permissionDenied
+        }
         minimumInterval = 1.0 / Double(min(max(detectionsPerSecond, 1), 30))
         detectionSink = sink
 
@@ -235,12 +263,14 @@ final class CaptureSession: NSObject, FlutterTexture,
         case noCamera
         case captureFailed
         case rectifyFailed
+        case permissionDenied
 
         var errorDescription: String? {
             switch self {
             case .noCamera: return "No usable back camera on this device."
             case .captureFailed: return "The camera returned no image."
             case .rectifyFailed: return "Could not warp the image."
+            case .permissionDenied: return "Byrsa needs the camera to scan a document."
             }
         }
     }

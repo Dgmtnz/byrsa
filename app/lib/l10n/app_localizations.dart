@@ -259,6 +259,48 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Page {position} of {total}'**
   String pageSemanticLabel(int position, int total);
+
+  /// No description provided for @cameraNeeded.
+  ///
+  /// In en, this message translates to:
+  /// **'Byrsa needs the camera'**
+  String get cameraNeeded;
+
+  /// No description provided for @cameraNeededBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Scanning happens entirely on this device. No photograph is uploaded.'**
+  String get cameraNeededBody;
+
+  /// No description provided for @cameraDeniedBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Camera access is turned off for Byrsa. You can turn it back on in the system settings.'**
+  String get cameraDeniedBody;
+
+  /// No description provided for @tryAgain.
+  ///
+  /// In en, this message translates to:
+  /// **'Try again'**
+  String get tryAgain;
+
+  /// No description provided for @processing.
+  ///
+  /// In en, this message translates to:
+  /// **'Enhancing…'**
+  String get processing;
+
+  /// No description provided for @enhance.
+  ///
+  /// In en, this message translates to:
+  /// **'Enhance pages'**
+  String get enhance;
+
+  /// No description provided for @enhanced.
+  ///
+  /// In en, this message translates to:
+  /// **'Enhanced'**
+  String get enhanced;
 }
 
 class _AppLocalizationsDelegate

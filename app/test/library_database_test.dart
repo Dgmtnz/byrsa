@@ -118,6 +118,38 @@ void main() {
     });
   });
 
+  group('restoration state', () {
+    test('a freshly captured page is rectified but not restored', () {
+      // The distinction the background enhancement depends on. Without it the
+      // application either redoes finished work or never finishes it.
+      final id = db.createDocument('Escaneo');
+      final pageId = db.addPage(
+        id,
+        originalPath: 'raw.jpg',
+        processedPath: 'raw.jpg.page.jpg',
+      );
+      final page = db.pagesOf(id).single;
+      expect(page.processedPath, 'raw.jpg.page.jpg');
+      expect(page.restored, isFalse);
+
+      db.setPageRestored(pageId, 'raw.jpg.restored.jpg');
+      expect(db.pagesOf(id).single.restored, isTrue);
+      expect(db.pagesOf(id).single.displayPath, 'raw.jpg.restored.jpg');
+    });
+
+    test('re-warping a page marks it as needing restoration again', () {
+      // Corners corrected after the fact produce a new rectified image, and
+      // the old restored one no longer describes it.
+      final id = db.createDocument('Escaneo');
+      final pageId = db.addPage(id, originalPath: 'raw.jpg');
+      db.setPageRestored(pageId, 'raw.jpg.restored.jpg');
+      expect(db.pagesOf(id).single.restored, isTrue);
+
+      db.setPageProcessed(pageId, 'raw.jpg.page.jpg');
+      expect(db.pagesOf(id).single.restored, isFalse);
+    });
+  });
+
   group('word boxes', () {
     test('round-trip, so an exported PDF is genuinely searchable', () {
       final id = db.createDocument('Factura');

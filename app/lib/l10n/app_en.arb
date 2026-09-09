@@ -16,19 +16,53 @@
   "exportPdf": "Export searchable PDF",
   "exportText": "Export text",
   "pageCount": "{count, plural, =0{No pages} =1{1 page} other{{count} pages}}",
-  "@pageCount": { "placeholders": { "count": { "type": "int" } } },
+  "@pageCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "searchable": "Searchable",
   "notSearchable": "Not searchable yet",
   "runOcr": "Recognise text",
   "ocrEngine": "Recognition engine",
   "downloadModels": "Download recognition models",
   "downloadModelsExplanation": "This is the only time Byrsa uses the network. It downloads {megabytes} MB of recognition models from a fixed address and checks them against a known fingerprint. Your documents are never uploaded.",
-  "@downloadModelsExplanation": { "placeholders": { "megabytes": { "type": "int" } } },
+  "@downloadModelsExplanation": {
+    "placeholders": {
+      "megabytes": {
+        "type": "int"
+      }
+    }
+  },
   "download": "Download",
   "privacyHeading": "Where your documents go",
   "privacyBody": "Nowhere. Everything happens on this device. The only network request Byrsa can make is downloading the recognition models, and only when you ask for it.",
   "exportedTo": "Saved to {path}",
-  "@exportedTo": { "placeholders": { "path": { "type": "String" } } },
+  "@exportedTo": {
+    "placeholders": {
+      "path": {
+        "type": "String"
+      }
+    }
+  },
   "pageSemanticLabel": "Page {position} of {total}",
-  "@pageSemanticLabel": { "placeholders": { "position": { "type": "int" }, "total": { "type": "int" } } }
+  "@pageSemanticLabel": {
+    "placeholders": {
+      "position": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "cameraNeeded": "Byrsa needs the camera",
+  "cameraNeededBody": "Scanning happens entirely on this device. No photograph is uploaded.",
+  "cameraDeniedBody": "Camera access is turned off for Byrsa. You can turn it back on in the system settings.",
+  "tryAgain": "Try again",
+  "processing": "Enhancing…",
+  "enhance": "Enhance pages",
+  "enhanced": "Enhanced"
 }

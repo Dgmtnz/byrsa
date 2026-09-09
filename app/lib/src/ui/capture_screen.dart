@@ -19,14 +19,28 @@ class CaptureScreen extends ConsumerStatefulWidget {
 
 class _CaptureScreenState extends ConsumerState<CaptureScreen> {
   final ByrsaCaptureController _controller = ByrsaCaptureController();
+  CameraPermissionDenied? _denied;
   Object? _error;
+  bool _saving = false;
 
   @override
   void initState() {
     super.initState();
-    _controller.start().catchError((Object error) {
-      if (mounted) setState(() => _error = error);
+    _start();
+  }
+
+  Future<void> _start() async {
+    setState(() {
+      _denied = null;
+      _error = null;
     });
+    try {
+      await _controller.start();
+    } on CameraPermissionDenied catch (denied) {
+      if (mounted) setState(() => _denied = denied);
+    } on Object catch (error) {
+      if (mounted) setState(() => _error = error);
+    }
   }
 
   @override
@@ -38,15 +52,6 @@ class _CaptureScreenState extends ConsumerState<CaptureScreen> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-    if (_error != null) {
-      return Scaffold(
-        appBar: AppBar(title: Text(l10n.scan)),
-        body: Center(
-          child: Padding(
-              padding: const EdgeInsets.all(24), child: Text('$_error')),
-        ),
-      );
-    }
 
     return Scaffold(
       appBar: AppBar(
@@ -55,26 +60,40 @@ class _CaptureScreenState extends ConsumerState<CaptureScreen> {
           ListenableBuilder(
             listenable: _controller,
             builder: (context, _) => TextButton(
-              onPressed: _controller.pages.isEmpty ? null : _save,
+              onPressed: _controller.pages.isEmpty || _saving ? null : _save,
               child: Text(l10n.save),
             ),
           ),
         ],
       ),
-      body: CapturePreview(
-        controller: _controller,
-        hintBuilder: (context, hint) => _hint(l10n, hint),
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _controller.capture,
-        child: const Icon(Icons.camera),
-      ),
+      body: switch ((_denied, _error)) {
+        (final CameraPermissionDenied denied, _) => _PermissionNotice(
+            denied: denied,
+            onRetry: _start,
+          ),
+        (_, final Object error) => Center(
+            child: Padding(
+              padding: const EdgeInsets.all(24),
+              child: Text('$error', textAlign: TextAlign.center),
+            ),
+          ),
+        _ => CapturePreview(
+            controller: _controller,
+            hintBuilder: (context, hint) => _hint(hint),
+          ),
+      },
+      floatingActionButton: _denied != null || _error != null
+          ? null
+          : FloatingActionButton(
+              onPressed: _controller.capture,
+              child: const Icon(Icons.camera),
+            ),
     );
   }
 
   /// The guidance line, translated. The package ships English wording and this
   /// hook so an application does not inherit somebody else's localisation.
-  String _hint(AppLocalizations l10n, CaptureHint hint) => switch (hint) {
+  String _hint(CaptureHint hint) => switch (hint) {
         CaptureHint.noDocument => 'Apunta a un documento',
         CaptureHint.tooFar => 'Acércate',
         CaptureHint.cropped => 'Encuadra la página entera',
@@ -85,20 +104,70 @@ class _CaptureScreenState extends ConsumerState<CaptureScreen> {
       };
 
   Future<void> _save() async {
-    final library = await ref.read(libraryProvider.future);
-    final title =
-        'Escaneo ${DateTime.now().toIso8601String().substring(0, 16)}';
-    final documentId = library.createDocument(title);
-    for (final page in _controller.pages) {
-      library.addPage(
-        documentId,
-        originalPath: page.originalPath,
-        processedPath: page.rectifiedPath,
-        width: page.width,
-        height: page.height,
-      );
+    setState(() => _saving = true);
+    try {
+      final library = await ref.read(libraryProvider.future);
+      final title =
+          'Escaneo ${DateTime.now().toIso8601String().substring(0, 16)}';
+      final documentId = library.createDocument(title);
+      for (final page in _controller.pages) {
+        library.addPage(
+          documentId,
+          originalPath: page.originalPath,
+          processedPath: page.rectifiedPath,
+          width: page.width,
+          height: page.height,
+        );
+      }
+      ref.read(libraryRevisionProvider.notifier).state++;
+      if (mounted) context.go('/document/$documentId');
+    } finally {
+      if (mounted) setState(() => _saving = false);
     }
-    ref.read(libraryRevisionProvider.notifier).state++;
-    if (mounted) context.go('/document/$documentId');
+  }
+}
+
+/// Explains why the camera is needed, and offers the only action that can
+/// actually help.
+///
+/// The two cases are genuinely different: one deserves a retry, the other a
+/// trip to Settings. An interface that offers "try again" after a permanent
+/// refusal just looks broken.
+class _PermissionNotice extends StatelessWidget {
+  const _PermissionNotice({required this.denied, required this.onRetry});
+
+  final CameraPermissionDenied denied;
+  final VoidCallback onRetry;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.all(32),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: <Widget>[
+            const Icon(Icons.no_photography_outlined, size: 56),
+            const SizedBox(height: 16),
+            Text(
+              l10n.cameraNeeded,
+              style: Theme.of(context).textTheme.titleLarge,
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 8),
+            Text(
+              denied.permanently
+                  ? l10n.cameraDeniedBody
+                  : l10n.cameraNeededBody,
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 24),
+            if (!denied.permanently)
+              FilledButton(onPressed: onRetry, child: Text(l10n.tryAgain)),
+          ],
+        ),
+      ),
+    );
   }
 }

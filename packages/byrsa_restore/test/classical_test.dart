@@ -142,6 +142,101 @@ void main() {
     });
   });
 
+  group('analysis resolution', () {
+    // The first version of this pipeline analysed the full-resolution image
+    // and took 56 seconds on a 12 MP photograph, which every unit test missed
+    // because the fixtures are 240x320. These tests exercise the path that
+    // only appears on a large image.
+
+    /// A page big enough that the analysis actually downscales.
+    ImageBuffer largePage(int width, int height) {
+      final data = Uint8List(width * height);
+      for (var y = 0; y < height; y++) {
+        for (var x = 0; x < width; x++) {
+          final onLine = (y % 40) < 14 && y > 60 && y < height - 60;
+          final inColumn = x > 60 && x < width - 60;
+          final shade = 0.5 + 0.5 * (x / width);
+          data[y * width + x] =
+              (((onLine && inColumn) ? 40 : 245) * shade).round().clamp(0, 255);
+        }
+      }
+      return ImageBuffer.gray(width, height, data);
+    }
+
+    double spread(ImageBuffer image, int width, int height) {
+      final values = <int>[];
+      for (var y = 0; y < height; y++) {
+        if ((y % 40) < 18) continue;
+        for (var x = 80; x < width - 80; x += 3) {
+          values.add(image.data[y * width + x]);
+        }
+      }
+      final mean = values.reduce((a, b) => a + b) / values.length;
+      return math.sqrt(
+        values.map((v) => math.pow(v - mean, 2)).reduce((a, b) => a + b) /
+            values.length,
+      );
+    }
+
+    test('flattens a shadow on an image far larger than the analysis grid', () {
+      const width = 1600;
+      const height = 1200;
+      final before = largePage(width, height);
+      final after = const ClassicalRestore()(before);
+      expect(
+        spread(after, width, height),
+        lessThan(spread(before, width, height) / 3),
+      );
+    });
+
+    test('the answer barely moves when the analysis grid changes size', () {
+      // If it did, the default would be a quality setting rather than a
+      // performance one, and it is sold as the latter.
+      const width = 1600;
+      const height = 1200;
+      final image = largePage(width, height);
+
+      final coarse = ClassicalRestore(analysisWidth: 256)(image);
+      final fine = ClassicalRestore(analysisWidth: 1024)(image);
+
+      var worst = 0;
+      var total = 0;
+      for (var i = 0; i < coarse.data.length; i++) {
+        final difference = (coarse.data[i] - fine.data[i]).abs();
+        total += difference;
+        if (difference > worst) worst = difference;
+      }
+      expect(total / coarse.data.length, lessThan(6),
+          reason: 'mean difference over 256 grey levels');
+      expect(worst, lessThan(80), reason: 'no pixel may be wildly different');
+    });
+
+    test('costs roughly the same per pixel whatever the analysis radius', () {
+      // The old failure in one assertion: cost used to grow with the blur
+      // radius, and the radius grew with the image, so a 15x larger photograph
+      // cost 52x more. Timing is coarse here on purpose — this catches a
+      // return to quadratic behaviour, not a 20% regression.
+      final small = largePage(800, 600);
+      final large = largePage(1600, 1200);
+      const restore = ClassicalRestore();
+      restore(small);
+
+      final smallWatch = Stopwatch()..start();
+      restore(small);
+      smallWatch.stop();
+
+      final largeWatch = Stopwatch()..start();
+      restore(large);
+      largeWatch.stop();
+
+      // Four times the pixels must not cost more than twelve times the time.
+      expect(
+        largeWatch.elapsedMicroseconds,
+        lessThan(math.max(smallWatch.elapsedMicroseconds, 1000) * 12),
+      );
+    });
+  });
+
   group('ImageBuffer', () {
     test('rejects a byte count that does not match its geometry', () {
       expect(

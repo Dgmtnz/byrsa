@@ -58,6 +58,7 @@ class LibraryDatabase {
           position       INTEGER NOT NULL,
           original_path  TEXT NOT NULL,
           processed_path TEXT,
+          restored       INTEGER NOT NULL DEFAULT 0,
           text           TEXT,
           words          TEXT,
           width          INTEGER,
@@ -242,9 +243,21 @@ class LibraryDatabase {
     ]);
   }
 
+  /// Records a page that has been through restoration.
+  ///
+  /// Separate from a plain processed path so the application can tell a
+  /// perspective-corrected page from one that has also had its light
+  /// flattened, and can finish the job for the pages still waiting.
+  void setPageRestored(int pageId, String processedPath) {
+    _db.execute(
+      'UPDATE pages SET processed_path = ?, restored = 1 WHERE id = ?',
+      <Object?>[processedPath, pageId],
+    );
+  }
+
   void setPageProcessed(int pageId, String processedPath) {
     _db.execute(
-      'UPDATE pages SET processed_path = ? WHERE id = ?',
+      'UPDATE pages SET processed_path = ?, restored = 0 WHERE id = ?',
       <Object?>[processedPath, pageId],
     );
   }
@@ -255,7 +268,7 @@ class LibraryDatabase {
   List<ScanPage> pagesOf(int documentId) => _db
       .select(
         'SELECT id, document_id, position, original_path, processed_path, '
-        'text, words, width, height '
+        'restored, text, words, width, height '
         'FROM pages WHERE document_id = ? ORDER BY position',
         <Object?>[documentId],
       )
@@ -265,6 +278,7 @@ class LibraryDatabase {
             position: row['position'] as int,
             originalPath: row['original_path'] as String,
             processedPath: row['processed_path'] as String?,
+            restored: (row['restored'] as int? ?? 0) != 0,
             text: row['text'] as String?,
             words: _decodeWords(row['words'] as String?),
             width: row['width'] as int?,

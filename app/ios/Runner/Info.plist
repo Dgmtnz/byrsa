@@ -66,5 +66,9 @@
 		<string>UIInterfaceOrientationLandscapeLeft</string>
 		<string>UIInterfaceOrientationLandscapeRight</string>
 	</array>
+	<key>NSCameraUsageDescription</key>
+	<string>Byrsa uses the camera to scan documents. Everything is processed on this device and no photograph is ever uploaded.</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>Byrsa can import an existing photograph to scan. It stays on this device.</string>
 </dict>
 </plist>

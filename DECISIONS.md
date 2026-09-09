@@ -526,3 +526,98 @@ complementarios, no uno mejor que otro.
 
 Si la tabla se confirma, la conclusión probable no es "elige uno" sino contribuir la
 polaridad y el umbral local al mismo sitio. Eso también es upstream.
+
+---
+
+## D-029 · El análisis se hace en pequeño; solo la corrección toca la imagen entera
+**Fecha:** 2026-09-09 · **Estado:** ratificar
+**Corrige un defecto medido, no una preferencia**
+
+La primera versión de `ClassicalRestore` analizaba la imagen a resolución completa y
+tardaba **55,9 s en una foto de 12 MP**, que es exactamente lo que produce la cámara de
+un móvil. Los 19 tests pasaban: usan fixtures de 240×320, donde el coste que importaba
+era invisible.
+
+La causa no era un bucle lento sino una pregunta mal planteada. El campo de color del
+papel y los mapas de ecualización son **de baja frecuencia por construcción** —el fondo
+se suaviza a propósito con un radio de varios por ciento de la imagen, y los mapas
+describen una rejilla gruesa de teselas—. Ninguno de los dos contiene detalle que
+merezca calcularse a 12 MP.
+
+Ahora todo se mide sobre una imagen reducida a `analysisWidth` (512 por defecto) y solo
+la corrección se aplica a tamaño completo, en **una sola pasada fusionada** con
+aritmética entera y sin una división por píxel.
+
+| | Antes | Ahora |
+|---|---|---|
+| 12 MP gris | 55.921 ms | **608 ms** |
+| 3 MP gris | 2.336 ms | 228 ms |
+| 12 MP color | — | 907 ms |
+
+Y el coste pasa a ser lineal en píxeles: antes crecía con el radio del desenfoque, y el
+radio crecía con la imagen, así que 15× píxeles costaban 52× tiempo.
+
+**Tests que impiden la recaída:** uno con una imagen 1600×1200 —la primera que ejerce el
+camino de reducción, porque los fixtures antiguos no lo tocan—, otro que comprueba que
+cambiar `analysisWidth` mueve el resultado menos de 6 niveles de gris de media (si lo
+moviera, el ajuste sería de calidad y se vende como de rendimiento), y otro que asserta
+que 4× píxeles no cuesta más de 12× tiempo, que es la forma barata de detectar una vuelta
+al comportamiento cuadrático.
+
+**Lección, más útil que el arreglo:** un test de comportamiento dice que la salida es
+correcta; no dice que llegue. `tool/bench_restore.dart` existe por eso.
+
+---
+
+## D-030 · El permiso de cámara se pide en `start()`, y las dos negativas se distinguen
+**Fecha:** 2026-09-09 · **Estado:** ratificar
+**Arregla un fallo que rompía la app en el primer arranque de cualquier dispositivo**
+
+No se pedía el permiso de cámara en ningún sitio. Estaba declarado en el manifiesto, que
+no basta desde Android 6; y en iOS faltaba además `NSCameraUsageDescription`, sin la cual
+el sistema **mata la app** al tocar la cámara. Es el fallo que nunca aparece en el móvil
+del que desarrolla —donde el permiso se concedió hace semanas— y le pasa a todo el mundo
+la primera vez.
+
+`start()` es quien lo pide, en las dos plataformas, porque es lo que quiere cualquier
+consumidor. Y devuelve **dos códigos distintos**: `permission-denied` y
+`permission-denied-permanently`. Dart los convierte en `CameraPermissionDenied` con un
+flag, y la app enseña una explicación con "Reintentar" en el primer caso y un texto que
+manda a los ajustes en el segundo. Una interfaz que ofrece "reintentar" después de una
+negativa permanente simplemente parece rota.
+
+También hay `permissionStatus()` sin efectos secundarios, para poder explicarse **antes**
+de que salga el diálogo del sistema — que es la diferencia entre un permiso que la gente
+concede y uno que rechaza.
+
+---
+
+## D-031 · La restauración se aplica sola, en segundo plano, después de enseñar la página
+**Fecha:** 2026-09-09 · **Estado:** ratificar
+
+`DocumentPipeline` existía, estaba testeado y **no lo llamaba nadie**: la captura
+guardaba la página en la base de datos sin restaurar nada.
+
+Ahora la captura da la página rectificada al instante —que es lo que hay que ver al
+tocar el botón— y al abrir el documento se restauran en segundo plano las páginas que
+falten. La página aparece y luego mejora a la vista. La columna `restored` de la BD es lo
+que permite terminar un trabajo empezado sin repetir el ya hecho, y volver a marcarlo
+pendiente si se corrigen las esquinas.
+
+**Decodificar con `dart:ui`, no con un códec Dart.** Medido: decodificar un JPEG de 12 MP
+en Dart puro cuesta 1.154 ms; el decodificador de la plataforma es una fracción de eso y
+además reescala de camino, que es como se aplica `maxDimension` sin materializar nunca la
+imagen completa.
+
+**Restaurar y codificar en un isolate.** Juntos son ~1,7 s en un portátil para una página
+de 6,8 MP y varios segundos en un móvil. Eso es una barra de progreso, no una interfaz
+congelada — una diferencia invisible en un benchmark y muy visible en la mano.
+
+**Tope de 3000 px en el lado largo** (~255 ppp en A4). Los sensores de móvil son ya de
+48 MP de forma rutinaria y nada en un escaneo se beneficia de eso.
+
+**Coste que queda y su salida:** el codificador JPEG de Dart puro es ahora el término
+mayor (904 ms de los 1.659 ms). Codificar nativamente lo bajaría a ~100 ms. No se hace
+todavía porque metería un códec en un paquete que no le corresponde, o glue nativo sin
+probar en la app; queda anotado con su número en `docs/measurements.md` en vez de
+arreglado a medias.

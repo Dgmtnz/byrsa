@@ -34,6 +34,39 @@ class CaptureOptions {
       };
 }
 
+/// Whether the application may use the camera.
+enum CameraPermission {
+  /// Granted. [ByrsaCapturePlatform.start] will open the camera.
+  granted,
+
+  /// Not answered yet. Starting will show the system prompt.
+  notAsked,
+
+  /// Refused, and the system will not ask again. Only Settings will change
+  /// this, and an interface that keeps retrying here just looks broken.
+  deniedPermanently,
+}
+
+/// The camera was refused.
+///
+/// Thrown by [ByrsaCapturePlatform.start], because declaring `CAMERA` in a
+/// manifest has not been enough since Android 6 and iOS terminates an
+/// application that touches the camera without asking. It is a typed exception
+/// rather than a raw platform error so the interface can say something useful,
+/// and can tell the two cases apart: one deserves a rationale and a retry, the
+/// other a link to Settings.
+class CameraPermissionDenied implements Exception {
+  const CameraPermissionDenied({required this.permanently});
+
+  final bool permanently;
+
+  @override
+  String toString() => permanently
+      ? 'Camera access is turned off for this application. Only the system '
+          'settings can turn it back on.'
+      : 'Camera access was refused.';
+}
+
 /// The contract every platform implementation of `byrsa_capture` satisfies.
 ///
 /// It is identical on Android and iOS on purpose (plan §0.2): the iOS side is
@@ -64,7 +97,17 @@ abstract class ByrsaCapturePlatform extends PlatformInterface {
   }
 
   /// Starts the camera and returns the Flutter texture id to display.
+  ///
+  /// Asks for the camera permission if it has not been granted, and throws
+  /// [CameraPermissionDenied] if the user says no.
   Future<int> start(CaptureOptions options);
+
+  /// Whether the camera may be used, without asking for it.
+  ///
+  /// For an interface that wants to explain itself before the system prompt
+  /// appears — which is the difference between a permission people grant and
+  /// one they refuse.
+  Future<CameraPermission> permissionStatus();
 
   Future<void> stop();
 

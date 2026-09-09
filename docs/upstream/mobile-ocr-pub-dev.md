@@ -56,6 +56,22 @@ Concretely, publishing needs four small things:
 **I would be glad to send a pull request with all four.** Say the word and it
 will be open within the day.
 
+### A separate heads-up, worth its own issue
+
+Building an application that depends on `mobile_ocr` with Flutter 3.47 prints:
+
+```
+Your app uses the following plugins that apply Kotlin Gradle Plugin (KGP): mobile_ocr
+Future versions of Flutter will fail to build if your app uses plugins that
+apply KGP.
+```
+
+Today it is a warning. When it becomes an error, every application depending on
+`mobile_ocr` stops building at once, and the fix is in the plugin rather than in
+any of them. Flutter's migration guide for plugin authors is
+[here](https://docs.flutter.dev/release/breaking-changes/migrate-to-built-in-kotlin/for-plugin-authors).
+Happy to send that patch too.
+
 ### What I am building
 
 An Apache-2.0 set of Flutter packages for document capture, rectification and
