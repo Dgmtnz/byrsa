@@ -501,6 +501,28 @@ movimiento correcto es depender de él con el PR ya mergeado; si no, nos quedamo
 nuestro y el PR sigue siendo una contribución que vale por sí sola. En ningún escenario
 se forkea.
 
-**Pendiente antes de tocar nada:** verificar el fichero `LICENSE` de `doclens` — el plan
-dice MIT y no lo he comprobado — y si el lado iOS usa Vision/VisionKit en vez de ML Kit,
-que es lo probable pero tampoco está verificado (U-27, U-28).
+**Comprobado el 2026-09-09 (cierra U-27 y U-28):** `doclens` es MIT, © 2026 Govind
+Maheshwari. Y su lado iOS **no usa ML Kit en absoluto** — importa Vision y VisionKit,
+las de Apple. El problema es exclusivamente de Android, lo que hace la petición upstream
+más fácil de defender: iOS ya hace lo correcto.
+
+**Qué hace realmente su detector, ahora que está leído (373 líneas):** umbral sobre la
+luma media con *polaridad* —papel claro sobre fondo oscuro, o DNI oscuro sobre mesa
+clara, o automático—, mayor componente conexa, y recorrido del contorno aproximado a
+cuatro esquinas con Douglas-Peucker sobre la envolvente convexa. Su propia cabecera dice
+*"v0.1 deliberately avoids OpenCV and ML Kit"*, lo cual convierte la dependencia
+incondicional del Gradle en un descuido y no en una decisión de diseño — y es
+exactamente el argumento del PR.
+
+**Hipótesis falsable para M1/M2, que es lo que hace útil la medición:** son enfoques
+complementarios, no uno mejor que otro.
+
+| Condición | Quién debería ganar | Por qué |
+|---|---|---|
+| Documento que no llena el encuadre | `doclens` | la componente conexa lo encuentra en cualquier parte; el nuestro escanea desde los bordes hacia dentro |
+| Documento oscuro sobre fondo claro | `doclens` | tiene polaridad; el nuestro asume papel claro |
+| Sombra fuerte cruzando la página | el nuestro | un umbral global parte la componente en dos; el ajuste por lado es local |
+| Mesa desordenada con papeles claros alrededor | el nuestro | la componente conexa se los traga |
+
+Si la tabla se confirma, la conclusión probable no es "elige uno" sino contribuir la
+polaridad y el umbral local al mismo sitio. Eso también es upstream.

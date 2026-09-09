@@ -43,14 +43,14 @@ here, not run yet) · `CLOSED` (verified; keep the row with the result).
 | U-19 | The Android build contains no Google Play Services | `tool/check_no_play_services.sh` on the capture example's debug APK, 2026-09-08 | **0** `com.google.android.gms` / `com.google.mlkit` classes; 1717 `androidx.camera` references. Runs in CI on every push. |
 | U-20 | Searchable PDFs are readable by Poppler, including accented Spanish | `dart test packages/dart_searchable_pdf`, 2026-09-08 | Words, accents and line grouping all round-trip through `pdftotext -layout`. |
 | U-21 | Every model in `models.json` has a real, computed SHA-256 | `dart run tool/pin_models.dart --verify`, 2026-09-08 | 5 of 5 pinned. |
+| U-27 | `doclens` is MIT | read its `LICENSE`, 2026-09-09 | MIT, © 2026 Govind Maheshwari. |
+| U-28 | `doclens`'s iOS side does not use ML Kit | grepped `ios/doclens/Sources`, 2026-09-09 | **No ML Kit at all.** It imports Vision and VisionKit — Apple's own. The Play Services problem is Android-only. |
 
-## Needs someone to read the source, and nothing else
+## Needs a device and the fifty documents
 
 | # | Claim | How to close it | Status |
 |---|---|---|---|
-| U-27 | `doclens` is MIT. The plan says so; nobody in this project has opened its `LICENSE` file | read `LICENSE` in the published archive | OPEN |
-| U-28 | `doclens`'s iOS side uses Apple Vision/VisionKit and not ML Kit — likely, but only the Kotlin was grepped | grep `ios/doclens/Sources` for `MLKit` | OPEN |
-| U-29 | Whether `doclens`'s quad detector beats ours. Only its Gradle file was read, never `QuadDetector.kt` | read it, then measure both over the 50 documents (D-028) | OPEN |
+| U-29 | Whether `doclens`'s quad detector beats ours, and in which conditions. Both algorithms are now read and understood; which one is better on real photographs is not | run both over the 50 documents with corners annotated by hand (D-028) | OPEN |
 
 ## Needs a physical Android phone
 

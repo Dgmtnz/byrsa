@@ -22,9 +22,16 @@ ML Kit dependency without removing a feature**.
 | 1 | Replace the text-orientation detector with a classical implementation | none |
 | 2 | Move the two remaining ML Kit paths to `compileOnly`, opt-in at the app level | none by default; the native-UI scanner needs one line in the consumer's Gradle |
 
-Before filing: check `doclens`'s `LICENSE` file, and confirm the iOS side uses
-Vision/VisionKit rather than ML Kit — likely, but only the Kotlin was read.
-(Repository rows U-27 and U-28.)
+Two things worth saying at the top of the issue, because both make the case
+easier to accept:
+
+- **The iOS side is already clean.** It imports Vision and VisionKit, Apple's
+  own frameworks, and contains no ML Kit at all. This is an Android-only
+  problem, and the fix brings Android in line with what the plugin already does
+  on the other platform.
+- **`QuadDetector.kt` says, in its own header comment, that v0.1 "deliberately
+  avoids OpenCV and ML Kit".** The core of the plugin already made this
+  decision. The Gradle file quietly undoes it for every consumer.
 
 ---
 
@@ -144,6 +151,16 @@ I am building a set of Apache-2.0 Flutter packages for document capture,
 rectification and OCR, aimed at F-Droid and other independent distributions.
 `doclens` was the intended foundation for the capture half, and the plan for the
 project says in as many words: do not reimplement this, build on `doclens`.
+
+Our detector took a different route — fitting a line to the strongest brightness
+step scanning inward from each edge of the frame, rather than thresholding and
+taking the largest connected component — and I suspect the two fail in
+complementary conditions: yours should be better when the page does not fill the
+frame or is darker than the desk, ours when a hard shadow crosses the page and a
+global threshold splits the component. I intend to measure that properly over a
+public set of fifty real photographs, and I will send you the numbers whichever
+way they come out. If the complementarity is real, the useful outcome is not
+"pick one" but contributing local thresholding to yours.
 
 Rather than fork, I would prefer to send these two patches and depend on the
 plugin. In the meantime the project carries its own CameraX detector, and if
