@@ -32,10 +32,14 @@ nothing below is a runtime measurement on a phone.
 
 ### Release size — the answer to a risk the plan rated High
 
-Updated 2026-09-09, after adding the page-flattening path: **48.8 MB on
-arm64-v8a**, still with no model downloaded. Adding a second ONNX Runtime
-binding cost 0.8 MB, because it shares the runtime the OCR engine already
-brought.
+Updated 2026-09-09: **48.8 MB on arm64-v8a**, still with no model downloaded.
+
+The 48.0 MB figure below is from the day before and is *not* a clean baseline
+for the ONNX work — `image`, `image_picker` and `share_plus` also arrived in
+between, so the 0.8 MB difference cannot be attributed to any one of them. What
+can be said from the APK's contents rather than by subtraction: the second ONNX
+Runtime binding contributes **no native library of its own**, because its copy
+is excluded and it shares the one the OCR engine already brought.
 
 
 `flutter build apk --release --split-per-abi`, on the full application: capture,

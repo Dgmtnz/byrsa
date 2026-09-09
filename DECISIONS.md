@@ -782,6 +782,12 @@ propio subproyecto y solo sobrevive la del AAR. Verificado descomprimiendo el AP
 release: la que queda es la de 27.985.944 bytes, junto al shim que se compiló contra
 ella.
 
+El release vuelve a **48,8 MB en arm64**. No se puede atribuir la diferencia con los
+48,0 MB del día anterior al binding de ONNX, porque entre medias entraron también
+`image`, `image_picker` y `share_plus`. Lo que sí se puede decir mirando el contenido del
+APK en vez de restando: el segundo binding **no aporta ninguna biblioteca nativa propia**,
+porque su copia se excluye y comparte la que ya traía el motor de OCR.
+
 Cuál de los dos emparejamientos es el seguro es un juicio, y conviene decirlo: la API de C
 de ONNX Runtime está versionada y es retrocompatible, así que un binding de FFI generado
 contra una cabecera vieja llamando a una biblioteca nueva es la dirección que sobrevive.
