@@ -16,6 +16,8 @@ import 'corner_editor_screen.dart';
 
 import '../../l10n/app_localizations.dart';
 import '../data/image_io.dart';
+import '../data/library_database.dart';
+import '../data/preferences.dart';
 import '../data/providers.dart';
 import '../domain/document.dart';
 
@@ -34,7 +36,6 @@ class _DocumentScreenState extends ConsumerState<DocumentScreen> {
   String? _status;
   bool _busy = false;
   bool _restoring = false;
-  PageFilter _filter = PageFilter.colour;
 
   /// Pages captured but not yet restored are finished off in the background as
   /// soon as the document is opened.
@@ -55,7 +56,7 @@ class _DocumentScreenState extends ConsumerState<DocumentScreen> {
     });
     try {
       final library = await ref.read(libraryProvider.future);
-      final io = ImageIo(filter: _filter);
+      final io = ImageIo(filter: ref.read(preferencesProvider).filter);
       for (final page in pending) {
         final outcome = await io.restoreFile(
           // Always from the perspective-corrected page, never from a previous
@@ -63,8 +64,16 @@ class _DocumentScreenState extends ConsumerState<DocumentScreen> {
           inputPath: page.processedPath ?? page.originalPath,
           outputPath: '${page.originalPath}.restored.jpg',
         );
+        await _forgetCached(outcome.path);
         library.setPageRestored(page.id, outcome.path);
         if (mounted) ref.read(libraryRevisionProvider.notifier).state++;
+
+        // Recognition follows enhancement when the user has asked for it, and
+        // only then: on Android the first run downloads models, and reaching
+        // for the network unasked is what this project exists not to do.
+        if (ref.read(preferencesProvider).recogniseAutomatically) {
+          await _recognisePage(library, page.id, outcome.path);
+        }
       }
     } on Object catch (error) {
       if (mounted) setState(() => _status = '$error');
@@ -151,7 +160,7 @@ class _DocumentScreenState extends ConsumerState<DocumentScreen> {
 
   /// Switches the look of every page, which means restoring them again.
   Future<void> _setFilter(PageFilter filter, ScanDocument? document) async {
-    setState(() => _filter = filter);
+    ref.read(preferencesProvider.notifier).setFilter(filter);
     if (document == null) return;
     final library = await ref.read(libraryProvider.future);
     for (final page in document.pages) {
@@ -194,6 +203,7 @@ class _DocumentScreenState extends ConsumerState<DocumentScreen> {
         quad: quad,
         targetAspectRatio: quad.aspectRatioOrFallback(),
       );
+      await _forgetCached(rectified);
       final library = await ref.read(libraryProvider.future);
       library.setPageProcessed(
         page.id,
@@ -225,6 +235,47 @@ class _DocumentScreenState extends ConsumerState<DocumentScreen> {
     ref.read(libraryRevisionProvider.notifier).state++;
   }
 
+  /// Forgets a cached decode of [path].
+  ///
+  /// Flutter caches decoded images by path and size, so rewriting a file in
+  /// place leaves the old picture on screen. Restoring with a different filter,
+  /// or re-warping after correcting corners, does exactly that — and the
+  /// symptom is an action that appears to do nothing at all.
+  static Future<void> _forgetCached(String path) async {
+    final image = FileImage(File(path));
+    await image.evict();
+  }
+
+  /// Recognises one page and stores the text with its word boxes.
+  ///
+  /// Returns quietly when no engine is ready: an automatic step must never
+  /// interrupt with an error the user did not ask to see.
+  Future<void> _recognisePage(
+    LibraryDatabase library,
+    int pageId,
+    String imagePath,
+  ) async {
+    try {
+      const ocr = ByrsaOcr();
+      if (!(await ocr.readiness()).ready) return;
+      final result = await ocr.recognise(imagePath: imagePath);
+      library.setPageOcr(pageId, result.text, <PageWord>[
+        for (final word in result.words)
+          PageWord(
+            text: word.text,
+            left: word.box.left,
+            top: word.box.top,
+            right: word.box.right,
+            bottom: word.box.bottom,
+          ),
+      ]);
+      if (mounted) ref.read(libraryRevisionProvider.notifier).state++;
+    } on Object {
+      // Recognition is an enhancement, not the point. A failure costs the
+      // text, never the scan.
+    }
+  }
+
   Future<void> _runOcr(ScanDocument? document) async {
     if (document == null) return;
     final library = await ref.read(libraryProvider.future);
@@ -237,17 +288,7 @@ class _DocumentScreenState extends ConsumerState<DocumentScreen> {
         return;
       }
       for (final page in document.pages) {
-        final result = await ocr.recognise(imagePath: page.displayPath);
-        library.setPageOcr(page.id, result.text, <PageWord>[
-          for (final word in result.words)
-            PageWord(
-              text: word.text,
-              left: word.box.left,
-              top: word.box.top,
-              right: word.box.right,
-              bottom: word.box.bottom,
-            ),
-        ]);
+        await _recognisePage(library, page.id, page.displayPath);
       }
       ref.read(libraryRevisionProvider.notifier).state++;
     } on Object catch (error) {

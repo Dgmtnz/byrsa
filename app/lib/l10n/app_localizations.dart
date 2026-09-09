@@ -373,6 +373,36 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Delete this document? The scans go with it.'**
   String get deleteDocumentConfirm;
+
+  /// No description provided for @autoCapture.
+  ///
+  /// In en, this message translates to:
+  /// **'Capture automatically'**
+  String get autoCapture;
+
+  /// No description provided for @autoCaptureBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Take the picture when the page is steady and in focus.'**
+  String get autoCaptureBody;
+
+  /// No description provided for @autoOcr.
+  ///
+  /// In en, this message translates to:
+  /// **'Recognise text automatically'**
+  String get autoOcr;
+
+  /// No description provided for @autoOcrBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Run recognition on each page as soon as it is enhanced.'**
+  String get autoOcrBody;
+
+  /// No description provided for @importImage.
+  ///
+  /// In en, this message translates to:
+  /// **'Import a photograph'**
+  String get importImage;
 }
 
 class _AppLocalizationsDelegate

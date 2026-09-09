@@ -11,6 +11,7 @@ import 'package:sqlite3/sqlite3.dart';
 
 import '../domain/document.dart';
 import 'library_database.dart';
+import 'scan_storage.dart';
 
 /// Where scans and the database live. Overridden in tests with a temp folder.
 final storageRootProvider = FutureProvider<Directory>((ref) async {
@@ -18,6 +19,10 @@ final storageRootProvider = FutureProvider<Directory>((ref) async {
   final scans = Directory(p.join(directory.path, 'scans'));
   if (!scans.existsSync()) scans.createSync(recursive: true);
   return directory;
+});
+
+final scanStorageProvider = FutureProvider<ScanStorage>((ref) async {
+  return ScanStorage(await ref.watch(storageRootProvider.future));
 });
 
 final libraryProvider = FutureProvider<LibraryDatabase>((ref) async {

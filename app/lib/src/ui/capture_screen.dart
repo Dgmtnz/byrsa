@@ -7,6 +7,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../l10n/app_localizations.dart';
+import '../data/preferences.dart';
 import '../data/providers.dart';
 
 /// Capture: preview, live outline, batch of pages, save as a document.
@@ -18,7 +19,9 @@ class CaptureScreen extends ConsumerStatefulWidget {
 }
 
 class _CaptureScreenState extends ConsumerState<CaptureScreen> {
-  final ByrsaCaptureController _controller = ByrsaCaptureController();
+  late final ByrsaCaptureController _controller = ByrsaCaptureController(
+    autoCapture: ref.read(preferencesProvider).autoCapture,
+  );
   CameraPermissionDenied? _denied;
   Object? _error;
   bool _saving = false;

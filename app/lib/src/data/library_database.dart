@@ -66,6 +66,15 @@ class LibraryDatabase {
           height         INTEGER
         );
       ''');
+      // Preferences live here rather than in a separate store: the database is
+      // already open, already travels with the documents, and a key-value table
+      // is less machinery than another dependency.
+      _db.execute('''
+        CREATE TABLE settings (
+          key   TEXT PRIMARY KEY,
+          value TEXT NOT NULL
+        );
+      ''');
       _db.execute(
           'CREATE INDEX pages_document ON pages(document_id, position)');
       _db.execute('CREATE INDEX documents_folder ON documents(folder_id)');
@@ -97,6 +106,24 @@ class LibraryDatabase {
       }
     }
     _db.execute('PRAGMA user_version = $schemaVersion');
+  }
+
+  // ---- Settings ----
+
+  String? setting(String key) {
+    final rows = _db.select(
+      'SELECT value FROM settings WHERE key = ?',
+      <Object?>[key],
+    );
+    return rows.isEmpty ? null : rows.first['value'] as String;
+  }
+
+  void setSetting(String key, String value) {
+    _db.execute(
+      'INSERT INTO settings(key, value) VALUES (?, ?) '
+      'ON CONFLICT(key) DO UPDATE SET value = excluded.value',
+      <Object?>[key, value],
+    );
   }
 
   // ---- Folders ----

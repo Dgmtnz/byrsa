@@ -669,3 +669,44 @@ ninguna de las dos plataformas. Ahora se ofrece al share sheet del sistema
 
 Es la única dependencia nueva de la app aparte de `image`, y hace la diferencia entre una
 función que existe y una que sirve.
+
+---
+
+## D-035 · Los escaneos se copian fuera de la caché al guardarlos
+**Fecha:** 2026-09-09 · **Estado:** ratificar
+**Arregla una pérdida de datos silenciosa**
+
+`byrsa_capture` escribe sus resultados en el directorio de **caché** de la plataforma
+—`context.cacheDir` en Android, `NSTemporaryDirectory()` en iOS—. Eso está bien: una
+captura que el usuario descarta no debería sobrevivir.
+
+Lo que estaba mal era que la app guardaba **esas mismas rutas** en la base de datos. El
+sistema operativo puede vaciar esos directorios cuando le falte espacio, así que los
+documentos del usuario desaparecían solos, semanas después, sin ningún error en ningún
+sitio. El mismo problema con `image_picker`, que también devuelve una copia en caché.
+
+La regla queda escrita en `ScanStorage`: **el plugin produce ficheros temporales y todo lo
+que la app decide conservar se copia primero.** Y al borrar un documento se borran sus
+imágenes, porque si no el único síntoma es un móvil que se va llenando de documentos que
+el usuario ya borró.
+
+Seis tests, uno de los cuales borra el directorio de caché entero después de guardar y
+comprueba que el fichero sigue ahí. Es el fallo entero en una aserción.
+
+---
+
+## D-036 · Las preferencias viven en la base de datos que ya está abierta
+**Fecha:** 2026-09-09 · **Estado:** ratificar
+
+Filtro, captura automática y reconocimiento automático se guardan en una tabla
+`settings` de clave-valor en la base de datos de la biblioteca, no en
+`shared_preferences`.
+
+**Por qué:** la base de datos ya está abierta, ya viaja con los documentos en una copia de
+seguridad, y una tabla de dos columnas es menos maquinaria que otra dependencia. Un filtro
+que vuelve a "Color" cada vez que sales de la pantalla no es una preferencia, es una
+molestia.
+
+**El reconocimiento automático viene desactivado a propósito.** En Android la primera
+ejecución descarga modelos, y un escáner que va a la red sin que se lo pidan es justo lo
+que este proyecto existe para no ser.

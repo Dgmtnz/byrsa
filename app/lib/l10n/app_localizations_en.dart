@@ -164,4 +164,21 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get deleteDocumentConfirm =>
       'Delete this document? The scans go with it.';
+
+  @override
+  String get autoCapture => 'Capture automatically';
+
+  @override
+  String get autoCaptureBody =>
+      'Take the picture when the page is steady and in focus.';
+
+  @override
+  String get autoOcr => 'Recognise text automatically';
+
+  @override
+  String get autoOcrBody =>
+      'Run recognition on each page as soon as it is enhanced.';
+
+  @override
+  String get importImage => 'Import a photograph';
 }

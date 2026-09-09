@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../l10n/app_localizations.dart';
+import '../data/preferences.dart';
 import '../data/providers.dart';
 
 /// Settings, and the place where the application states its one network
@@ -46,6 +47,23 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
               ),
             ),
           ),
+          SwitchListTile(
+            title: Text(l10n.autoCapture),
+            subtitle: Text(l10n.autoCaptureBody),
+            value: ref.watch(preferencesProvider).autoCapture,
+            onChanged: (value) => ref
+                .read(preferencesProvider.notifier)
+                .setAutoCapture(enabled: value),
+          ),
+          SwitchListTile(
+            title: Text(l10n.autoOcr),
+            subtitle: Text(l10n.autoOcrBody),
+            value: ref.watch(preferencesProvider).recogniseAutomatically,
+            onChanged: (value) => ref
+                .read(preferencesProvider.notifier)
+                .setRecogniseAutomatically(enabled: value),
+          ),
+          const Divider(),
           readiness.when(
             loading: () => const ListTile(title: LinearProgressIndicator()),
             error: (error, _) => ListTile(title: Text('$error')),

@@ -147,14 +147,14 @@ documents.
 
 | What | Value |
 |---|---|
-| Tests passing, no device, no models, no network | **139** |
+| Tests passing, no device, no models, no network | **145** |
 | `flutter analyze` across the workspace | 0 issues |
 | `reuse lint` | every file compliant |
 | `dart format --set-exit-if-changed` | clean |
 
 Breakdown: `dart_searchable_pdf` 30 (including Poppler round-trips),
 `byrsa_capture` 33, `byrsa_restore` 26, `byrsa_ocr` 13, `byrsa_ocr_mobile_ocr`
-6, `byrsa` (app) 31, `harness` 9.
+6, `byrsa` (app) 37, `harness` 9.
 
 `dart_searchable_pdf` and `byrsa_ocr` both pass `dart pub publish --dry-run`
 with no warnings, and CI runs that check so a git dependency cannot creep back
@@ -192,6 +192,9 @@ plan predicted:
   from 256 to 1024 moves the output by less than six grey levels on average.
 - **A camera refusal is reported as a refusal**, with the permanent case told
   apart from the retryable one.
+- **A kept scan survives the cache being emptied.** One test deletes the whole
+  cache directory after saving and checks the file is still there — the data
+  loss bug in a single assertion.
 - **Text and word boxes are stored together.** A page with text but no boxes
   searches inside the application and exports an image-only PDF; the two states
   are distinguishable rather than inferred.

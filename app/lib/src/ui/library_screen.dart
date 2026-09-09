@@ -6,6 +6,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:image_picker/image_picker.dart';
 
 import '../../l10n/app_localizations.dart';
 import '../data/providers.dart';
@@ -53,13 +54,49 @@ class LibraryScreen extends ConsumerWidget {
       body: query.trim().isEmpty
           ? _Browser(folderId: folderId)
           : const _SearchResults(),
-      floatingActionButton: FloatingActionButton.extended(
-        onPressed: () => context.push('/capture'),
-        icon: const Icon(Icons.document_scanner_outlined),
-        label: Text(l10n.scan),
+      floatingActionButton: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.end,
+        children: <Widget>[
+          // Importing an existing photograph matters more than it looks:
+          // plenty of documents arrive as a picture somebody else took.
+          FloatingActionButton.small(
+            heroTag: 'import',
+            tooltip: l10n.importImage,
+            onPressed: () => _importImage(context, ref, folderId),
+            child: const Icon(Icons.add_photo_alternate_outlined),
+          ),
+          const SizedBox(height: 12),
+          FloatingActionButton.extended(
+            heroTag: 'scan',
+            onPressed: () => context.push('/capture'),
+            icon: const Icon(Icons.document_scanner_outlined),
+            label: Text(l10n.scan),
+          ),
+        ],
       ),
     );
   }
+}
+
+/// Brings a photograph the user already has into the library.
+///
+/// It goes in as the original frame with no quad, so it takes the same path as
+/// a capture: the corners can be set by hand and restoration runs over it.
+Future<void> _importImage(
+    BuildContext context, WidgetRef ref, int? folderId) async {
+  final images = await ImagePicker().pickMultiImage();
+  if (images.isEmpty) return;
+
+  final library = await ref.read(libraryProvider.future);
+  final title =
+      'Importado ${DateTime.now().toIso8601String().substring(0, 16)}';
+  final documentId = library.createDocument(title, folderId: folderId);
+  for (final image in images) {
+    library.addPage(documentId, originalPath: image.path);
+  }
+  ref.read(libraryRevisionProvider.notifier).state++;
+  if (context.mounted) context.push('/document/$documentId');
 }
 
 /// Asks for a name and creates a folder in the current one.
@@ -141,7 +178,11 @@ class _Browser extends ConsumerWidget {
                 },
                 onDelete: () async {
                   final library = await ref.read(libraryProvider.future);
+                  final storage = await ref.read(scanStorageProvider.future);
                   library.deleteDocument(document.id);
+                  // The images go too. Otherwise the only symptom is a phone
+                  // that slowly fills up with documents the user deleted.
+                  await storage.discard(document.id);
                   ref.read(libraryRevisionProvider.notifier).state++;
                 },
               ),

@@ -76,5 +76,10 @@
   "filterColour": "Color",
   "filterGrayscale": "Escala de grises",
   "filterBlackAndWhite": "Blanco y negro",
-  "deleteDocumentConfirm": "¿Eliminar este documento? Los escaneos se van con él."
+  "deleteDocumentConfirm": "¿Eliminar este documento? Los escaneos se van con él.",
+  "autoCapture": "Capturar automáticamente",
+  "autoCaptureBody": "Hace la foto cuando la página está quieta y enfocada.",
+  "autoOcr": "Reconocer el texto automáticamente",
+  "autoOcrBody": "Ejecuta el reconocimiento en cada página en cuanto se mejora.",
+  "importImage": "Importar una foto"
 }

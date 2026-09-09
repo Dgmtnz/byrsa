@@ -76,5 +76,10 @@
   "filterColour": "Colour",
   "filterGrayscale": "Grayscale",
   "filterBlackAndWhite": "Black and white",
-  "deleteDocumentConfirm": "Delete this document? The scans go with it."
+  "deleteDocumentConfirm": "Delete this document? The scans go with it.",
+  "autoCapture": "Capture automatically",
+  "autoCaptureBody": "Take the picture when the page is steady and in focus.",
+  "autoOcr": "Recognise text automatically",
+  "autoOcrBody": "Run recognition on each page as soon as it is enhanced.",
+  "importImage": "Import a photograph"
 }
