@@ -6,6 +6,27 @@ import 'dart:typed_data';
 
 import 'image_buffer.dart';
 
+/// What the restored page should look like.
+///
+/// The three choices every scanner offers, and they are not only cosmetic:
+/// dropping the chroma makes the page encode about three times faster and land
+/// two to three times smaller, which for a document is usually the right trade
+/// and occasionally the wrong one.
+enum PageFilter {
+  /// Keep the colours. A receipt with a red stamp, a form with a signature in
+  /// blue ink, a page with a photograph on it.
+  colour,
+
+  /// Grayscale. The right default for text on paper.
+  grayscale,
+
+  /// Grayscale with a hard contrast curve — the classic "black and white"
+  /// scan. Text is crisp and the paper is white; anything with a photograph or
+  /// a faint pencil note on it is destroyed, which is why it is a choice and
+  /// not a default.
+  blackAndWhite,
+}
+
 /// The classical restoration pipeline: estimate the paper, divide it out, then
 /// equalise what is left.
 ///
@@ -32,11 +53,15 @@ import 'image_buffer.dart';
 /// worse rather than merely slow.
 class ClassicalRestore {
   const ClassicalRestore({
+    this.filter = PageFilter.colour,
     this.backgroundRadius = 0.06,
     this.claheTiles = 8,
     this.claheClipLimit = 3.0,
     this.analysisWidth = 512,
   }) : assert(analysisWidth >= 64, 'too small to estimate anything from');
+
+  /// What the page should end up looking like.
+  final PageFilter filter;
 
   /// Radius of the paper-colour estimate, as a fraction of the longer side.
   ///
@@ -65,6 +90,30 @@ class ClassicalRestore {
     final luma = image.toLuma();
     final analysis = _Analysis.of(luma, image.width, image.height, this);
     return _apply(image, luma, analysis);
+  }
+
+  /// The contrast curve for [PageFilter.blackAndWhite], as a 256-entry table.
+  ///
+  /// A curve rather than a threshold. A hard threshold looks decisive on a
+  /// screenshot and eats the anti-aliased edges of every letter, which is
+  /// exactly the detail OCR uses; this keeps the transition a few levels wide.
+  ///
+  /// It costs nothing at run time because it is composed into the equalisation
+  /// tables, which the pipeline was going to consult anyway.
+  static Uint8List contrastCurve({int low = 96, int high = 176}) {
+    final curve = Uint8List(256);
+    for (var i = 0; i < 256; i++) {
+      if (i <= low) {
+        curve[i] = 0;
+      } else if (i >= high) {
+        curve[i] = 255;
+      } else {
+        // Smoothstep, so the edge of a glyph keeps a couple of grey levels.
+        final t = (i - low) / (high - low);
+        curve[i] = (255 * t * t * (3 - 2 * t)).round().clamp(0, 255);
+      }
+    }
+    return curve;
   }
 
   /// Estimates the colour of the paper at every pixel.
@@ -110,7 +159,7 @@ class ClassicalRestore {
     int tiles = 8,
     double clipLimit = 3.0,
   }) {
-    final grid = _TileMaps.build(luma, width, height, tiles, clipLimit);
+    final grid = _TileMaps.build(luma, width, height, tiles, clipLimit, null);
     final out = Uint8List(luma.length);
     final columns = grid.columnWeights(width);
     for (var y = 0; y < height; y++) {
@@ -136,9 +185,11 @@ class ClassicalRestore {
   ImageBuffer _apply(ImageBuffer image, Uint8List luma, _Analysis analysis) {
     final width = image.width;
     final height = image.height;
-    final gray = image.isGray;
+    // Colour is only carried through when the input has it and the caller
+    // asked to keep it.
+    final keepColour = !image.isGray && filter == PageFilter.colour;
     final source = image.data;
-    final out = Uint8List(source.length);
+    final out = Uint8List(keepColour ? source.length : width * height);
 
     final columns = analysis.grid.columnWeights(width);
     final bgColumns = analysis.backgroundColumns(width);
@@ -161,7 +212,7 @@ class ClassicalRestore {
         final corrected =
             analysis.grid.lookup(flattened, columns, x, rowWeight);
 
-        if (gray) {
+        if (!keepColour) {
           out[index] = corrected;
         } else {
           // 3. Scale the channels by the same ratio the luma moved, which is
@@ -185,7 +236,7 @@ class ClassicalRestore {
     return ImageBuffer(
       width: width,
       height: height,
-      channels: image.channels,
+      channels: keepColour ? 3 : 1,
       data: out,
     );
   }
@@ -366,6 +417,9 @@ class _Analysis {
         small.height,
         options.claheTiles,
         options.claheClipLimit,
+        options.filter == PageFilter.blackAndWhite
+            ? ClassicalRestore.contrastCurve()
+            : null,
       ),
     );
   }
@@ -439,6 +493,7 @@ class _TileMaps {
     int height,
     int tiles,
     double clipLimit,
+    Uint8List? curve,
   ) {
     final tilesX = math.max(1, math.min(tiles, width ~/ 8));
     final tilesY = math.max(1, math.min(tiles, height ~/ 8));
@@ -489,7 +544,10 @@ class _TileMaps {
       var cumulative = 0;
       for (var i = 0; i < 256; i++) {
         cumulative += histogram[i];
-        map[i] = (cumulative * 255 / pixels).round().clamp(0, 255);
+        final equalised = (cumulative * 255 / pixels).round().clamp(0, 255);
+        // Composing the filter curve here makes it free: the pipeline already
+        // consults this table once per pixel.
+        map[i] = curve == null ? equalised : curve[equalised];
       }
       return map;
     });

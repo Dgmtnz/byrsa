@@ -621,3 +621,51 @@ mayor (904 ms de los 1.659 ms). Codificar nativamente lo bajaría a ~100 ms. No 
 todavía porque metería un códec en un paquete que no le corresponde, o glue nativo sin
 probar en la app; queda anotado con su número en `docs/measurements.md` en vez de
 arreglado a medias.
+
+---
+
+## D-032 · Tres filtros de página, y salen gratis
+**Fecha:** 2026-09-09 · **Estado:** ratificar
+
+Color, escala de grises y blanco y negro. Son de rigor en un escáner, y aquí además
+cuestan cero: la curva de contraste del modo blanco y negro se **compone dentro de las
+tablas de ecualización**, que el pipeline iba a consultar una vez por píxel de todas
+formas.
+
+Es una curva y no un umbral duro a propósito. Un umbral queda decidido en una captura de
+pantalla y se come el borde suavizado de cada letra, que es justo el detalle que lee el
+OCR. La transición se mantiene unos cuantos niveles de ancho, y hay un test que lo
+comprueba.
+
+**Medido, 6,8 MP:** color 1.383 ms, gris 1.051 ms, blanco y negro 1.043 ms.
+
+**Hallazgo por el camino:** pasarle al codificador de `package:image` un búfer de un solo
+canal produce igualmente un JPEG de **tres componentes** y un fichero del **doble de
+tamaño** (691 KB frente a 349 KB con los mismos píxeles). Así que el gris se expande a
+RGB antes de codificar: una pasada más, croma plano, y JPEG lo comprime a casi nada.
+
+---
+
+## D-033 · La corrección manual de esquinas no es un extra
+**Fecha:** 2026-09-09 · **Estado:** ratificar · **Origen:** plan T1, ahora implementado
+
+La detección falla con papel de poco contraste, mesas desordenadas y mala luz. Sin una
+forma de arreglarlo a mano, la única salida es repetir la foto — que suele fallar igual
+por el mismo motivo.
+
+Ahora cada página tiene su acción de ajustar esquinas, se guarda el cuadrilátero usado
+(columna `quad`), y el reencuadre se hace **siempre desde el fotograma original**. Volver
+a deformar una imagen ya deformada es corregir una corrección. Y al reencuadrar se marca
+`restored = 0`, así que la restauración vuelve a pasar sola sobre el recorte nuevo.
+
+---
+
+## D-034 · Exportar sin compartir es mentira
+**Fecha:** 2026-09-09 · **Estado:** ratificar
+
+El export escribía el PDF en un directorio del sandbox al que el usuario no llega en
+ninguna de las dos plataformas. Ahora se ofrece al share sheet del sistema
+(`share_plus`), y además se deja en disco para los gestores de ficheros que existan.
+
+Es la única dependencia nueva de la app aparte de `image`, y hace la diferencia entre una
+función que existe y una que sirve.

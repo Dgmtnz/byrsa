@@ -142,6 +142,81 @@ void main() {
     });
   });
 
+  group('page filters', () {
+    ImageBuffer colourPage() {
+      final data = Uint8List(_width * _height * 3);
+      for (var y = 0; y < _height; y++) {
+        for (var x = 0; x < _width; x++) {
+          final i = (y * _width + x) * 3;
+          final text = (y % 16) < 6 && y > 24 && x > 20 && x < _width - 20;
+          final stamp = x > 40 && x < 100 && y > 200 && y < 260;
+          final shade = 0.6 + 0.4 * (x / _width);
+          final (r, g, b) =
+              stamp ? (200, 50, 45) : (text ? (40, 40, 40) : (245, 243, 238));
+          data[i] = (r * shade).round();
+          data[i + 1] = (g * shade).round();
+          data[i + 2] = (b * shade).round();
+        }
+      }
+      return ImageBuffer(
+          width: _width, height: _height, channels: 3, data: data);
+    }
+
+    test('grayscale drops the chroma, which is most of the file', () {
+      final restored = const ClassicalRestore(
+        filter: PageFilter.grayscale,
+      )(colourPage());
+      expect(restored.channels, 1);
+      expect(restored.data.length, _width * _height);
+    });
+
+    test('colour is the only filter that keeps a red stamp red', () {
+      final page = colourPage();
+      final colour = const ClassicalRestore(filter: PageFilter.colour)(page);
+      final gray = const ClassicalRestore(filter: PageFilter.grayscale)(page);
+
+      final index = (230 * _width + 70);
+      expect(
+          colour.data[index * 3], greaterThan(colour.data[index * 3 + 1] + 40));
+      expect(gray.channels, 1, reason: 'grayscale has nowhere to keep it');
+    });
+
+    test('black and white pushes paper to white and ink to black', () {
+      final restored = const ClassicalRestore(
+        filter: PageFilter.blackAndWhite,
+      )(syntheticPage());
+
+      var paper = 0;
+      var ink = 0;
+      for (var y = 40; y < _height - 40; y++) {
+        for (var x = 40; x < _width - 40; x++) {
+          final v = restored.data[y * _width + x];
+          if (v >= 250) paper++;
+          if (v <= 5) ink++;
+        }
+      }
+      final total = (_height - 80) * (_width - 80);
+      expect((paper + ink) / total, greaterThan(0.9),
+          reason: 'almost every pixel should be at one end or the other');
+      expect(ink, greaterThan(total ~/ 50), reason: 'the text must survive');
+    });
+
+    test('the contrast curve keeps an edge instead of hard-thresholding it',
+        () {
+      // A hard threshold looks decisive and eats the anti-aliased edge of every
+      // letter, which is exactly the detail OCR reads.
+      final curve = ClassicalRestore.contrastCurve();
+      expect(curve[0], 0);
+      expect(curve[255], 255);
+      final between = <int>[
+        for (var i = 0; i < 256; i++)
+          if (curve[i] > 8 && curve[i] < 247) i,
+      ];
+      expect(between.length, greaterThan(20),
+          reason: 'the transition must be a ramp, not a cliff');
+    });
+  });
+
   group('analysis resolution', () {
     // The first version of this pipeline analysed the full-resolution image
     // and took 56 seconds on a 12 MP photograph, which every unit test missed

@@ -123,18 +123,38 @@ interface — a difference invisible in a benchmark and very visible in the hand
 **Not measured:** any of this on a phone. Expect several times slower, and do
 not quote a multiplier until someone has run it (`UNVERIFIED.md`, U-31).
 
+### Page filters, and a surprise in the encoder
+
+A 6.8 MP colour page, the size the application actually processes:
+
+| Filter | Restore | Encode | Total |
+|---|---|---|---|
+| Colour | 616 ms | 767 ms | 1,383 ms |
+| Grayscale | 399 ms | 652 ms | 1,051 ms |
+| Black and white | 462 ms | 581 ms | 1,043 ms |
+
+Measured while adding them: handing `package:image`'s JPEG encoder a
+**single-channel** buffer still produces a three-component JPEG, and a file
+**twice the size** — 691 KB against 349 KB for the same pixels expanded to RGB
+first. So grayscale pages are expanded before encoding. One extra pass, flat
+chroma, and JPEG compresses that to almost nothing.
+
+File sizes are not reported here because the test pages are synthetic and JPEG
+size is entirely a function of content. That number needs the fifty real
+documents.
+
 ### Test suite
 
 | What | Value |
 |---|---|
-| Tests passing, no device, no models, no network | **128** |
+| Tests passing, no device, no models, no network | **139** |
 | `flutter analyze` across the workspace | 0 issues |
 | `reuse lint` | every file compliant |
 | `dart format --set-exit-if-changed` | clean |
 
 Breakdown: `dart_searchable_pdf` 30 (including Poppler round-trips),
-`byrsa_capture` 33, `byrsa_restore` 22, `byrsa_ocr` 13, `byrsa_ocr_mobile_ocr`
-6, `byrsa` (app) 24, `harness` 9.
+`byrsa_capture` 33, `byrsa_restore` 26, `byrsa_ocr` 13, `byrsa_ocr_mobile_ocr`
+6, `byrsa` (app) 31, `harness` 9.
 
 `dart_searchable_pdf` and `byrsa_ocr` both pass `dart pub publish --dry-run`
 with no warnings, and CI runs that check so a git dependency cannot creep back

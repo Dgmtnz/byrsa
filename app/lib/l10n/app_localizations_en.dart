@@ -127,4 +127,41 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get enhanced => 'Enhanced';
+
+  @override
+  String get adjustCorners => 'Adjust corners';
+
+  @override
+  String get adjustCornersHelp => 'Drag the corners to the edges of the page.';
+
+  @override
+  String get reset => 'Reset';
+
+  @override
+  String get share => 'Share';
+
+  @override
+  String get deletePage => 'Delete page';
+
+  @override
+  String get movePageLeft => 'Move left';
+
+  @override
+  String get movePageRight => 'Move right';
+
+  @override
+  String get filter => 'Filter';
+
+  @override
+  String get filterColour => 'Colour';
+
+  @override
+  String get filterGrayscale => 'Grayscale';
+
+  @override
+  String get filterBlackAndWhite => 'Black and white';
+
+  @override
+  String get deleteDocumentConfirm =>
+      'Delete this document? The scans go with it.';
 }

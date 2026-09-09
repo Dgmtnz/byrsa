@@ -63,6 +63,7 @@ class ScanPage {
     required this.originalPath,
     this.processedPath,
     this.restored = false,
+    this.quad,
     this.text,
     this.words = const <PageWord>[],
     this.width,
@@ -83,6 +84,12 @@ class ScanPage {
 
   /// The rectified page, when it exists.
   final String? processedPath;
+
+  /// The four corners used to warp this page, in the original frame's
+  /// normalised coordinates, as `[x0, y0, x1, y1, x2, y2, x3, y3]`.
+  ///
+  /// Kept so the corners can be corrected weeks later, from the original.
+  final List<double>? quad;
 
   /// Whether [processedPath] has been through restoration, not merely warped.
   ///

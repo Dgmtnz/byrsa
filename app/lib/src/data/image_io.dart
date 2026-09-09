@@ -23,7 +23,14 @@ import 'package:image/image.dart' as img;
 /// frozen interface — and the difference is invisible in a benchmark and very
 /// visible in the hand.
 class ImageIo {
-  const ImageIo({this.maxDimension = 3000, this.jpegQuality = 92});
+  const ImageIo({
+    this.maxDimension = 3000,
+    this.jpegQuality = 92,
+    this.filter = PageFilter.colour,
+  });
+
+  /// What the restored page should look like.
+  final PageFilter filter;
 
   /// Longest side the page is processed and stored at.
   ///
@@ -70,9 +77,6 @@ class ImageIo {
   Future<RestoreOutcome> restoreFile({
     required String inputPath,
     required String outputPath,
-    RestorePipeline pipeline = const RestorePipeline(<RestoreStage>[
-      ClassicalStage(),
-    ]),
   }) async {
     final watch = Stopwatch()..start();
     final image = await decode(inputPath);
@@ -87,6 +91,7 @@ class ImageIo {
         channels: image.channels,
         outputPath: outputPath,
         quality: jpegQuality,
+        filter: filter,
       ),
     );
 
@@ -144,6 +149,7 @@ class _RestoreRequest {
     required this.channels,
     required this.outputPath,
     required this.quality,
+    required this.filter,
   });
 
   final Uint8List pixels;
@@ -152,12 +158,26 @@ class _RestoreRequest {
   final int channels;
   final String outputPath;
   final int quality;
+  final PageFilter filter;
 }
 
 class _RestoreReply {
   const _RestoreReply(this.stages);
 
   final List<StageOutcome> stages;
+}
+
+/// Expands a grayscale buffer to RGB, or returns an RGB one untouched.
+Uint8List _asRgb(ImageBuffer image) {
+  if (!image.isGray) return image.data;
+  final out = Uint8List(image.pixelCount * 3);
+  for (var i = 0; i < image.pixelCount; i++) {
+    final value = image.data[i];
+    out[i * 3] = value;
+    out[i * 3 + 1] = value;
+    out[i * 3 + 2] = value;
+  }
+  return out;
 }
 
 /// Runs in an isolate: restore, encode, write.
@@ -169,7 +189,9 @@ Future<_RestoreReply> _restoreAndEncode(_RestoreRequest request) async {
     data: request.pixels,
   );
 
-  const pipeline = RestorePipeline(<RestoreStage>[ClassicalStage()]);
+  final pipeline = RestorePipeline(<RestoreStage>[
+    const ClassicalStage().withFilter(request.filter),
+  ]);
   final restored = await pipeline.run(input);
 
   final watch = Stopwatch()..start();
@@ -177,8 +199,13 @@ Future<_RestoreReply> _restoreAndEncode(_RestoreRequest request) async {
     img.Image.fromBytes(
       width: restored.image.width,
       height: restored.image.height,
-      bytes: restored.image.data.buffer,
-      numChannels: restored.image.channels,
+      // Always three channels, even for a grayscale page. Measured: handing
+      // the encoder a single-channel image still produces a three-component
+      // JPEG, and a file twice the size. Expanding it ourselves costs one
+      // pass and leaves the chroma flat, which is what JPEG compresses to
+      // almost nothing.
+      bytes: _asRgb(restored.image).buffer,
+      numChannels: 3,
       order: img.ChannelOrder.rgb,
     ),
     quality: request.quality,

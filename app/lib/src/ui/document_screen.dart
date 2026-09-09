@@ -3,11 +3,16 @@
 
 import 'dart:io';
 
+import 'package:byrsa_capture/byrsa_capture.dart';
 import 'package:byrsa_ocr/byrsa_ocr.dart';
+import 'package:byrsa_restore/byrsa_restore.dart';
 import 'package:dart_searchable_pdf/dart_searchable_pdf.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:path/path.dart' as p;
+import 'package:share_plus/share_plus.dart';
+
+import 'corner_editor_screen.dart';
 
 import '../../l10n/app_localizations.dart';
 import '../data/image_io.dart';
@@ -29,6 +34,7 @@ class _DocumentScreenState extends ConsumerState<DocumentScreen> {
   String? _status;
   bool _busy = false;
   bool _restoring = false;
+  PageFilter _filter = PageFilter.colour;
 
   /// Pages captured but not yet restored are finished off in the background as
   /// soon as the document is opened.
@@ -49,7 +55,7 @@ class _DocumentScreenState extends ConsumerState<DocumentScreen> {
     });
     try {
       final library = await ref.read(libraryProvider.future);
-      const io = ImageIo();
+      final io = ImageIo(filter: _filter);
       for (final page in pending) {
         final outcome = await io.restoreFile(
           // Always from the perspective-corrected page, never from a previous
@@ -83,10 +89,15 @@ class _DocumentScreenState extends ConsumerState<DocumentScreen> {
         actions: <Widget>[
           PopupMenuButton<String>(
             onSelected: (value) => switch (value) {
-              'enhance' => _enhanceAll(document.valueOrNull),
               'pdf' => _exportPdf(document.valueOrNull),
               'txt' => _exportText(document.valueOrNull),
               'ocr' => _runOcr(document.valueOrNull),
+              'filter-colour' =>
+                _setFilter(PageFilter.colour, document.valueOrNull),
+              'filter-grayscale' =>
+                _setFilter(PageFilter.grayscale, document.valueOrNull),
+              'filter-bw' =>
+                _setFilter(PageFilter.blackAndWhite, document.valueOrNull),
               _ => null,
             },
             itemBuilder: (context) => <PopupMenuEntry<String>>[
@@ -119,33 +130,14 @@ class _DocumentScreenState extends ConsumerState<DocumentScreen> {
                   itemCount: doc.pages.length,
                   itemBuilder: (context, index) {
                     final page = doc.pages[index];
-                    return Semantics(
-                      label:
-                          l10n.pageSemanticLabel(index + 1, doc.pages.length),
-                      child: Card(
-                        margin: const EdgeInsets.all(12),
-                        clipBehavior: Clip.antiAlias,
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.stretch,
-                          children: <Widget>[
-                            Image.file(
-                              File(page.displayPath),
-                              fit: BoxFit.contain,
-                              errorBuilder: (_, __, ___) => const Icon(
-                                  Icons.broken_image_outlined,
-                                  size: 64),
-                            ),
-                            if (page.hasText)
-                              Padding(
-                                padding: const EdgeInsets.all(12),
-                                child: SelectableText(
-                                  page.text!,
-                                  style: Theme.of(context).textTheme.bodySmall,
-                                ),
-                              ),
-                          ],
-                        ),
-                      ),
+                    return _PageCard(
+                      page: page,
+                      position: index,
+                      total: doc.pages.length,
+                      onAdjustCorners: () => _adjustCorners(page),
+                      onDelete: () => _deletePage(page),
+                      onMoveLeft: () => _movePage(doc, index, index - 1),
+                      onMoveRight: () => _movePage(doc, index, index + 1),
                     );
                   },
                 ),
@@ -157,17 +149,80 @@ class _DocumentScreenState extends ConsumerState<DocumentScreen> {
     );
   }
 
-  /// Re-runs restoration over every page, from the rectified image.
-  Future<void> _enhanceAll(ScanDocument? document) async {
+  /// Switches the look of every page, which means restoring them again.
+  Future<void> _setFilter(PageFilter filter, ScanDocument? document) async {
+    setState(() => _filter = filter);
     if (document == null) return;
     final library = await ref.read(libraryProvider.future);
     for (final page in document.pages) {
+      // Back to the rectified image: restoring a restored page would apply
+      // the correction twice.
       library.setPageProcessed(
           page.id, page.processedPath ?? page.originalPath);
     }
     ref.read(libraryRevisionProvider.notifier).state++;
     final refreshed = library.document(document.id);
     if (refreshed != null) await _restorePending(refreshed);
+  }
+
+  /// Re-warps a page from corners the user dragged, on the original frame.
+  ///
+  /// Detection fails on low-contrast paper and cluttered desks, and retaking
+  /// the photograph usually fails the same way for the same reason. This is the
+  /// recovery, and it is why the original frame is never thrown away.
+  Future<void> _adjustCorners(ScanPage page) async {
+    final stored = page.quad;
+    final quad = await Navigator.of(context).push<CaptureQuad>(
+      MaterialPageRoute<CaptureQuad>(
+        builder: (_) => CornerEditorScreen(
+          imagePath: page.originalPath,
+          initialQuad: stored == null
+              ? CaptureQuad.full
+              : CaptureQuad.fromPoints(<CapturePoint>[
+                  for (var i = 0; i < 4; i++)
+                    CapturePoint(stored[i * 2], stored[i * 2 + 1]),
+                ]),
+        ),
+      ),
+    );
+    if (quad == null || !mounted) return;
+
+    setState(() => _busy = true);
+    try {
+      final rectified = await ByrsaCapturePlatform.instance.rectify(
+        imagePath: page.originalPath,
+        quad: quad,
+        targetAspectRatio: quad.aspectRatioOrFallback(),
+      );
+      final library = await ref.read(libraryProvider.future);
+      library.setPageProcessed(
+        page.id,
+        rectified,
+        quad: <double>[
+          for (final corner in quad.corners) ...<double>[corner.x, corner.y],
+        ],
+      );
+      ref.read(libraryRevisionProvider.notifier).state++;
+    } on Object catch (error) {
+      if (mounted) setState(() => _status = '$error');
+    } finally {
+      if (mounted) setState(() => _busy = false);
+    }
+  }
+
+  Future<void> _deletePage(ScanPage page) async {
+    final library = await ref.read(libraryProvider.future);
+    library.deletePage(page.id);
+    ref.read(libraryRevisionProvider.notifier).state++;
+  }
+
+  Future<void> _movePage(ScanDocument document, int from, int to) async {
+    if (to < 0 || to >= document.pages.length) return;
+    final order = document.pages.map((page) => page.id).toList();
+    order.insert(to, order.removeAt(from));
+    final library = await ref.read(libraryProvider.future);
+    library.reorderPages(document.id, order);
+    ref.read(libraryRevisionProvider.notifier).state++;
   }
 
   Future<void> _runOcr(ScanDocument? document) async {
@@ -222,7 +277,8 @@ class _DocumentScreenState extends ConsumerState<DocumentScreen> {
       }
       final path = p.join(root.path, '${_safeName(document.title)}.pdf');
       await File(path).writeAsBytes(pdf.build());
-      setState(() => _status = l10n.exportedTo(path));
+      if (mounted) setState(() => _status = l10n.exportedTo(path));
+      await _offer(path, document.title);
     } on Object catch (error) {
       setState(() => _status = '$error');
     } finally {
@@ -237,10 +293,99 @@ class _DocumentScreenState extends ConsumerState<DocumentScreen> {
     final path = p.join(root.path, '${_safeName(document.title)}.txt');
     await File(path).writeAsString(document.text);
     if (mounted) setState(() => _status = l10n.exportedTo(path));
+    await _offer(path, document.title);
+  }
+
+  /// Hands the exported file to the system share sheet.
+  ///
+  /// Without this, export writes into a sandbox directory the user cannot
+  /// reach on either platform, which makes the feature a lie. The file is also
+  /// left on disk, so a file manager can find it where one exists.
+  Future<void> _offer(String path, String title) async {
+    await Share.shareXFiles(<XFile>[XFile(path)], subject: title);
   }
 
   static String _safeName(String title) => title
       .replaceAll(RegExp(r'[^\w\s-]'), '')
       .trim()
       .replaceAll(RegExp(r'\s+'), '-');
+}
+
+/// One page, with the actions that belong to a page rather than a document.
+class _PageCard extends StatelessWidget {
+  const _PageCard({
+    required this.page,
+    required this.position,
+    required this.total,
+    required this.onAdjustCorners,
+    required this.onDelete,
+    required this.onMoveLeft,
+    required this.onMoveRight,
+  });
+
+  final ScanPage page;
+  final int position;
+  final int total;
+  final VoidCallback onAdjustCorners;
+  final VoidCallback onDelete;
+  final VoidCallback onMoveLeft;
+  final VoidCallback onMoveRight;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    return Semantics(
+      label: l10n.pageSemanticLabel(position + 1, total),
+      child: Card(
+        margin: const EdgeInsets.all(12),
+        clipBehavior: Clip.antiAlias,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: <Widget>[
+            Image.file(
+              File(page.displayPath),
+              fit: BoxFit.contain,
+              // A page that is being restored right now is briefly replaced on
+              // disk, so a failed decode is a normal transient, not an error.
+              errorBuilder: (_, __, ___) => const SizedBox(
+                  height: 120, child: Icon(Icons.hourglass_empty)),
+            ),
+            if (page.hasText)
+              Padding(
+                padding: const EdgeInsets.all(12),
+                child: SelectableText(
+                  page.text!,
+                  style: Theme.of(context).textTheme.bodySmall,
+                ),
+              ),
+            OverflowBar(
+              alignment: MainAxisAlignment.end,
+              children: <Widget>[
+                IconButton(
+                  tooltip: l10n.movePageLeft,
+                  icon: const Icon(Icons.arrow_back),
+                  onPressed: position == 0 ? null : onMoveLeft,
+                ),
+                IconButton(
+                  tooltip: l10n.movePageRight,
+                  icon: const Icon(Icons.arrow_forward),
+                  onPressed: position == total - 1 ? null : onMoveRight,
+                ),
+                IconButton(
+                  tooltip: l10n.adjustCorners,
+                  icon: const Icon(Icons.crop_free),
+                  onPressed: onAdjustCorners,
+                ),
+                IconButton(
+                  tooltip: l10n.deletePage,
+                  icon: const Icon(Icons.delete_outline),
+                  onPressed: onDelete,
+                ),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
 }

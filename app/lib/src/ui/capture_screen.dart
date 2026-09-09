@@ -115,6 +115,12 @@ class _CaptureScreenState extends ConsumerState<CaptureScreen> {
           documentId,
           originalPath: page.originalPath,
           processedPath: page.rectifiedPath,
+          quad: <double>[
+            for (final corner in page.quad.corners) ...<double>[
+              corner.x,
+              corner.y
+            ],
+          ],
           width: page.width,
           height: page.height,
         );

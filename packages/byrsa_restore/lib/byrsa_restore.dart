@@ -11,7 +11,7 @@
 /// reports itself as skipped instead of failing the pipeline.
 library;
 
-export 'src/classical.dart';
+export 'src/classical.dart' show ClassicalRestore, PageFilter;
 export 'src/image_buffer.dart';
 export 'src/model_catalog.dart';
 export 'src/model_store.dart';

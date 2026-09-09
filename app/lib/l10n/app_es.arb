@@ -64,5 +64,17 @@
   "tryAgain": "Reintentar",
   "processing": "Mejorando…",
   "enhance": "Mejorar páginas",
-  "enhanced": "Mejorada"
+  "enhanced": "Mejorada",
+  "adjustCorners": "Ajustar esquinas",
+  "adjustCornersHelp": "Arrastra las esquinas hasta los bordes de la página.",
+  "reset": "Restablecer",
+  "share": "Compartir",
+  "deletePage": "Eliminar página",
+  "movePageLeft": "Mover a la izquierda",
+  "movePageRight": "Mover a la derecha",
+  "filter": "Filtro",
+  "filterColour": "Color",
+  "filterGrayscale": "Escala de grises",
+  "filterBlackAndWhite": "Blanco y negro",
+  "deleteDocumentConfirm": "¿Eliminar este documento? Los escaneos se van con él."
 }

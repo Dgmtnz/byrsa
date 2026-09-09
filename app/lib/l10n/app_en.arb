@@ -64,5 +64,17 @@
   "tryAgain": "Try again",
   "processing": "Enhancing…",
   "enhance": "Enhance pages",
-  "enhanced": "Enhanced"
+  "enhanced": "Enhanced",
+  "adjustCorners": "Adjust corners",
+  "adjustCornersHelp": "Drag the corners to the edges of the page.",
+  "reset": "Reset",
+  "share": "Share",
+  "deletePage": "Delete page",
+  "movePageLeft": "Move left",
+  "movePageRight": "Move right",
+  "filter": "Filter",
+  "filterColour": "Colour",
+  "filterGrayscale": "Grayscale",
+  "filterBlackAndWhite": "Black and white",
+  "deleteDocumentConfirm": "Delete this document? The scans go with it."
 }

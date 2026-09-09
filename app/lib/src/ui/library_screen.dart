@@ -27,6 +27,11 @@ class LibraryScreen extends ConsumerWidget {
         title: Text(l10n.libraryTitle),
         actions: <Widget>[
           IconButton(
+            icon: const Icon(Icons.create_new_folder_outlined),
+            tooltip: l10n.newFolder,
+            onPressed: () => _createFolder(context, ref, folderId),
+          ),
+          IconButton(
             icon: const Icon(Icons.settings_outlined),
             tooltip: l10n.settings,
             onPressed: () => context.push('/settings'),
@@ -57,6 +62,40 @@ class LibraryScreen extends ConsumerWidget {
   }
 }
 
+/// Asks for a name and creates a folder in the current one.
+Future<void> _createFolder(
+    BuildContext context, WidgetRef ref, int? parentId) async {
+  final l10n = AppLocalizations.of(context)!;
+  final controller = TextEditingController();
+  final name = await showDialog<String>(
+    context: context,
+    builder: (context) => AlertDialog(
+      title: Text(l10n.newFolder),
+      content: TextField(
+        controller: controller,
+        autofocus: true,
+        decoration: InputDecoration(labelText: l10n.folderName),
+        onSubmitted: (value) => Navigator.of(context).pop(value),
+      ),
+      actions: <Widget>[
+        TextButton(
+          onPressed: () => Navigator.of(context).pop(),
+          child: Text(l10n.cancel),
+        ),
+        FilledButton(
+          onPressed: () => Navigator.of(context).pop(controller.text),
+          child: Text(l10n.save),
+        ),
+      ],
+    ),
+  );
+  if (name == null || name.trim().isEmpty) return;
+
+  final library = await ref.read(libraryProvider.future);
+  library.createFolder(name.trim(), parentId: parentId);
+  ref.read(libraryRevisionProvider.notifier).state++;
+}
+
 class _Browser extends ConsumerWidget {
   const _Browser({this.folderId});
 
@@ -83,8 +122,29 @@ class _Browser extends ConsumerWidget {
                 leading: const Icon(Icons.folder_outlined),
                 title: Text(folder.name),
                 onTap: () => context.push('/folder/${folder.id}'),
+                onLongPress: () async {
+                  // Deleting a folder leaves the documents in it alone; they
+                  // fall back to the root. Losing a folder is an accident,
+                  // losing the scans inside it is a disaster.
+                  final library = await ref.read(libraryProvider.future);
+                  library.deleteFolder(folder.id);
+                  ref.read(libraryRevisionProvider.notifier).state++;
+                },
               ),
-            for (final document in docs) _DocumentTile(document: document),
+            for (final document in docs)
+              _DocumentTile(
+                document: document,
+                onRename: (title) async {
+                  final library = await ref.read(libraryProvider.future);
+                  library.renameDocument(document.id, title);
+                  ref.read(libraryRevisionProvider.notifier).state++;
+                },
+                onDelete: () async {
+                  final library = await ref.read(libraryProvider.future);
+                  library.deleteDocument(document.id);
+                  ref.read(libraryRevisionProvider.notifier).state++;
+                },
+              ),
           ],
         );
       },
@@ -93,9 +153,15 @@ class _Browser extends ConsumerWidget {
 }
 
 class _DocumentTile extends StatelessWidget {
-  const _DocumentTile({required this.document});
+  const _DocumentTile({
+    required this.document,
+    required this.onRename,
+    required this.onDelete,
+  });
 
   final ScanDocument document;
+  final ValueChanged<String> onRename;
+  final VoidCallback onDelete;
 
   @override
   Widget build(BuildContext context) {
@@ -118,8 +184,70 @@ class _DocumentTile extends StatelessWidget {
         '${l10n.pageCount(document.pageCount)} · '
         '${document.isSearchable ? l10n.searchable : l10n.notSearchable}',
       ),
+      trailing: PopupMenuButton<String>(
+        onSelected: (value) async {
+          if (value == 'delete') {
+            if (await _confirmDelete(context)) onDelete();
+          } else {
+            final title = await _askTitle(context, document.title);
+            if (title != null) onRename(title);
+          }
+        },
+        itemBuilder: (context) => <PopupMenuEntry<String>>[
+          PopupMenuItem<String>(value: 'rename', child: Text(l10n.rename)),
+          PopupMenuItem<String>(value: 'delete', child: Text(l10n.delete)),
+        ],
+      ),
       onTap: () => context.push('/document/${document.id}'),
     );
+  }
+
+  static Future<bool> _confirmDelete(BuildContext context) async {
+    final l10n = AppLocalizations.of(context)!;
+    return await showDialog<bool>(
+          context: context,
+          builder: (context) => AlertDialog(
+            content: Text(l10n.deleteDocumentConfirm),
+            actions: <Widget>[
+              TextButton(
+                onPressed: () => Navigator.of(context).pop(false),
+                child: Text(l10n.cancel),
+              ),
+              FilledButton(
+                onPressed: () => Navigator.of(context).pop(true),
+                child: Text(l10n.delete),
+              ),
+            ],
+          ),
+        ) ??
+        false;
+  }
+
+  static Future<String?> _askTitle(BuildContext context, String current) async {
+    final l10n = AppLocalizations.of(context)!;
+    final controller = TextEditingController(text: current);
+    final title = await showDialog<String>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text(l10n.rename),
+        content: TextField(
+          controller: controller,
+          autofocus: true,
+          onSubmitted: (value) => Navigator.of(context).pop(value),
+        ),
+        actions: <Widget>[
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(),
+            child: Text(l10n.cancel),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.of(context).pop(controller.text),
+            child: Text(l10n.save),
+          ),
+        ],
+      ),
+    );
+    return (title == null || title.trim().isEmpty) ? null : title.trim();
   }
 }
 

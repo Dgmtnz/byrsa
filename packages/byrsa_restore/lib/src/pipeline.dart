@@ -122,6 +122,17 @@ class RestorePipeline {
 class ClassicalStage implements RestoreStage {
   const ClassicalStage([this.restore = const ClassicalRestore()]);
 
+  /// The same stage with a different look.
+  ClassicalStage withFilter(PageFilter filter) => ClassicalStage(
+        ClassicalRestore(
+          filter: filter,
+          backgroundRadius: restore.backgroundRadius,
+          claheTiles: restore.claheTiles,
+          claheClipLimit: restore.claheClipLimit,
+          analysisWidth: restore.analysisWidth,
+        ),
+      );
+
   final ClassicalRestore restore;
 
   @override

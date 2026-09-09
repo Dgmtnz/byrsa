@@ -127,4 +127,42 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get enhanced => 'Mejorada';
+
+  @override
+  String get adjustCorners => 'Ajustar esquinas';
+
+  @override
+  String get adjustCornersHelp =>
+      'Arrastra las esquinas hasta los bordes de la página.';
+
+  @override
+  String get reset => 'Restablecer';
+
+  @override
+  String get share => 'Compartir';
+
+  @override
+  String get deletePage => 'Eliminar página';
+
+  @override
+  String get movePageLeft => 'Mover a la izquierda';
+
+  @override
+  String get movePageRight => 'Mover a la derecha';
+
+  @override
+  String get filter => 'Filtro';
+
+  @override
+  String get filterColour => 'Color';
+
+  @override
+  String get filterGrayscale => 'Escala de grises';
+
+  @override
+  String get filterBlackAndWhite => 'Blanco y negro';
+
+  @override
+  String get deleteDocumentConfirm =>
+      '¿Eliminar este documento? Los escaneos se van con él.';
 }

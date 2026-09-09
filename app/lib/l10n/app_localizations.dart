@@ -301,6 +301,78 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Enhanced'**
   String get enhanced;
+
+  /// No description provided for @adjustCorners.
+  ///
+  /// In en, this message translates to:
+  /// **'Adjust corners'**
+  String get adjustCorners;
+
+  /// No description provided for @adjustCornersHelp.
+  ///
+  /// In en, this message translates to:
+  /// **'Drag the corners to the edges of the page.'**
+  String get adjustCornersHelp;
+
+  /// No description provided for @reset.
+  ///
+  /// In en, this message translates to:
+  /// **'Reset'**
+  String get reset;
+
+  /// No description provided for @share.
+  ///
+  /// In en, this message translates to:
+  /// **'Share'**
+  String get share;
+
+  /// No description provided for @deletePage.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete page'**
+  String get deletePage;
+
+  /// No description provided for @movePageLeft.
+  ///
+  /// In en, this message translates to:
+  /// **'Move left'**
+  String get movePageLeft;
+
+  /// No description provided for @movePageRight.
+  ///
+  /// In en, this message translates to:
+  /// **'Move right'**
+  String get movePageRight;
+
+  /// No description provided for @filter.
+  ///
+  /// In en, this message translates to:
+  /// **'Filter'**
+  String get filter;
+
+  /// No description provided for @filterColour.
+  ///
+  /// In en, this message translates to:
+  /// **'Colour'**
+  String get filterColour;
+
+  /// No description provided for @filterGrayscale.
+  ///
+  /// In en, this message translates to:
+  /// **'Grayscale'**
+  String get filterGrayscale;
+
+  /// No description provided for @filterBlackAndWhite.
+  ///
+  /// In en, this message translates to:
+  /// **'Black and white'**
+  String get filterBlackAndWhite;
+
+  /// No description provided for @deleteDocumentConfirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete this document? The scans go with it.'**
+  String get deleteDocumentConfirm;
 }
 
 class _AppLocalizationsDelegate

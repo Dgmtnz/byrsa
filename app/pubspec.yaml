@@ -31,6 +31,7 @@ dependencies:
   meta: ^1.15.0
   path: ^1.9.0
   path_provider: ^2.1.4
+  share_plus: ^10.1.2
   sqlite3: ^2.4.6
   sqlite3_flutter_libs: ^0.5.26
 

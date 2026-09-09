@@ -59,6 +59,7 @@ class LibraryDatabase {
           original_path  TEXT NOT NULL,
           processed_path TEXT,
           restored       INTEGER NOT NULL DEFAULT 0,
+          quad           TEXT,
           text           TEXT,
           words          TEXT,
           width          INTEGER,
@@ -198,6 +199,7 @@ class LibraryDatabase {
     String? processedPath,
     String? text,
     List<PageWord> words = const <PageWord>[],
+    List<double>? quad,
     int? width,
     int? height,
   }) {
@@ -255,10 +257,16 @@ class LibraryDatabase {
     );
   }
 
-  void setPageProcessed(int pageId, String processedPath) {
+  /// Records a new warp of a page, from new corners.
+  ///
+  /// Clears the restored flag on purpose: the old restored image described a
+  /// different rectangle, so the page goes back into the queue.
+  void setPageProcessed(int pageId, String processedPath,
+      {List<double>? quad}) {
     _db.execute(
-      'UPDATE pages SET processed_path = ?, restored = 0 WHERE id = ?',
-      <Object?>[processedPath, pageId],
+      'UPDATE pages SET processed_path = ?, restored = 0'
+      '${quad == null ? '' : ', quad = ?'} WHERE id = ?',
+      <Object?>[processedPath, if (quad != null) jsonEncode(quad), pageId],
     );
   }
 
@@ -268,7 +276,7 @@ class LibraryDatabase {
   List<ScanPage> pagesOf(int documentId) => _db
       .select(
         'SELECT id, document_id, position, original_path, processed_path, '
-        'restored, text, words, width, height '
+        'restored, quad, text, words, width, height '
         'FROM pages WHERE document_id = ? ORDER BY position',
         <Object?>[documentId],
       )
@@ -279,6 +287,7 @@ class LibraryDatabase {
             originalPath: row['original_path'] as String,
             processedPath: row['processed_path'] as String?,
             restored: (row['restored'] as int? ?? 0) != 0,
+            quad: _decodeQuad(row['quad'] as String?),
             text: row['text'] as String?,
             words: _decodeWords(row['words'] as String?),
             width: row['width'] as int?,
@@ -350,6 +359,14 @@ class LibraryDatabase {
         .toList();
     if (terms.isEmpty) return null;
     return terms.map((t) => '"$t"*').join(' AND ');
+  }
+
+  static List<double>? _decodeQuad(String? json) {
+    if (json == null || json.isEmpty) return null;
+    final values = (jsonDecode(json) as List).cast<num>();
+    return values.length == 8
+        ? values.map((v) => v.toDouble()).toList(growable: false)
+        : null;
   }
 
   static String? _encodeWords(List<PageWord> words) =>
