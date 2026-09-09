@@ -122,10 +122,15 @@ colour page:
 | JPEG encode (pure Dart) | 904 ms |
 | **Total** | **~1.7 s** |
 
-Encoding is now the largest single term. Encoding natively would take it to
-roughly 100 ms; it is not done yet because it would put an image codec in a
-package that should not have one, or untested native glue in the application.
-The number is recorded rather than the problem half-fixed.
+Encoding was the largest single term, so it now goes through the platform's own
+encoder — `Bitmap.compress` on Android, `UIImage.jpegData` on iOS — via a
+channel the application owns (DECISIONS.md D-038). The Dart encoder remains as
+a real fallback, and the pipeline records which one ran, as `encode:native` or
+`encode:dart`.
+
+**How fast the native path actually is has not been measured**, because that
+needs a device. What is measured is what it replaces: ~900 ms of pure Dart for
+a 6.8 MP page. `UNVERIFIED.md` U-35.
 
 All of this runs in an isolate, so it is a progress bar rather than a frozen
 interface — a difference invisible in a benchmark and very visible in the hand.

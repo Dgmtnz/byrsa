@@ -7,7 +7,10 @@ import 'dart:ui' as ui;
 
 import 'package:byrsa_restore/byrsa_restore.dart';
 import 'package:flutter/foundation.dart';
+import 'package:flutter/services.dart';
 import 'package:image/image.dart' as img;
+
+import 'native_codec.dart';
 
 /// Reading and writing page images, and running restoration off the UI thread.
 ///
@@ -102,6 +105,10 @@ class ImageIo {
         quality: jpegQuality,
         filter: filter,
         dewarpModelPath: dewarpModelPath,
+        // A background isolate has no platform channel until it is given the
+        // root isolate's token. Without this the native encoder is simply
+        // unreachable and the Dart one runs, which is correct but slow.
+        rootIsolateToken: RootIsolateToken.instance,
       ),
     );
 
@@ -109,6 +116,7 @@ class ImageIo {
       path: outputPath,
       width: image.width,
       height: image.height,
+      encoder: result.encoder,
       stages: <StageOutcome>[
         StageOutcome(id: 'decode', duration: decodeTime),
         ...result.stages,
@@ -139,12 +147,16 @@ class RestoreOutcome {
     required this.width,
     required this.height,
     required this.stages,
+    required this.encoder,
   });
 
   final String path;
   final int width;
   final int height;
   final List<StageOutcome> stages;
+
+  /// Which encoder wrote the file. Part of any timing that is reported.
+  final JpegEncoder encoder;
 
   Duration get total =>
       stages.fold(Duration.zero, (sum, stage) => sum + stage.duration);
@@ -161,6 +173,7 @@ class _RestoreRequest {
     required this.quality,
     required this.filter,
     required this.dewarpModelPath,
+    required this.rootIsolateToken,
   });
 
   final Uint8List pixels;
@@ -171,12 +184,14 @@ class _RestoreRequest {
   final int quality;
   final PageFilter filter;
   final String? dewarpModelPath;
+  final RootIsolateToken? rootIsolateToken;
 }
 
 class _RestoreReply {
-  const _RestoreReply(this.stages);
+  const _RestoreReply(this.stages, this.encoder);
 
   final List<StageOutcome> stages;
+  final JpegEncoder encoder;
 }
 
 /// Expands a grayscale buffer to RGB, or returns an RGB one untouched.
@@ -211,25 +226,46 @@ Future<_RestoreReply> _restoreAndEncode(_RestoreRequest request) async {
   final restored = await pipeline.run(input);
 
   final watch = Stopwatch()..start();
-  final encoded = img.encodeJpg(
-    img.Image.fromBytes(
+
+  // Always three channels, even for a grayscale page. Measured: handing an
+  // encoder a single-channel image still produces a three-component JPEG, and
+  // a file twice the size. Expanding it ourselves costs one pass and leaves
+  // the chroma flat, which is what JPEG compresses to almost nothing.
+  final rgb = _asRgb(restored.image);
+
+  final token = request.rootIsolateToken;
+  var encoder = JpegEncoder.dart;
+  if (token != null) {
+    BackgroundIsolateBinaryMessenger.ensureInitialized(token);
+    final written = await const NativeCodec().encodeJpeg(
+      rgb: rgb,
       width: restored.image.width,
       height: restored.image.height,
-      // Always three channels, even for a grayscale page. Measured: handing
-      // the encoder a single-channel image still produces a three-component
-      // JPEG, and a file twice the size. Expanding it ourselves costs one
-      // pass and leaves the chroma flat, which is what JPEG compresses to
-      // almost nothing.
-      bytes: _asRgb(restored.image).buffer,
-      numChannels: 3,
-      order: img.ChannelOrder.rgb,
-    ),
-    quality: request.quality,
-  );
-  File(request.outputPath).writeAsBytesSync(encoded);
+      path: request.outputPath,
+      quality: request.quality,
+    );
+    if (written != null) encoder = JpegEncoder.native;
+  }
+
+  if (encoder == JpegEncoder.dart) {
+    // The fallback, and it is a real one: it runs on a platform with no
+    // channel, and whenever the native encoder refuses.
+    File(request.outputPath).writeAsBytesSync(
+      img.encodeJpg(
+        img.Image.fromBytes(
+          width: restored.image.width,
+          height: restored.image.height,
+          bytes: rgb.buffer,
+          numChannels: 3,
+          order: img.ChannelOrder.rgb,
+        ),
+        quality: request.quality,
+      ),
+    );
+  }
 
   return _RestoreReply(<StageOutcome>[
     ...restored.outcomes,
-    StageOutcome(id: 'encode', duration: watch.elapsed),
-  ]);
+    StageOutcome(id: 'encode:${encoder.name}', duration: watch.elapsed),
+  ], encoder);
 }

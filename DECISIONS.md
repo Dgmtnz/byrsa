@@ -834,3 +834,32 @@ anotados con su riesgo (U-33), no escondidos.
 
 Si el spike en dispositivo dice que `pickFirsts` no es seguro, la salida es la API de Java
 **como respaldo solo de Android**, no como sustitución.
+
+---
+
+## D-038 · Codificar el JPEG lo hace la plataforma, con respaldo en Dart
+**Fecha:** 2026-09-09 · **Estado:** ratificar
+
+Codificar una página de 6,8 MP en Dart puro cuesta ~900 ms, y era el término mayor de lo
+que tarda un escaneo desde que se captura hasta que se ve bien. El codificador de la
+plataforma —`Bitmap.compress` en Android, `UIImage.jpegData` en iOS— ya está en todos los
+dispositivos.
+
+**Dónde vive:** en la app, como canal propio (`dev.byrsa/codec`), no en un paquete. Un
+plugin de captura no tiene por qué llevar un códec de imagen; `byrsa_restore` es Dart puro
+a propósito (D-020, y D-037 es lo que pasa cuando un paquete se trae lo suyo); y un
+paquete de ochenta líneas con un solo consumidor es un paquete que no ha pedido nadie. Si
+aparece un segundo consumidor, es mover un fichero.
+
+**El respaldo no es decorativo.** Si el canal no está —plataforma sin implementar, isolate
+sin messenger, el codificador se niega— se usa el de Dart. Un fallo aquí cuesta velocidad,
+nunca el escaneo. Y **cuál de los dos corrió se registra en la etapa** (`encode:native` o
+`encode:dart`), porque un benchmark que no dice cuál se usó no está diciendo gran cosa.
+
+**Detalle que hay que saber:** un isolate de fondo no tiene canal de plataforma hasta que
+se le pasa el `RootIsolateToken` del isolate raíz y se llama a
+`BackgroundIsolateBinaryMessenger.ensureInitialized`. Sin eso el camino nativo es
+sencillamente inalcanzable y corre el de Dart — correcto, y lento.
+
+**Sin medir todavía:** el tiempo real del codificador nativo. Necesita dispositivo (U-35).
+Lo único que se afirma aquí es lo que cuesta el de Dart, que sí está medido.
