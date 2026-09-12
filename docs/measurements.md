@@ -258,6 +258,65 @@ Flutter generates, because that one evaluates every plugin project and an
 `afterEvaluate` registered afterwards never runs. The one-line real fix is
 drafted in `docs/upstream/onnxruntime-flutter-compilesdk.md`.
 
+## 2026-09-12 — DocShadow, and the first decision the dataset blocks
+
+Plan §4.3 names DocShadow-SD7K and calls shadows "80% of the perceived effect".
+Measured, it cannot be shipped — and the reason is arithmetic, not quality.
+
+`image` `[batch, 3, height, width]` in, `result` `[batch, 3, height, width]`
+out: an image the size of the input, the same shape that disqualified UVDoc's
+image export. **10,612 nodes**, against 259 for the UVDoc grid.
+
+| Input | Time | Peak RSS |
+|---|---|---|
+| loading the session | 2,606 ms | 338 MB |
+| 256×256 (0.07 MP) | 251 ms | 344 MB |
+| 384×512 (0.20 MP) | 689 ms | 368 MB |
+| 576×768 (0.44 MP) | 1,854 ms | 430 MB |
+| 768×1024 (0.79 MP) | **3,566 ms** | 534 MB |
+
+The application processes 6.8 MP. Quantisation shrinks the weights, not the
+operation count, so it does not close a gap of this size.
+
+### The trick that works, and is not enough
+
+Shadow removal is a low-frequency correction, like the paper-colour field in
+D-029. Running the model small, taking the **ratio** of output to input as a
+gain field, and applying that at full resolution costs 5× less and stays close
+to the direct result: **27.0 dB** with analysis at 384×512, 697 ms against
+3,597 ms. Good architecture, recorded for any future illumination model. It
+still inherits the model's quality.
+
+### Against the classical baseline
+
+Synthetic 768×1024 page, PSNR against the un-shadowed original:
+
+| | multiplicative shadow | physical shadow |
+|---|---|---|
+| untouched | 11.0 dB | 9.5 dB |
+| **classical (already written)** | **25.7 dB** · 128 ms | **24.4 dB** · 124 ms |
+| DocShadow direct | 17.0 dB · 3,445 ms | 18.5 dB · 3,165 ms |
+| DocShadow gain field | 16.6 dB · 664 ms | 20.7 dB · 670 ms |
+| gain field then classical | 20.5 dB · 792 ms | 23.0 dB · 794 ms |
+
+The second column is built specifically to break the classical method's
+assumption — additive ambient light, a blue tint and a wide penumbra, none of
+which dividing by a background inverts. It still wins by 5.9 dB at a
+twenty-fifth of the cost.
+
+**What this does not show.** Both pages are synthetic, and DocShadow was
+trained on real photographs; a model can score badly on synthetic data and well
+on real. The test page is flat white paper with pure black text, which is an
+unrealistically easy target for background division. And PSNR needs a clean
+original, which the fifty real photographs will not have — the real benchmark
+is CER.
+
+So the conclusion splits. **Settled:** DocShadow-SD7K is not shipped; that is
+architecture, not data. **Blocked:** whether any shadow network earns 120 MB.
+Only the fifty photographs answer that, and it is the first engineering
+decision that dataset gates rather than a marketing claim (`UNVERIFIED.md`
+U-36).
+
 ### Test suite
 
 | What | Value |

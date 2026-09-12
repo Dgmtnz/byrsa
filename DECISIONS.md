@@ -863,3 +863,87 @@ sencillamente inalcanzable y corre el de Dart — correcto, y lento.
 
 **Sin medir todavía:** el tiempo real del codificador nativo. Necesita dispositivo (U-35).
 Lo único que se afirma aquí es lo que cuesta el de Dart, que sí está medido.
+
+---
+
+## D-039 · DocShadow-SD7K queda descartado por coste, y la calidad no se puede decidir sin las 50 fotos
+**Fecha:** 2026-09-12 · **Estado:** ratificar
+**Cierra la otra mitad de T2, y no como esperaba el plan**
+
+§4.3 dice que las sombras son "el 80% del efecto percibido" y nombra DocShadow-SD7K.
+Medido, no sirve — y el motivo no es la calidad sino la aritmética.
+
+### El contrato
+
+Entrada `image` `[batch, 3, height, width]`, espacial dinámica. Salida `result`
+`[batch, 3, height, width]`: **una imagen del tamaño de la entrada**. Mismo patrón que
+hizo inservible el export de imagen de UVDoc (D-037), y **10.612 nodos** frente a los 259
+del grid de UVDoc.
+
+### El coste, en CPU de sobremesa con cuatro hilos
+
+| Entrada | Tiempo | RSS pico |
+|---|---|---|
+| cargar la sesión | 2.606 ms | 338 MB |
+| 256×256 (0,07 MP) | 251 ms | 344 MB |
+| 384×512 (0,20 MP) | 689 ms | 368 MB |
+| 576×768 (0,44 MP) | 1.854 ms | 430 MB |
+| 768×1024 (0,79 MP) | **3.566 ms** | 534 MB |
+
+La app procesa 6,8 MP. Extrapolando: decenas de segundos aquí y **minutos** en un móvil,
+más 120 MB de descarga. La cuantización no cierra un hueco de ese tamaño; reduce el peso
+del modelo, no el número de operaciones.
+
+### La idea que sí funciona, y que no basta
+
+Quitar sombras es una corrección de **baja frecuencia**, igual que el fondo de D-029. Si
+el modelo corre en pequeño y de ahí se saca un **campo de ganancia** —el cociente entre
+salida y entrada— que se reescala y se aplica a resolución completa, el coste cae 5× y la
+salida se parece a la directa: **27,0 dB** con análisis a 384×512, 697 ms frente a
+3.597 ms.
+
+Es buena arquitectura y está anotada para cualquier modelo de iluminación futuro. Pero
+hereda la calidad del modelo, y ahí está el problema.
+
+### Contra la línea base clásica
+
+Página sintética 768×1024, PSNR contra el original sin sombra, dos modelos físicos de
+sombra distintos:
+
+| | multiplicativa | física (atenuación + ambiente aditivo + tinte) |
+|---|---|---|
+| sin tocar | 11,0 dB | 9,5 dB |
+| **clásico (ya escrito)** | **25,7 dB** · 128 ms | **24,4 dB** · 124 ms |
+| DocShadow directo | 17,0 dB · 3.445 ms | 18,5 dB · 3.165 ms |
+| DocShadow campo de ganancia | 16,6 dB · 664 ms | 20,7 dB · 670 ms |
+| ganancia + clásico encima | 20,5 dB · 792 ms | 23,0 dB · 794 ms |
+
+El segundo escenario está construido a propósito para **romper** la suposición del método
+clásico: la sombra no es multiplicativa, lleva luz ambiente aditiva, tinte azul y una
+penumbra ancha, que es justo lo que dividir por el fondo no invierte. Aun así el clásico
+gana por 5,9 dB a 1/25 del coste.
+
+### Lo que esto NO demuestra
+
+Honestidad sobre el límite de la prueba, porque es grande:
+
+- **Las dos páginas son sintéticas.** DocShadow se entrenó con fotografías reales (SD7K).
+  Un modelo puede puntuar mal con datos sintéticos y bien con reales.
+- Mi página tiene papel blanco plano y texto negro puro: un objetivo irrealmente fácil
+  para la división por el fondo.
+- La métrica es PSNR contra un original limpio, que las 50 fotos reales **no tendrán**.
+  El benchmark de verdad usa CER, como dice el plan.
+
+Por eso la decisión se parte en dos:
+
+**Decidido, y no se re-litiga:** DocShadow-SD7K no se envía. Es aritmética de arquitectura,
+no de datos, y ningún matiz de sintético-contra-real la toca.
+
+**Sin decidir, y bloqueado:** si alguna red de sombras merece los 120 MB. Eso solo lo
+contestan las 50 fotografías reales medidas por CER (U-36). Es la primera vez que el set
+de evaluación bloquea una decisión de ingeniería en vez de una afirmación de marketing.
+
+**Consecuencia para §4.3 del plan:** la frase "DocShadow-SD7K → es el 80% del efecto
+percibido" no se sostiene con lo medido y hay que reescribirla antes de que llegue al
+formulario. Lo que sí se sostiene, y con números, es la otra mitad del párrafo: la
+normalización clásica de iluminación es barata y buena.

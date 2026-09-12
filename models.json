@@ -41,8 +41,10 @@
       "sha256": "8c09b9320a0fb3c53806cdf9cb8410b3706c77caed81f4ec1cb0bf2cbd14b049",
       "license": "MIT",
       "source": "https://github.com/fabio-sim/DocShadow-ONNX-TensorRT",
-      "description": "Shadow removal, SD7K weights. 120 MB as exported in fp32 — four times UVDoc, and far too large to ship as-is. Quantisation is not an optimisation here, it is the precondition for using it at all.",
-      "pinnedOn": "2026-09-08"
+      "description": "Shadow removal, SD7K weights, 120 MB fp32. Kept in the manifest rather than deleted because 'we measured this and rejected it' is more useful to the next person than an absence. The quality question is not settled — only real photographs can settle it — but the cost question is, and it is decided.",
+      "pinnedOn": "2026-09-08",
+      "usable": false,
+      "notUsableReason": "Measured 2026-09-09..12: disqualified on cost, before quality even enters the argument. 10,612 nodes; the output is an image the size of the input, so a full-resolution page needs a full-resolution tensor. On a desktop CPU with four threads: 0.79 MP costs 3,566 ms and 534 MB of peak RSS, and loading the session alone is 2,606 ms and 338 MB. The application processes 6.8 MP. Extrapolated, that is tens of seconds on a desktop and minutes on a phone. Quantisation does not close a gap that size. A low-resolution gain field makes it 5x cheaper and still leaves a 120 MB download for a stage that did not beat the classical baseline on either synthetic test."
     },
     {
       "id": "ppocr-v5-det",
