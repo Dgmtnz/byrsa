@@ -229,7 +229,10 @@ that ships.
 
 The choice is therefore made deterministically instead: the Dart package's
 vendored copy is dropped at its source, so only the AAR's survives and both
-bindings share ONNX Runtime 1.27.0. Verified by unzipping the release APK — the
+bindings share ONNX Runtime 1.27.0. Asserted, not assumed: CI builds a release
+APK and `tool/check_native_collisions.sh` reads the version string out of every
+`libonnxruntime.so` in it, failing on anything but 1.27.0. Verified by
+unzipping the release APK — the
 27,985,944-byte library is the one present, paired with the JNI shim that was
 built against it.
 

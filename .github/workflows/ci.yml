@@ -97,6 +97,29 @@ jobs:
         working-directory: app
         run: flutter build apk --debug
 
+      # Everything below is release, and that is the point. Both ONNX failures
+      # this project has hit — the jniLibs collision and the plugin's stale
+      # compileSdk — pass in debug and fail in release, which means a
+      # debug-only pipeline is structurally blind to the class of bug that
+      # stops a shipment. One ABI keeps it quick.
+      - name: Build the application for release
+        working-directory: app
+        run: flutter build apk --release --target-platform android-arm64
+
+      - name: One ONNX Runtime, and the right one
+        # When the wrong build wins the merge the APK gets 13 MB *smaller* and
+        # nothing looks wrong, so this is an assertion rather than a comment.
+        run: >-
+          tool/check_native_collisions.sh
+          app/build/app/outputs/flutter-apk/app-release.apk
+
+      - name: No Google Play Services in the release build
+        # Stronger than the debug check above: R8 has run, so this is the
+        # artifact a distribution would actually receive.
+        run: >-
+          tool/check_no_play_services.sh
+          app/build/app/outputs/flutter-apk/app-release.apk
+
   ios:
     needs: flutter-version
     runs-on: macos-latest
