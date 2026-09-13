@@ -43,3 +43,8 @@ harness/dataset/private/
 .idea/
 **/example/.idea/
 .metadata
+
+# Stray fetches. Downloaded pages belong in
+# a scratch directory, and one reached a commit before this line existed.
+/*.html
+/*.tmp

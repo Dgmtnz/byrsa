@@ -57,6 +57,7 @@ Packages are Apache-2.0 so that anyone can adopt them; the application is
 GPL-3.0-or-later. The repository is [REUSE](https://reuse.software) compliant —
 every file carries an SPDX header or a `REUSE.toml` entry.
 
+
 ## Repository layout
 
 ```
