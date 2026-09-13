@@ -21,7 +21,7 @@ solicitud, en `docs/application-notes.md`.
 |---|---|---|
 | §4.1: "no lo reimplementes, forkea `doclens`" | `doclens` 0.0.9 declara `play-services-mlkit-*` como dependencia Gradle **incondicional**. Cualquier app que lo use mete Play Services en el APK. Gana §0.1: `byrsa_capture` lleva detector propio, y el arreglo se propone upstream | D-017 |
 | §11: "tamaño de app > 150 MB", probabilidad alta | **48,0 MB** en `arm64-v8a` release con splits por ABI, app completa, antes de descargar ningún modelo. Con 0 clases de Play Services tras R8 | D-026 |
-| §4.3: "DocShadow-SD7K ONNX" | **120.041.674 bytes** en fp32. La cuantización no es una optimización de T2, es la condición para poder usarlo | D-024 |
+| §4.3: "DocShadow-SD7K ONNX" · "es el 80% del efecto percibido" | **Descartado, medido.** 120.041.674 bytes en fp32 y 10.612 nodos; la salida es una imagen del tamaño de la entrada, así que 0,79 MP cuestan 3.566 ms y **534 MB de RSS pico** en un CPU de sobremesa. La app procesa 6,8 MP. No es un problema de cuantización: reduce los pesos, no las operaciones. Y en dos pruebas sintéticas el pipeline clásico le gana por 5,9-8,7 dB a 1/25 del coste. Si alguna red de sombras merece los 120 MB solo lo deciden las 50 fotos por CER | D-024, **D-039** |
 | §2/§4.4: "faltan idiomas y medición" sobre `mobile_ocr` | Además: no está en pub.dev, y pub.dev rechaza dependencias git. Resuelto invirtiendo la dependencia: `byrsa_ocr` es la API en Dart puro y **se publica hoy**; el motor vive en `byrsa_ocr_mobile_ocr`, que es el único que carga con el git | D-021, D-027 |
 | §3, tabla de stack: `drift`, `opencv_dart` | Ninguno de los dos entra por ahora: SQL a mano sobre `sqlite3` (FTS5 hay que escribirlo igual, y `build_runner` estorba a una build reproducible) y restauración clásica en Dart puro | D-022, D-020 |
 
@@ -81,7 +81,7 @@ La consecuencia se ve en el mercado: en Android hay media docena de opciones lib
 
 Y hay dos capacidades que **no existen en ningún sitio del ecosistema libre**, pese a que los modelos y los formatos son abiertos y están disponibles:
 
-1. **Rectificación geométrica y eliminación de sombras en el dispositivo.** Es lo que separa una foto de un papel de un escaneo legible. UVDoc y DocShadow existen como modelos abiertos y corren en móvil en ~300 ms. Nadie los ha empaquetado.
+1. **Rectificación geométrica y eliminación de sombras en el dispositivo.** Es lo que separa una foto de un papel de un escaneo legible. UVDoc existe como modelo abierto, y en el export correcto —el que devuelve un grid de muestreo, no una imagen— cuesta 173 ms y 127 MB (D-037). Nadie lo ha empaquetado. Para sombras la respuesta medida resultó ser otra: la normalización clásica de iluminación gana a DocShadow en calidad y por veinticinco a uno en coste (D-039), así que lo que hay que empaquetar ahí no es una red.
 2. **Un escritor de capa de texto invisible en PDF en Dart puro.** Es lo que hace que un escaneo sea buscable, copiable y accesible a lectores de pantalla. No hay nada equivalente en el ecosistema Dart.
 
 Esas dos son el núcleo de la propuesta. Lo demás es integración.
@@ -95,7 +95,7 @@ Esta tabla es la que evita que plan, hitos y formulario se desincronicen. Si toc
 | Paquete | Tarea (solicitud) | Hito | Qué hace | Estado del arte hoy |
 |---|---|---|---|---|
 | `byrsa_capture` | T1 | M1 | Detección de bordes en vivo y corrección de perspectiva, sin Play Services | Parcial: `doclens` (MIT) resuelve la base; faltan lotes, ajuste manual de esquinas y API estable |
-| `byrsa_restore` | T2 | M3 | Rectificación (UVDoc) y eliminación de sombras (DocShadow) como ONNX cuantizado | **No existe** |
+| `byrsa_restore` | T2 | M3 | Rectificación (UVDoc, export de grid) y normalización de iluminación. La eliminación de sombras resultó no necesitar red: D-039 | **No existe** |
 | `byrsa_ocr` | T3 | M5 | OCR en dispositivo tras una API Dart única: Vision en iOS, PP-OCR ONNX en Android | Base: `ente-io/mobile_ocr` (MIT); faltan idiomas y medición |
 | `dart_searchable_pdf` | T4 | M4 | Capa de texto invisible (render mode 3) con métrica de fuente correcta | **No existe en Dart** |
 | **Byrsa** (app) | T5 | M6 | Implementación de referencia: biblioteca, carpetas, FTS, export, i18n, accesibilidad | — |
@@ -143,7 +143,7 @@ El dominio es Dart puro a propósito: es lo que permite testear el pipeline ente
 | Códigos | `mobile_scanner` | BSD-3 |
 | Sync | `webdav_client` | MIT |
 | Rectificación | UVDoc ONNX (~31 MB) | MIT |
-| Sombras | DocShadow-SD7K ONNX | ver repo |
+| Sombras | ~~DocShadow-SD7K ONNX~~ → normalización clásica | MIT (los pesos, por inferencia; licencia del dataset SD7K sin establecer). Descartado por coste, D-039 |
 
 **Licencia del proyecto:** GPLv3 para la app, **Apache-2.0 para los cuatro paquetes**. Un paquete Apache-2.0 se adopta; uno GPLv3 no lo toca nadie. La adopción es exactamente lo que Restack financia.
 
@@ -165,7 +165,7 @@ UVDoc en ONNX. Hace su propio downscale interno a 712×488 y reescala el grid; *
 
 ### 4.3 Eliminación de sombras y suciedad
 Tres problemas que Adobe vende como uno:
-- **Sombras** → DocShadow-SD7K ONNX. Es el 80% del efecto percibido.
+- **Sombras** → **la normalización clásica, no una red.** Esto era "DocShadow-SD7K ONNX, el 80% del efecto percibido" hasta medirlo, y no se sostiene: 534 MB de pico a 0,79 MP y peor calidad que dividir por el fondo estimado en dos modelos de sombra distintos, uno de ellos construido a propósito para romper la suposición del método clásico (D-039). Lo que sigue en pie es que las sombras son el efecto percibido dominante — solo que la herramienta correcta es barata. Si alguna red merece los 120 MB lo deciden las 50 fotos por CER, no una intuición.
 - **Manchas y arrugas** → normalización de iluminación local (CLAHE + división por fondo estimado con blur gaussiano grande). Clásico, barato, mejora todos los escaneos. **Empieza por aquí: es una tarde, y es la línea base contra la que se mide todo lo demás en M2.**
 - **Dedos en el borde** → máscara HSV de piel + `cv.inpaint` (Telea). Llega sorprendentemente lejos sin red neuronal.
 
@@ -227,7 +227,7 @@ NLnet paga contra hitos. Esta es la estructura que propondrías en el MoU si te 
 |---|---|---|
 | **M1** | T1 | `byrsa_capture` publicado en pub.dev. Captura y perspectiva funcionando **medidas en Android**, implementación iOS completa y compilable en CI, sin Play Services. Demo compilable. |
 | **M2** | T6 | Set de 50 documentos + harness público. Línea base medida con el pipeline clásico (§4.3). |
-| **M3** | T2 | `byrsa_restore` publicado. UVDoc y DocShadow cuantizados en gama media, con benchmark de tiempo y memoria y límites documentados. |
+| **M3** | T2 | `byrsa_restore` publicado. UVDoc en gama media con benchmark de tiempo y memoria y límites documentados, y la línea base clásica medida contra él. DocShadow ya no forma parte del hito: descartado con números en D-039, que es un resultado del hito y no un incumplimiento. |
 | **M4** | T4 | `dart_searchable_pdf` publicado. PDFs validados en Poppler, Chrome, pdf.js y — con la máquina disponible — Acrobat y Preview. |
 | **M5** | T3 | `byrsa_ocr` publicado, con cobertura y CER medidos para español, inglés, francés, alemán, italiano y portugués. |
 | **M6** | T5 | App Byrsa v1.0: biblioteca, carpetas, FTS, export, i18n, accesibilidad. Build reproducible, REUSE compliant, publicada en F-Droid y GitHub Releases. Informe final de evaluación. |
@@ -418,9 +418,11 @@ adjustment and a stable Dart API. No dependency on Google Play Services,
 so the output is usable in F-Droid and other independent distributions.
 
 T2 - Geometric rectification and shadow removal. [X] hours.
-Packaging UVDoc (page dewarping) and DocShadow (shadow removal) as
-quantised ONNX models that run on mid-range phones, released as
-`byrsa_restore`. This is the part no free scanner currently has, and the
+Packaging UVDoc (page dewarping) as a quantised ONNX model that runs on
+mid-range phones, released as `byrsa_restore`, alongside a classical
+illumination pipeline. Measuring which of the two a given problem needs is part
+of the task rather than an assumption: shadow removal already turned out not to
+need a network, and that result is the deliverable. This is the part no free scanner currently has, and the
 part that decides whether a photograph of a page is actually readable.
 Includes quantisation, memory profiling and a reproducible benchmark.
 
