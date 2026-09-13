@@ -4,6 +4,7 @@
 import 'dart:io';
 
 import 'package:byrsa_restore/byrsa_restore.dart';
+import 'package:byrsa_restore_onnx/byrsa_restore_onnx.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {

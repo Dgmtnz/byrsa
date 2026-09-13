@@ -17,4 +17,3 @@ export 'src/image_buffer.dart';
 export 'src/model_catalog.dart';
 export 'src/model_store.dart';
 export 'src/pipeline.dart';
-export 'src/uvdoc_stage.dart';

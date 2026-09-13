@@ -4,7 +4,7 @@
 import 'dart:typed_data';
 
 import 'package:byrsa_restore/byrsa_restore.dart';
-import 'package:flutter_test/flutter_test.dart';
+import 'package:test/test.dart';
 
 /// A source image whose pixel value encodes its own position, so a remap can
 /// be checked by reading the answer rather than by eyeballing it.

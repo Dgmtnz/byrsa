@@ -317,6 +317,34 @@ Only the fifty photographs answer that, and it is the first engineering
 decision that dataset gates rather than a marketing claim (`UNVERIFIED.md`
 U-36).
 
+## 2026-09-13 — the harness runs, and there is a baseline
+
+The harness could score a run and could not produce one, so the pipeline had
+never been executed over a corpus at all. `harness run` now executes the
+shipped restoration over a dataset; `harness synth` generates pages with a
+known clean original so it can be done today.
+
+Six synthetic 1024×1400 pages, this laptop:
+
+| Filter | PSNR in | PSNR out | Gain | ms/page | KB/page |
+|---|---|---|---|---|---|
+| colour | 8.1 dB | 17.5 dB | **+9.4** | 544 | 367 |
+| grayscale | 8.1 dB | 17.7 dB | **+9.6** | 526 | 355 |
+| black and white | 8.1 dB | 17.7 dB | **+9.6** | 476 | **127** |
+
+Black and white gives the same gain in a file three times smaller.
+
+Both ends of the measurement are recorded, and that matters: contrast-limited
+equalisation deliberately moves the image *away* from the clean original — text
+darker and paper whiter than the page ever was — so it costs PSNR while
+improving readability. The absolute score means little; the distance travelled
+means something.
+
+**These are synthetic pages and not the evaluation set.** They have no text, so
+they measure restoration and never OCR, and the headline metric over the real
+fifty is character error rate. What they buy is that the tooling is debugged
+before the photographs exist rather than after.
+
 ### Test suite
 
 | What | Value |

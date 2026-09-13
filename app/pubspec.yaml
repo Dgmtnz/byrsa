@@ -18,6 +18,8 @@ dependencies:
     path: ../packages/byrsa_ocr_mobile_ocr
   byrsa_restore:
     path: ../packages/byrsa_restore
+  byrsa_restore_onnx:
+    path: ../packages/byrsa_restore_onnx
   dart_searchable_pdf:
     path: ../packages/dart_searchable_pdf
   flutter:

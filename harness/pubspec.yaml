@@ -11,6 +11,13 @@ resolution: workspace
 environment:
   sdk: ^3.6.0
 
+# byrsa_restore is pure Dart precisely so this can depend on it: the baseline
+# the harness measures has to be the same code the application ships, not a
+# reimplementation that drifts. See DECISIONS.md D-040.
+dependencies:
+  byrsa_restore: ^0.1.0
+  image: ^4.3.0
+
 dev_dependencies:
   lints: ^6.0.0
   test: ^1.25.0

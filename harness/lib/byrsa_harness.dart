@@ -8,3 +8,5 @@ export 'src/cer.dart';
 export 'src/dataset.dart';
 export 'src/report.dart';
 export 'src/results.dart';
+export 'src/runner.dart';
+export 'src/synthetic.dart';

@@ -10,6 +10,7 @@ workspace:
   - packages/byrsa_capture
   - packages/byrsa_capture/example
   - packages/byrsa_restore
+  - packages/byrsa_restore_onnx
   - packages/byrsa_restore/example
   - packages/byrsa_ocr
   - packages/byrsa_ocr_mobile_ocr

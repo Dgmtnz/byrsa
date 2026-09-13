@@ -4,7 +4,7 @@
 import 'dart:typed_data';
 
 import 'package:byrsa_restore/byrsa_restore.dart';
-import 'package:flutter_test/flutter_test.dart';
+import 'package:test/test.dart';
 
 class _Stage implements RestoreStage {
   _Stage(this.id, {this.unavailable, this.throws = false, this.delta = 1});

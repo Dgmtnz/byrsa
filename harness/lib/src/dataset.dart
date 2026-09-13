@@ -13,6 +13,7 @@ class DatasetDocument {
     required this.id,
     required this.file,
     required this.groundTruth,
+    this.groundTruthImage,
     required this.category,
     required this.language,
     required this.conditions,
@@ -25,6 +26,7 @@ class DatasetDocument {
         id: json['id']! as String,
         file: json['file']! as String,
         groundTruth: json['groundTruth']! as String,
+        groundTruthImage: json['groundTruthImage'] as String?,
         category: json['category'] as String? ?? 'unknown',
         language: json['language'] as String? ?? 'es',
         conditions:
@@ -40,6 +42,14 @@ class DatasetDocument {
 
   /// Path to the transcription a human typed, relative to the dataset directory.
   final String groundTruth;
+
+  /// A clean reference image, for synthetic documents only.
+  ///
+  /// A photograph of a page has no pixel-level ground truth for what the page
+  /// should look like — that is why the metric over the real fifty is character
+  /// error rate. Synthetic pages do have one, and it is what turns the
+  /// restoration into something with a regression guard.
+  final String? groundTruthImage;
 
   /// receipt, invoice, book-page, id-card, whiteboard, ...
   final String category;

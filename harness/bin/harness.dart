@@ -9,7 +9,10 @@
 // Scoring is separate from running the pipeline on purpose: a run happens on a
 // device and writes JSON, and the maths happens here. See DECISIONS.md D-019.
 
+import 'dart:convert';
 import 'dart:io';
+
+import 'package:byrsa_restore/byrsa_restore.dart';
 
 import 'package:byrsa_harness/byrsa_harness.dart';
 
@@ -17,13 +20,33 @@ const String _usage = '''
 byrsa evaluation harness
 
 Usage:
+  dart run harness/bin/harness.dart run [options]
   dart run harness/bin/harness.dart score --results <run.json> [options]
+  dart run harness/bin/harness.dart synth [options]
   dart run harness/bin/harness.dart validate
 
 Commands:
+  run        Execute the restoration pipeline over the dataset and write a run
+             file. Runs the same code the application ships. No OCR engine
+             here, so character error rate is left to a run from a device.
   score      Score a run against the dataset and write a report.
+  synth      Generate a synthetic corpus with clean originals. NOT the
+             evaluation set — it exists so the pipeline can be exercised and
+             regressions caught before the fifty photographs exist.
   validate   Check the dataset manifest: files present, ground truth readable,
              licences declared, publishable flags consistent.
+
+Options for run:
+  --dataset <dir>    Dataset directory.       (default: harness/dataset)
+  --out <path>       Run file to write.       (default: harness/out/run.json)
+  --images <dir>     Where to keep restored images. Omit to skip writing them.
+  --filter <name>    colour | grayscale | blackAndWhite   (default: colour)
+  --analysis <px>    Analysis width for the restoration.  (default: 512)
+  --device <text>    What produced this run. Be specific.
+
+Options for synth:
+  --out <dir>        Where to generate.       (default: harness/synthetic)
+  --count <n>        How many documents.      (default: 10)
 
 Options for score:
   --results <path>   Run output produced on a device.        (required)
@@ -56,6 +79,59 @@ void main(List<String> arguments) {
       stdout
         ..writeln(renderMarkdown(card))
         ..writeln('Wrote $base.{md,csv,json}');
+
+    case 'run':
+      final dataset = Dataset.load(
+        Directory(options['dataset'] ?? 'harness/dataset'),
+      );
+      if (dataset.documents.isEmpty) {
+        _fail('The dataset at ${dataset.directory.path} has no documents. '
+            'Generate a synthetic one with `synth`, or point --dataset at the '
+            'real set once the photographs exist.');
+      }
+      final filterName = options['filter'] ?? 'colour';
+      final filter = PageFilter.values.firstWhere(
+        (value) => value.name == filterName,
+        orElse: () => _fail('Unknown --filter "$filterName". Use '
+            '${PageFilter.values.map((v) => v.name).join(", ")}.'),
+      );
+      final runner = PipelineRunner(
+        filter: filter,
+        analysisWidth: int.tryParse(options['analysis'] ?? '') ?? 512,
+        writeOutput: options['images'] != null,
+      );
+      final results = runner.run(
+        dataset,
+        runId: options['run-id'] ??
+            'local-${filter.name}-${dataset.documents.length}',
+        device: options['device'] ?? 'unspecified host, `harness run`',
+        outputDirectory:
+            options['images'] == null ? null : Directory(options['images']!),
+        onDocument: (done, total, id) => stdout.writeln('  [$done/$total] $id'),
+      );
+
+      final outPath = options['out'] ?? 'harness/out/run.json';
+      File(outPath).parent.createSync(recursive: true);
+      File(outPath).writeAsStringSync(
+        '${const JsonEncoder.withIndent('  ').convert(results.toJson())}\n',
+      );
+      stdout
+        ..writeln()
+        ..writeln('Wrote $outPath')
+        ..writeln('Score it: dart run harness/bin/harness.dart score '
+            '--results $outPath --dataset ${dataset.directory.path}');
+
+    case 'synth':
+      final target = Directory(options['out'] ?? 'harness/synthetic');
+      final count = int.tryParse(options['count'] ?? '') ?? 10;
+      const SyntheticCorpus().write(target, count: count);
+      stdout
+        ..writeln('Generated $count synthetic documents in ${target.path}')
+        ..writeln('These are NOT the evaluation set. They have a clean '
+            'original and no text, so they measure restoration and not OCR.')
+        ..writeln()
+        ..writeln('  dart run harness/bin/harness.dart run '
+            '--dataset ${target.path}');
 
     case 'validate':
       final problems = _validate(datasetDir);

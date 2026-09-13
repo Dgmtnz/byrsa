@@ -44,10 +44,12 @@ jobs:
       - run: flutter analyze
       - run: dart format --output=none --set-exit-if-changed .
       - name: Pure-Dart packages, no Flutter needed
-        run: dart test packages/dart_searchable_pdf packages/byrsa_ocr harness
+        run: >-
+          dart test packages/dart_searchable_pdf packages/byrsa_ocr
+          packages/byrsa_restore harness
       - name: Flutter packages and the application
         run: >-
-          flutter test packages/byrsa_capture packages/byrsa_restore
+          flutter test packages/byrsa_capture packages/byrsa_restore_onnx
           packages/byrsa_ocr_mobile_ocr app
 
       - name: The publishable packages are still publishable
@@ -57,6 +59,7 @@ jobs:
         run: |
           (cd packages/dart_searchable_pdf && dart pub publish --dry-run)
           (cd packages/byrsa_ocr && dart pub publish --dry-run)
+          (cd packages/byrsa_restore && dart pub publish --dry-run)
 
       - name: Dataset manifest is consistent
         run: dart run harness/bin/harness.dart validate

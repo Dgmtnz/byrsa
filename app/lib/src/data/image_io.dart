@@ -6,6 +6,7 @@ import 'dart:math' as math;
 import 'dart:ui' as ui;
 
 import 'package:byrsa_restore/byrsa_restore.dart';
+import 'package:byrsa_restore_onnx/byrsa_restore_onnx.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:image/image.dart' as img;

@@ -947,3 +947,82 @@ de evaluación bloquea una decisión de ingeniería en vez de una afirmación de
 percibido" no se sostiene con lo medido y hay que reescribirla antes de que llegue al
 formulario. Lo que sí se sostiene, y con números, es la otra mitad del párrafo: la
 normalización clásica de iluminación es barata y buena.
+
+---
+
+## D-040 · `byrsa_restore` vuelve a ser Dart puro, y la etapa ONNX se va aparte
+**Fecha:** 2026-09-13 · **Estado:** ratificar
+**Misma forma que D-027, y esta vez bloqueaba un hito**
+
+Al ir a construir el corredor del harness apareció el problema: `byrsa_restore` dependía
+de Flutter, así que **un CLI de Dart puro no podía ejecutar el pipeline clásico** — la
+línea base de M2, justamente lo que el harness existe para medir.
+
+Al mirar qué lo ataba, la respuesta fue vergonzosamente pequeña: **un solo fichero**.
+`uvdoc_stage.dart` importaba `onnxruntime`, que es un plugin de Flutter. Todo lo demás
+—`ImageBuffer`, `ClassicalRestore`, el remapeo, `ModelCatalog`, `ModelStore`— solo usa
+`crypto`, `meta` y `path`. Y `flutter`, `path_provider` y `plugin_platform_interface`
+estaban en el pubspec **sin que nadie los importara**.
+
+```
+byrsa_restore        imagen, filtros, dewarp, catálogo   Dart puro · dart test · publicable
+byrsa_restore_onnx   UvdocStage + onnxruntime            Flutter, y solo por eso
+```
+
+**Por qué importa más de lo que parece:** ONNX Runtime no llega solo. Trae Flutter, un
+plugin nativo y —según D-037— una colisión de bibliotecas que únicamente falla en release.
+Que todo eso viajara con el procesamiento de imagen era contagio, no diseño.
+
+**Y el harness usa el mismo código que la app, no una reimplementación.** Una segunda
+copia de la aritmética se separa de la primera y el número deja de describir el producto
+en silencio. Es la razón entera por la que este paquete tiene que quedarse en Dart puro.
+
+Resultado: 42 tests de `byrsa_restore` corren con `dart test`, tres dependencias sin usar
+desaparecen, y el paquete pasa a ser publicable como `byrsa_ocr` tras D-027.
+
+---
+
+## D-041 · El harness ejecuta el pipeline, y hay un corpus sintético para poder hacerlo hoy
+**Fecha:** 2026-09-13 · **Estado:** ratificar
+
+El harness era **solo un puntuador**: consumía un `run.json` que debía producir un
+dispositivo. No había forma de producir uno, así que el pipeline nunca se había ejecutado
+sobre un corpus y M2 no tenía manera de medirse.
+
+Ahora `harness run` ejecuta la restauración real sobre un dataset y escribe el run que
+`score` lee. `harness synth` genera páginas con **original limpio conocido**.
+
+**El corpus sintético no sustituye a las 50 fotos, y no puede.** Las capturas reales
+tienen grano de papel, desenfoque de lente, ruido de sensor y luz que ninguna fórmula
+reproduce, y la métrica de la serie real es CER, que necesita motor de OCR y glifos de
+verdad. Los ficheros de verdad-terreno textual de las páginas sintéticas se dejan
+**vacíos a propósito**: no se renderiza ninguna fuente, así que no hay texto que un OCR
+pudiera recuperar, y rellenarlos sería un test imposible de aprobar honestamente.
+
+Para lo que sirve es para lo que faltaba: que la tubería se ejecute hoy, que cada cambio
+en la restauración tenga guardia numérica, y que cuando lleguen las fotografías la
+herramienta ya esté depurada en vez de depurarse en el peor momento.
+
+**Dos modelos de sombra, y el segundo por una razón medida.** Una sombra puramente
+multiplicativa es justo lo que la división por el fondo invierte, así que medir solo
+contra eso adula al pipeline clásico (D-039). El modelo físico añade luz ambiente aditiva
+y tinte, que no invierte.
+
+**Se registran los dos extremos del PSNR, no solo el final.** CLAHE aleja la imagen del
+original limpio a propósito —oscurece el texto y blanquea el papel más de lo que la página
+fue nunca—, así que cuesta PSNR mientras mejora la legibilidad. El número absoluto no
+significa nada; la distancia recorrida sí.
+
+### Primera línea base medida del proyecto
+
+Seis páginas sintéticas de 1024×1400, en este portátil, con `harness run`:
+
+| Filtro | PSNR entrada | PSNR salida | Ganancia | ms/página | KB/página |
+|---|---|---|---|---|---|
+| color | 8,1 dB | 17,5 dB | **+9,4** | 544 | 367 |
+| gris | 8,1 dB | 17,7 dB | **+9,6** | 526 | 355 |
+| blanco y negro | 8,1 dB | 17,7 dB | **+9,6** | 476 | **127** |
+
+Blanco y negro da la misma ganancia en ficheros **tres veces más pequeños**. Es la
+primera vez que el proyecto compara sus propios filtros con números en vez de con
+intuición.

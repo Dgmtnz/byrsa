@@ -6,9 +6,7 @@ import 'dart:typed_data';
 
 import 'package:onnxruntime/onnxruntime.dart';
 
-import 'dewarp.dart';
-import 'image_buffer.dart';
-import 'pipeline.dart';
+import 'package:byrsa_restore/byrsa_restore.dart';
 
 /// Flattens a curved page, using UVDoc.
 ///

@@ -7,7 +7,7 @@ import 'dart:typed_data';
 
 import 'package:byrsa_restore/byrsa_restore.dart';
 import 'package:crypto/crypto.dart';
-import 'package:flutter_test/flutter_test.dart';
+import 'package:test/test.dart';
 
 /// Serves one blob, so the download path is exercised for real rather than
 /// mocked away. The interesting failures — a truncated file, a swapped blob —

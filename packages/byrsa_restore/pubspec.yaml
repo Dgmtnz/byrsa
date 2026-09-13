@@ -1,40 +1,32 @@
 name: byrsa_restore
 description: >-
-  On-device document restoration for Flutter: shadow removal and illumination
-  normalisation, plus geometric rectification with quantised ONNX models.
+  On-device document restoration in pure Dart: illumination normalisation,
+  shadow flattening, page filters, and grid-based dewarping.
 version: 0.1.0
 repository: https://github.com/dgmtnz/byrsa/tree/main/packages/byrsa_restore
 issue_tracker: https://github.com/dgmtnz/byrsa/issues
 topics:
   - image-processing
   - document
-  - onnx
   - scanner
+  - dewarping
 
 resolution: workspace
 
 environment:
   sdk: ^3.6.0
-  flutter: '>=3.24.0'
 
+# Pure Dart, and it has to stay that way. The pipeline in here is the baseline
+# every neural stage is measured against, so the evaluation harness — a plain
+# command-line program — must be able to run it. ONNX Runtime arrives as a
+# Flutter plugin and lives in `byrsa_restore_onnx` for exactly that reason.
+# See DECISIONS.md D-040.
 dependencies:
   crypto: ^3.0.5
-  # The spike this was added for is recorded in DECISIONS.md D-037: whether a
-  # second ONNX Runtime can live in the same APK as mobile_ocr's.
-  onnxruntime: ^1.4.1
-  flutter:
-    sdk: flutter
   meta: ^1.15.0
   path: ^1.9.0
-  path_provider: ^2.1.4
-  plugin_platform_interface: ^2.1.8
 
 dev_dependencies:
   image: ^4.3.0
-  flutter_lints: ^6.0.0
-  flutter_test:
-    sdk: flutter
-
-# No platform channels: this package is Dart all the way down. Neural stages
-# reach ONNX Runtime through its own FFI plugin, not through native code of
-# ours (DECISIONS.md D-020).
+  lints: ^6.0.0
+  test: ^1.25.0

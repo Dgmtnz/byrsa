@@ -31,6 +31,14 @@ class StageMeasurement {
   /// support — is recorded, not hidden. See DECISIONS.md D-016.
   final bool skipped;
   final String? skipReason;
+
+  Map<String, Object?> toJson() => <String, Object?>{
+        'name': name,
+        'milliseconds': milliseconds,
+        if (peakMemoryBytes != null) 'peakMemoryBytes': peakMemoryBytes,
+        if (skipped) 'skipped': true,
+        if (skipReason != null) 'skipReason': skipReason,
+      };
 }
 
 /// What the pipeline produced for one document.
@@ -40,6 +48,8 @@ class DocumentResult {
     required this.text,
     required this.stages,
     this.outputBytes,
+    this.psnr,
+    this.psnrInput,
   });
 
   factory DocumentResult.fromJson(Map<String, Object?> json) => DocumentResult(
@@ -50,6 +60,8 @@ class DocumentResult {
             .map(StageMeasurement.fromJson)
             .toList(),
         outputBytes: (json['outputBytes'] as num?)?.toInt(),
+        psnr: (json['psnr'] as num?)?.toDouble(),
+        psnrInput: (json['psnrInput'] as num?)?.toDouble(),
       );
 
   final String id;
@@ -57,8 +69,38 @@ class DocumentResult {
   final List<StageMeasurement> stages;
   final int? outputBytes;
 
+  /// Peak signal-to-noise ratio against a clean reference image, in dB.
+  ///
+  /// Only exists for synthetic documents, because only they have a clean
+  /// original to compare against. A real photograph has no ground truth for
+  /// its own pixels, which is why the headline metric over the fifty documents
+  /// is character error rate and not this.
+  final double? psnr;
+
+  /// The same measurement on the untouched capture.
+  ///
+  /// Without it the restored figure is uninterpretable. Contrast-limited
+  /// equalisation deliberately moves the image away from the clean original —
+  /// it makes text darker and paper whiter than the page ever was — so it costs
+  /// PSNR while improving readability. What means something is the distance
+  /// travelled, not the absolute score, and that is why both ends are recorded.
+  final double? psnrInput;
+
+  /// How much the pipeline improved the page, in dB.
+  double? get psnrGain =>
+      (psnr == null || psnrInput == null) ? null : psnr! - psnrInput!;
+
   double get totalMilliseconds =>
       stages.fold(0, (sum, stage) => sum + stage.milliseconds);
+
+  Map<String, Object?> toJson() => <String, Object?>{
+        'id': id,
+        'text': text,
+        'stages': stages.map((s) => s.toJson()).toList(),
+        if (outputBytes != null) 'outputBytes': outputBytes,
+        if (psnr != null) 'psnr': psnr,
+        if (psnrInput != null) 'psnrInput': psnrInput,
+      };
 }
 
 /// One run of the pipeline over the set, on one device.
@@ -110,6 +152,25 @@ class RunResults {
   final String? notes;
   final List<String> pipeline;
   final List<DocumentResult> documents;
+
+  /// Writes the file `score` reads.
+  ///
+  /// A run used to be something only a device could produce, which meant the
+  /// pipeline had never been executed over a corpus at all. It can be written
+  /// from anywhere now; what the report never omits is which platform and
+  /// which device produced it.
+  Map<String, Object?> toJson() => <String, Object?>{
+        'run': <String, Object?>{
+          'id': runId,
+          'device': device,
+          'platform': platform,
+          if (build != null) 'build': build,
+          if (startedAt != null) 'startedAt': startedAt,
+          if (notes != null) 'notes': notes,
+          'pipeline': pipeline,
+        },
+        'documents': documents.map((d) => d.toJson()).toList(),
+      };
 
   Map<String, DocumentResult> get byId =>
       <String, DocumentResult>{for (final d in documents) d.id: d};

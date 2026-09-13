@@ -13,6 +13,7 @@ plus a reference application that proves they compose end to end.
 | Package | What it does | Licence | Status |
 |---|---|---|---|
 | [`byrsa_capture`](packages/byrsa_capture) | Live edge detection and perspective correction, no Google Play Services | Apache-2.0 | in development |
+| [`byrsa_restore_onnx`](packages/byrsa_restore_onnx) | The neural stages: page dewarping through ONNX Runtime | Apache-2.0 | in development |
 | [`byrsa_restore`](packages/byrsa_restore) | Shadow removal and illumination flattening in pure Dart, plus page dewarping through a UVDoc ONNX grid | Apache-2.0 | in development |
 | [`byrsa_ocr`](packages/byrsa_ocr) | A stable Dart API for on-device OCR — pure Dart, no engine, no Flutter | Apache-2.0 | in development |
 | [`byrsa_ocr_mobile_ocr`](packages/byrsa_ocr_mobile_ocr) | The engine for phones: Apple Vision on iOS, PP-OCR ONNX on Android | Apache-2.0 | in development |

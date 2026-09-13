@@ -1,0 +1,25 @@
+name: byrsa_restore_onnx
+description: >-
+  The neural stages of byrsa_restore: page dewarping with UVDoc, through ONNX
+  Runtime.
+version: 0.1.0
+repository: https://github.com/dgmtnz/byrsa/tree/main/packages/byrsa_restore_onnx
+issue_tracker: https://github.com/dgmtnz/byrsa/issues
+
+resolution: workspace
+
+environment:
+  sdk: ^3.6.0
+  flutter: '>=3.24.0'
+
+dependencies:
+  byrsa_restore: ^0.1.0
+  flutter:
+    sdk: flutter
+  # The only reason this package exists. See DECISIONS.md D-040.
+  onnxruntime: ^1.4.1
+
+dev_dependencies:
+  flutter_lints: ^6.0.0
+  flutter_test:
+    sdk: flutter
