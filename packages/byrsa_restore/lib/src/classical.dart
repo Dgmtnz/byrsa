@@ -241,12 +241,13 @@ class ClassicalRestore {
     );
   }
 
-  /// Box-average downscale to at most [target] on the longer side.
+  /// Box-average downscale of a single-channel image to at most [target] on the
+  /// longer side.
   ///
   /// Averaging rather than sampling: a sampled downscale of a page of text is
   /// mostly ink or mostly paper depending on where the grid lands, and the
   /// paper estimate would flicker with it.
-  static ({Uint8List data, int width, int height}) _downscale(
+  static ({Uint8List data, int width, int height}) downscale(
     Uint8List luma,
     int width,
     int height,
@@ -381,7 +382,7 @@ class _Analysis {
     int height,
     ClassicalRestore options,
   ) {
-    final small = ClassicalRestore._downscale(
+    final small = ClassicalRestore.downscale(
       luma,
       width,
       height,

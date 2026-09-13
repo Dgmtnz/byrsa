@@ -1026,3 +1026,71 @@ Seis páginas sintéticas de 1024×1400, en este portátil, con `harness run`:
 Blanco y negro da la misma ganancia en ficheros **tres veces más pequeños**. Es la
 primera vez que el proyecto compara sus propios filtros con números en vez de con
 intuición.
+
+---
+
+## D-042 · Quitar lo que sujeta la página: por objeto fuera de sitio, no por color de piel
+**Fecha:** 2026-09-13 · **Estado:** ratificar
+**Completa el tercer punto de §4.3, y se aparta de lo que proponía**
+
+El plan dice: "Dedos en el borde → máscara HSV de piel + `cv.inpaint` (Telea)". No se hace
+así, y el motivo no es técnico sino de a quién le funciona.
+
+**Los umbrales de piel en HSV o YCbCr salen de datos mayoritariamente de piel clara.** Un
+escáner construido sobre ellos funciona mejor para unos usuarios que para otros, en una
+función que se dispara o no se dispara sobre la foto de la mano de alguien. Eso no es un
+detalle de calidad, es el tipo de sesgo que no se arregla luego.
+
+Así que la pregunta no es "¿esto es piel?" sino **"¿esto no es papel, y está agarrado al
+borde del encuadre?"**:
+
+1. Estimar el papel por un percentil alto del brillo de la página.
+2. Marcar lo que **se aparta** del papel, en cualquier dirección.
+3. Quedarse solo con lo conectado al borde de la imagen.
+4. Quedarse solo con lo **grueso** — un dedo sobrevive a una erosión, una línea de texto no.
+5. Descartar lo que toca dos bordes opuestos. Una mano entra por un lado; no cruza la página.
+
+Es agnóstico al tono por construcción, y de paso caza cosas que un detector de piel no
+vería: una mano con guante, un bolígrafo, el borde oscuro de la mesa.
+
+**El punto 2 dice "se aparta", no "es más oscuro", y el test es quien lo enseñó.** La
+primera versión buscaba más-oscuro-que-el-papel, y su propio test lo cazó: un pulgar
+fotografiado con buena luz da unos 190 sobre papel de 242 y **no se detectaba**, mientras
+que una mano más oscura se detectaba siempre. Es el mismo sesgo con otra ropa. La
+distancia al papel no tiene esa preferencia.
+
+**El punto 5 tampoco estaba, y lo destapó un falso positivo del 14%.** Al depurarlo
+apareció algo más importante que la propia función: **la normalización de iluminación deja
+un halo en un borde de sombra duro.** Dividir por un fondo construido con filtro de máximo
+sobreestima en el lado oscuro de un escalón brusco, y sobrevive una raya oscura donde
+estaba el borde. Esa raya es gruesa, se aparta del papel y toca el borde — pasaba las
+cuatro primeras reglas. Lo que no hace es lo que hace una mano: recorre la página entera.
+
+**Ese halo es un límite medido del método clásico y queda anotado como tal.** Es
+exactamente donde una red de sombras podría ganarse los 120 MB que D-039 le negó, y
+refuerza por qué esa decisión necesita las 50 fotos y no más síntesis.
+
+**Se ejecuta después de la iluminación, no antes.** Sobre una captura cruda la estimación
+del papel la arrastra la propia sombra.
+
+**Y no se activa por defecto.** El fallo es destructivo y silencioso: un falso positivo
+borra parte del documento de alguien. La etapa existe, está probada con 22 tests, y si se
+enciende lo deciden las 50 fotografías — igual que D-039.
+
+---
+
+## D-043 · Una tesela plana sin ecualizar: medido, neutro, revertido
+**Fecha:** 2026-09-13 · **Estado:** ratificar
+
+Al perseguir el falso positivo de D-042 supuse que la culpa era de CLAHE amplificando el
+grano en los márgenes vacíos, y añadí una mezcla hacia la identidad para las teselas sin
+contraste.
+
+**El harness dijo que no:** 17,5 dB antes y después, mismo tamaño de fichero, 13 ms más
+lento. La hipótesis era falsa —el artefacto era el halo— y el código no compraba nada, así
+que se revierte.
+
+Queda anotado porque saber que algo no funciona vale lo mismo que saber que sí, y porque
+si las 50 fotos enseñan moteado en márgenes en blanco, esto es lo primero que hay que
+volver a probar. Es también el primer cambio que el harness ha rechazado, que era
+justamente para lo que se construyó.

@@ -345,11 +345,22 @@ they measure restoration and never OCR, and the headline metric over the real
 fifty is character error rate. What they buy is that the tooling is debugged
 before the photographs exist rather than after.
 
+### A change the harness rejected
+
+Chasing a false positive in the intrusion detector, contrast-limited
+equalisation was suspected of amplifying grain in blank margins, and tiles with
+no contrast were blended toward the identity. Measured on the synthetic corpus:
+17.5 dB before, 17.5 dB after, identical file sizes, 13 ms slower. The
+hypothesis was wrong — the artefact was a halo elsewhere — so the change was
+reverted (D-043).
+
+The first change this harness has rejected, which is what it was built for.
+
 ### Test suite
 
 | What | Value |
 |---|---|
-| Tests passing, no device, no models, no network | **163** |
+| Tests passing, no device, no models, no network | **193** |
 | `flutter analyze` across the workspace | 0 issues |
 | `reuse lint` | every file compliant |
 | `dart format --set-exit-if-changed` | clean |

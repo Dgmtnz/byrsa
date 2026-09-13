@@ -23,6 +23,30 @@ same treatment rather than a glance.
 5. **What the redistributing repository actually licenses** — its conversion
    code, or the binaries it hosts.
 
+## A 404 can be your query, not the resource
+
+The most useful thing this audit produced was a correction to itself. The first
+pass reported the SD7K dataset licence as "not found", having tried the
+publisher's API and received a 404. An adversarial check found that the same
+endpoint returns HTTP 200 when the slug's slash is percent-encoded:
+
+```
+https://openxlab.org.cn/datasets/api/v2/datasets/lkljty/ShadowDocument7K    → 404
+https://openxlab.org.cn/datasets/api/v2/datasets/lkljty%2FShadowDocument7K → 200
+```
+
+And the record says, verbatim, `"license":[{"name":{"en":"MIT"}}]`, publisher
+"Department of Computer and Information Science, University of Macau".
+
+So the licence was declared all along, on the page the project's own README
+designates as the download. "Not found" had become "does not exist" somewhere
+between the tool and the conclusion, and it would have gone into the record as
+an unresolved risk.
+
+**Rule: a negative result about a licence needs the same scepticism as a
+positive one.** Before writing "not found", check that the thing doing the
+looking worked.
+
 ## Two traps this project walked up to
 
 Both were found while tracing DocShadow-SD7K, and both would have produced a
@@ -42,9 +66,9 @@ about code, weights or data.
 ## Worked example: DocShadow-SD7K
 
 - Upstream `CXH-Research/DocShadow-SD7K`: plain MIT, "Copyright (c) 2023 Nick
-  Chen", added in the initial commit on 2023-07-16 — five months before the
-  weights were released on 2023-12-17. One licence file in the whole tree; no
-  model card, no NOTICE, nothing under `models/`.
+  Chen", added in the initial commit on 2023-07-16 and never modified since —
+  months before the weights were released on 2023-12-17. One licence file in
+  the whole tree; no model card, no NOTICE, nothing under `models/`.
 - No non-commercial or research-only clause in the licence, the README, either
   release body, or the paper. The README's citation request is a courtesy, not
   a condition.
@@ -54,9 +78,9 @@ about code, weights or data.
 - `fabio-sim/DocShadow-ONNX-TensorRT` is MIT over its repository tree; the
   `.onnx` files are release assets outside that tree, so its licence adds
   nothing to the weights it redistributes.
-- **SD7K dataset licence: not found.** The OneDrive archives were not
-  downloaded and OpenXLab's page is JavaScript-rendered, so this is unresolved
-  rather than absent (`UNVERIFIED.md` U-37).
+- **SD7K dataset: MIT**, declared by the publisher on the OpenXLab listing the
+  README designates as the download. Established only after the first pass
+  reported it missing — see above.
 
 The artefact's identity was confirmed independently: the release asset hashes
 to `8c09b932…d14b049` at 120,041,674 bytes, matching the pin.
