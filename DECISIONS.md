@@ -1325,3 +1325,45 @@ hardware o un segundo compilador: dos de geometría de cámara, uno de aritméti
 estos dos. Ninguno era alcanzable desde los 200 tests, porque ninguno vive en la lógica que
 los tests ejecutan. Eso no es un argumento contra los tests; es el argumento a favor de las
 cincuenta fotografías y del hardware, hecho concreto y por cuadruplicado.
+
+---
+
+## D-048 · El pipeline clásico no se degrada: se cae, y sólo cuando hay dos daños
+**Fecha:** 2026-09-14 · **Estado:** ratificar
+
+Once páginas del corpus sintético han pasado por un Mi 9T Pro con restauración y OCR de
+verdad. Cinco sin dañar: **CER global 1,00%**. Seis dañadas: **41,45%**. Pero la media de
+las dañadas es el número menos interesante de los dos.
+
+| Daño | CER |
+|---|---|
+| movido | 0,39% |
+| torcido | 0,66% |
+| reflejo | 1,77% |
+| luz mezclada | 2,56% |
+| **sombra de mano + poca luz** | **42,85%** |
+| **torcido + movido** | **63,90%** |
+
+**Un daño solo casi no se nota** — 0,39% a 2,56%, dentro del rango de las páginas limpias
+(0,53% a 2,48%). **Dos daños a la vez no degradan: rompen.** Entre 2,56% y 42,85% no hay
+nada: un salto de dieciséis veces sin escalones.
+
+Y no es cuestión de densidad: `adversarial-01` es un tique de 849 caracteres y puntúa peor
+que un contrato de 3.757. Lo que tienen en común las dos que fallan es que llevan **dos**
+condiciones encima.
+
+**La explicación es arquitectónica, no de parámetros.** El pipeline clásico estima un único
+campo de color de papel y un único juego de mapas de ecualización. Cada corrección da por
+supuesto que los demás problemas no están. Con dos distorsiones superpuestas, corrige lo
+que no es, dos veces.
+
+**Qué cierra y qué no.** No cierra D-039 ni D-042: son páginas sintéticas con daño modelado,
+y si una red de sombras se gana sus 120 MB sigue necesitando fotografías reales medidas por
+CER. Lo que sí hace es **afinar la pregunta**, que es más útil que una media: ya no es «¿es
+suficiente la línea base clásica?» sino «la línea base clásica es suficiente hasta que dos
+problemas se solapan, y ése es el caso en el que puede merecer la pena gastarse 120 MB».
+
+Para las cincuenta fotografías esto cambia la instrucción: **no basta con hacer fotos
+difíciles, hacen falta fotos con dos dificultades a la vez.** Una sombra sobre una página
+torcida, poca luz con la mano encima. Es donde el producto se rompe, y hasta hoy nadie
+sabía que ahí estaba el borde.

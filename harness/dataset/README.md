@@ -25,6 +25,13 @@ to contain the failures, not just the easy wins.
 | 5 | Identity documents | `id-card` | **synthetic or anonymised only — see below** |
 | 5 | Deliberately awful | `adversarial` | hand shadow across the page, one finger over a corner, low light, mixed colour temperature, motion blur |
 
+**Shoot pages with two problems at once.** Measured 2026-09-14 (D-048): the
+pipeline scores 0.39%-2.56% CER with one damage condition and 42.85%-63.90% with
+two. The edge is not "hard photographs", it is *overlapping* ones — a shadow
+across a skewed page, low light with a hand in frame, glare on a crease. At
+least ten of the fifty should carry two conditions, and the `adversarial` row
+below should carry three.
+
 Across the whole set, make sure these conditions appear at least three times
 each, tagged in `conditions`:
 

@@ -23,6 +23,7 @@ cd "$(dirname "$0")/.."
 PKG=dev.byrsa.byrsa
 CORPUS=harness/dataset/synthetic
 COUNT="${1:-5}"
+ORDER="${2:-clean}"   # clean | damaged
 OUT=harness/out/device-ocr
 
 # The device check comes first, and nothing that talks to adb runs above it:
@@ -52,12 +53,15 @@ adb shell "run-as $PKG sh -c 'command -v sqlite3 >/dev/null && \
   || echo "  (no sqlite3 on the device; turn 'Recognise text automatically' on by hand)"
 
 mkdir -p "$OUT"
-mapfile -t DOCS < <(python3 - "$CORPUS" "$COUNT" <<'PY'
+mapfile -t DOCS < <(python3 - "$CORPUS" "$COUNT" "$ORDER" <<'PY'
 import json, sys
 docs = json.load(open(f'{sys.argv[1]}/manifest.json'))['documents']
-# Clean pages first: a recogniser that cannot read an undamaged page tells us
-# more, sooner, than one that cannot read a page with a hand across it.
-docs.sort(key=lambda d: len([c for c in d['conditions'] if c != 'dense-text']))
+damage = lambda d: len([c for c in d['conditions'] if c != 'dense-text'])
+# Clean pages first by default: a recogniser that cannot read an undamaged page
+# tells us more, sooner, than one that cannot read a page with a hand across it.
+# `damaged` reverses it, and that is the half that decides whether any of this is
+# worth shipping -- so every published figure has to say which order produced it.
+docs.sort(key=damage, reverse=sys.argv[3] == 'damaged')
 for d in docs[:int(sys.argv[2])]:
     print(d['id'])
 PY

@@ -880,3 +880,46 @@ photograph, and the fifty photographs remain the thing that would.
 Scored with `harness/bin/score_device.dart`, which matches each page to the
 ground truth it fits best — the application copies a picked file into its cache,
 so the original name is gone by the time text exists.
+
+### The damaged half, and a cliff rather than a slope
+
+Same device, same pipeline, six pages ordered by *most* damage
+(`tool/ocr_on_device.sh 6 damaged`):
+
+| Document | Conditions | CER | WER | chars |
+|---|---|---|---|---|
+| `whiteboard-03` | motion-blur | 0.39% | 2.50% | 255 |
+| `handwriting-02` | skewed | 0.66% | 3.66% | 454 |
+| `whiteboard-02` | glare | 1.77% | 6.98% | 224 |
+| `whiteboard-05` | mixed-light | 2.56% | 13.95% | 273 |
+| `adversarial-02` | **hand-shadow + low-light** | **42.85%** | 75.74% | 3757 |
+| `adversarial-01` | **skewed + motion-blur** | **63.90%** | 96.24% | 849 |
+
+Overall 41.45%, but the average is the least interesting number here: it is
+dominated by the two long adversarial pages, which are 4,606 of the 8,974
+characters.
+
+**The finding is the shape, not the mean.** One damage condition barely
+registers — 0.39% to 2.56%, comparable to the undamaged pages' 0.53% to 2.48%.
+Two conditions together do not degrade it, they break it. Between `mixed-light`
+alone at 2.56% and `hand-shadow + low-light` at 42.85% there is no middle: a
+sixteen-fold jump with nothing in between.
+
+Both failing pages are double-damaged and both collapse. Density is not the
+explanation — `adversarial-01` is a 849-character receipt and scores worse than
+the 3,757-character contract. The classical pipeline estimates one paper-colour
+field and one set of equalisation maps; each correction assumes the other
+problems are absent, and two overlapping distortions leave it correcting the
+wrong thing twice.
+
+**What it does and does not settle.** It does not close D-039 or D-042: these
+are synthetic pages with modelled damage, and the question of whether a shadow
+network earns its 120 MB still needs real photographs measured by CER. What it
+does do is sharpen the question from "is the classical baseline good enough" to
+"the classical baseline is good enough until two problems overlap, and that is
+the case worth spending 120 MB on" — which is a far more useful thing to put in
+front of a reviewer than an average.
+
+Eleven pages have now been through the device: five undamaged at **CER 1.00%**
+overall, six damaged at **41.45%**. Both figures are synthetic, and the fifty
+photographs remain what would make either of them a claim about the product.
