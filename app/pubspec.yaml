@@ -50,4 +50,12 @@ flutter:
     # The repository's model manifest, read at run time so the settings screen
     # can show what a download costs and under what licence — from the same
     # file a reviewer reads, not a copy that drifts from it.
-    - ../models.json
+    #
+    # A symlink, and that is the whole point. This used to read `../models.json`
+    # and Flutter silently shipped nothing: assets outside the package are not
+    # bundled, so on a device `rootBundle.loadString` threw, the model catalogue
+    # threw with it, and every restoration aborted before it began — which took
+    # OCR with it, because recognition runs after enhancement. One line in a
+    # manifest, and the entire pipeline was dead on hardware while every test
+    # passed. `tool/check_assets.sh` now asserts the file reaches the APK.
+    - assets/models.json

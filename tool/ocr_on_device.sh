@@ -47,7 +47,7 @@ echo "Device: $(adb shell getprop ro.product.model 2>/dev/null | tr -d '\r') " \
 echo "Turning on automatic recognition…"
 adb shell am force-stop "$PKG"
 adb shell "run-as $PKG sh -c 'command -v sqlite3 >/dev/null && \
-  sqlite3 files/library.db \"INSERT INTO settings(key,value) VALUES(\\\"autoOcr\\\",\\\"true\\\") \
+  sqlite3 app_flutter/library.db \"INSERT INTO settings(key,value) VALUES(\\\"autoOcr\\\",\\\"true\\\") \
   ON CONFLICT(key) DO UPDATE SET value=excluded.value;\"'" 2>/dev/null \
   || echo "  (no sqlite3 on the device; turn 'Recognise text automatically' on by hand)"
 
@@ -67,8 +67,14 @@ for id in "${DOCS[@]}"; do
   echo "--- $id"
   adb shell rm -f /sdcard/Pictures/byrsa-probe.jpg
   adb push -q "$CORPUS/images/$id.jpg" /sdcard/Pictures/byrsa-probe.jpg >/dev/null
+  # `adb push` keeps the source file's timestamp, which would file the page
+  # somewhere in the middle of whoever's gallery this is. Dated now, it is
+  # always the first tile in the picker — so the script taps our page and never
+  # goes looking through anybody's photographs.
+  adb shell touch /sdcard/Pictures/byrsa-probe.jpg
   adb shell am broadcast -a android.intent.action.MEDIA_SCANNER_SCAN_FILE \
       -d file:///sdcard/Pictures/byrsa-probe.jpg >/dev/null 2>&1
+  sleep 2
   adb shell am start -n "$PKG/.MainActivity" >/dev/null 2>&1
   sleep 4
   # Import: the photo button, then the newest item in the picker.
@@ -80,7 +86,7 @@ for id in "${DOCS[@]}"; do
 done
 
 echo "Pulling the library…"
-adb shell "run-as $PKG cat files/library.db" > "$OUT/library.db" 2>/dev/null
+adb shell "run-as $PKG cat app_flutter/library.db" > "$OUT/library.db" 2>/dev/null
 if [ ! -s "$OUT/library.db" ]; then
   echo "Could not read the database. Is this a debug build?" >&2
   exit 1

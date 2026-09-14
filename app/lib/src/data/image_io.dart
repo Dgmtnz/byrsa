@@ -65,28 +65,45 @@ class ImageIo {
   Future<({Uint8List rgba, int width, int height})> decode(String path) async {
     final bytes = await File(path).readAsBytes();
     final buffer = await ui.ImmutableBuffer.fromUint8List(bytes);
-    final descriptor = await ui.ImageDescriptor.encoded(buffer);
 
-    final longest = math.max(descriptor.width, descriptor.height);
-    final scale = longest > maxDimension ? maxDimension / longest : 1.0;
-    final codec = await descriptor.instantiateCodec(
-      targetWidth: math.max(1, (descriptor.width * scale).round()),
-      targetHeight: math.max(1, (descriptor.height * scale).round()),
-    );
-    descriptor.dispose();
+    // Everything is released in one place, and only once the pixels are out.
+    //
+    // This used to dispose the descriptor immediately after instantiating the
+    // codec, which reads: the descriptor owns the encoded bytes the codec has
+    // not read yet. On a desktop nothing noticed. On a phone it segfaulted
+    // inside libflutter.so on an `io.worker` thread — signal 11, fault address
+    // 0x20, a null dereference with no Dart exception to catch, which took the
+    // whole application down every time a page was opened. The buffer was also
+    // never released at all.
+    ui.ImageDescriptor? descriptor;
+    ui.Codec? codec;
+    ui.Image? image;
+    try {
+      descriptor = await ui.ImageDescriptor.encoded(buffer);
+      final longest = math.max(descriptor.width, descriptor.height);
+      final scale = longest > maxDimension ? maxDimension / longest : 1.0;
+      codec = await descriptor.instantiateCodec(
+        targetWidth: math.max(1, (descriptor.width * scale).round()),
+        targetHeight: math.max(1, (descriptor.height * scale).round()),
+      );
 
-    final frame = await codec.getNextFrame();
-    final image = frame.image;
-    final rgba = await image.toByteData(format: ui.ImageByteFormat.rawRgba);
-    final width = image.width;
-    final height = image.height;
-    image.dispose();
-    codec.dispose();
-
-    if (rgba == null) {
-      throw StateError('Could not read the pixels of $path.');
+      final frame = await codec.getNextFrame();
+      image = frame.image;
+      final rgba = await image.toByteData(format: ui.ImageByteFormat.rawRgba);
+      if (rgba == null) {
+        throw StateError('Could not read the pixels of $path.');
+      }
+      return (
+        rgba: rgba.buffer.asUint8List(),
+        width: image.width,
+        height: image.height,
+      );
+    } finally {
+      image?.dispose();
+      codec?.dispose();
+      descriptor?.dispose();
+      buffer.dispose();
     }
-    return (rgba: rgba.buffer.asUint8List(), width: width, height: height);
   }
 
   /// Restores [inputPath] and writes the result to [outputPath].

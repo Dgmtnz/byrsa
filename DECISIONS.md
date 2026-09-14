@@ -1265,3 +1265,63 @@ demuestra que la restauración es real y que funciona sin servidor, y la puede p
 evaluador en treinta segundos sin instalar nada. El móvil demuestra que el conjunto
 funciona y da el CER. Son complementarias, y hoy cada una encontró fallos que la otra no
 podía ver.
+
+---
+
+## D-047 · El OCR corre en un teléfono, y las dos cosas que lo impedían
+**Fecha:** 2026-09-14 · **Estado:** ratificar
+
+El reconocimiento de texto nunca se había ejecutado. Hoy sí, y para llegar hubo que
+arreglar dos fallos que **ningún test podía alcanzar**, porque los dos sólo existen
+cuando hay un APK y un teléfono.
+
+**Uno: `models.json` no viajaba dentro del APK.** `app/pubspec.yaml` lo declaraba como
+`../models.json`, una ruta fuera del paquete. Flutter no empaqueta eso y no avisa. La
+consecuencia no era una fila de ajustes vacía: el catálogo se lee por `rootBundle`, la
+pantalla del documento pregunta al catálogo si el modelo de dewarp está instalado *antes*
+de restaurar, y esa excepción abortaba el bucle — llevándose el OCR por delante, porque el
+reconocimiento va después del realce **en el mismo bucle**. Una línea de un manifiesto, y
+todo el camino restaurar-y-reconocer estaba muerto en hardware mientras 194 tests pasaban.
+
+Arreglado con un enlace simbólico en `app/assets/models.json`, para que siga habiendo **un
+solo manifiesto** y ninguna copia que se desvíe — que es lo que pedía el comentario
+original, ahora con un mecanismo que funciona.
+
+**Dos: un uso-después-de-liberar que mataba la aplicación entera.** Con el asset
+arreglado, abrir una página tumbaba el proceso cada vez, sin excepción de Dart que capturar:
+
+```
+Fatal signal 11 (SIGSEGV), fault addr 0x20, tid io.worker.1
+Cause: null pointer dereference — 5 marcos, todos en libflutter.so
+```
+
+`ImageIo.decode` liberaba el `ImageDescriptor` justo después de instanciar el códec y
+**antes** de leer el fotograma. El descriptor posee los bytes codificados que el códec aún
+no ha leído. El `ImmutableBuffer` no se liberaba nunca. Ahora se sueltan los dos juntos y
+sólo cuando los píxeles ya están fuera.
+
+**El resultado.** `whiteboard-01`, una de las páginas sin dañar del corpus, importada y
+reconocida en un Mi 9T Pro:
+
+| | |
+|---|---|
+| **CER** | **0,41%** — 1 error en 242 caracteres |
+| WER | 5,41% |
+| Cajas de palabra | 36 |
+
+El único fallo es un espacio que falta en `-Añadir`. Todos los diacríticos sobrevivieron.
+
+**Lo que este número es y lo que no.** Es una página sintética, renderizada de una fuente,
+sin daño, en español: la entrada más fácil que este proyecto va a presentarle nunca a un
+OCR. Se lee como «el camino funciona de extremo a extremo», no como una medida de calidad.
+El CER sobre la mitad dañada del corpus, y sobre fotografías reales, sigue debiéndose.
+
+Sí cierra o estrecha tres filas: la sesión ONNX abre en un dispositivo (U-34), el binding
+FFI compilado para 1.15.1 corre contra el 1.27.0 que se envía (U-33, en debug), y la
+métrica principal tiene por fin un valor (U-40).
+
+**La lección que se lleva el proyecto.** Cuatro fallos han aparecido hoy en cuanto hubo
+hardware o un segundo compilador: dos de geometría de cámara, uno de aritmética en web, y
+estos dos. Ninguno era alcanzable desde los 194 tests, porque ninguno vive en la lógica que
+los tests ejecutan. Eso no es un argumento contra los tests; es el argumento a favor de las
+cincuenta fotografías y del hardware, hecho concreto y por cuadruplicado.

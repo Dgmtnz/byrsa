@@ -728,3 +728,95 @@ instead of `gstatic.com`. A page whose argument is that nothing leaves the tab
 should not begin by fetching seven megabytes from Google. Instrumented in
 Chrome: **zero external requests, zero failed requests** on load and through a
 full restoration.
+
+---
+
+## 2026-09-14 — OCR runs, and the project has a character error rate
+
+Device: Xiaomi Mi 9T Pro, Android 16 (Infinity-X, kernel 4.14), arm64, debug
+build. Two bugs stood between the application and its own recogniser, and
+neither was reachable from a test.
+
+### Bug 1: `models.json` never reached the APK
+
+`app/pubspec.yaml` declared the asset as `../models.json` — a path outside the
+package. Flutter does not bundle those, and does not say so. Confirmed by
+listing the archive: **no `models.json` in the APK**.
+
+The consequence was not a missing settings row. `modelCatalogProvider` reads it
+through `rootBundle`, the document screen asks the catalogue whether the dewarp
+model is installed before restoring, and that throw aborted the loop — which
+carried OCR with it, because recognition runs *after* enhancement in the same
+loop. One line in a manifest, and the whole restore-and-recognise path was dead
+on hardware while 194 tests passed. What the user saw was
+`The asset does not exist or has empty data.`
+
+Fixed with a symlink at `app/assets/models.json`, so there is still exactly one
+manifest and no copy to drift. Verified: `assets/flutter_assets/assets/models.json`,
+11,547 bytes, is in the archive.
+
+### Bug 2: a use-after-free that segfaulted the whole application
+
+With the asset fixed, opening a page killed the process every time. No Dart
+exception, nothing to catch:
+
+```
+F/libc: Fatal signal 11 (SIGSEGV), code 1 (SEGV_MAPERR), fault addr 0x20
+        in tid 19818 (io.worker.1), pid 19059 (dev.byrsa.byrsa)
+Cause: null pointer dereference
+backtrace: 5 frames, all in libflutter.so
+```
+
+`ImageIo.decode` disposed the `ImageDescriptor` immediately after instantiating
+the codec and **before** reading the frame. The descriptor owns the encoded
+bytes the codec has not read yet; freeing it leaves the decoder reading freed
+memory on a Flutter IO worker. The `ImmutableBuffer` was never disposed at all.
+
+Both now released together, after the pixels are out. The application survived
+75 seconds of restoration and recognition without dying.
+
+### The first recognised text in the project's history
+
+`whiteboard-01`, one of the corpus's undamaged pages, imported and recognised on
+the device:
+
+```
+Sprint 24 - Planificación
+Equipo Núcleo Ávila
+Fechas 14/09/2026 - 25/09/2026
+Objetivo Reducir la cola de sincronización
+Comprometido
+- Migrar el índice de búsqueda
+-Añadir caché de miniaturas
+- Corregir el desfase horario en informes
+Reparto
+```
+
+Against the ground truth, scored with the harness's own `characterErrorRate`:
+
+| | |
+|---|---|
+| **CER** | **0.41%** — 1 error in 242 characters |
+| WER | 5.41% — 2 in 37 words |
+| Word boxes | 36 |
+
+The single error is a missing space in `-Añadir`. Every diacritic survived:
+`Planificación`, `Núcleo Ávila`, `sincronización`, `índice`, `búsqueda`,
+`Añadir`, `caché`.
+
+**What this number is, and is not.** It is one synthetic page, rendered from a
+font, undamaged, in Spanish. That is the easiest input this project will ever
+hand an OCR engine, and it should be read as "the path works end to end", not as
+a measure of quality. A CER over real photographs, and over the damaged half of
+the corpus, is still owed — and this is the first time the tooling to produce it
+exists.
+
+It does settle three things that were open: the ONNX session opens on a device
+(U-34), the FFI binding built for 1.15.1 runs against the 1.27.0 that ships
+(U-33), and the headline metric has a value at all (U-40).
+
+### Still not fixed, and known
+
+The library names imported documents `Importado …`, a Spanish literal, on the
+same footing as the capture hints fixed earlier in the day. Different screen,
+same defect, not yet done.

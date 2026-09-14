@@ -29,7 +29,7 @@ final scanStorageProvider = FutureProvider<ScanStorage>((ref) async {
 
 /// The model manifest, read from the asset rather than duplicated in code.
 final modelCatalogProvider = FutureProvider<ModelCatalog>((ref) async {
-  return ModelCatalog.parse(await rootBundle.loadString('models.json'));
+  return ModelCatalog.parse(await rootBundle.loadString('assets/models.json'));
 });
 
 /// Where downloaded models live. A cache: they can always be fetched again,
