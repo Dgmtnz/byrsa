@@ -1,0 +1,13 @@
+diff --git a/android/build.gradle.kts b/android/build.gradle.kts
+index 1b25ad9..ed4cd35 100644
+--- a/android/build.gradle.kts
++++ b/android/build.gradle.kts
+@@ -85,4 +85,8 @@ dependencies {
+     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.8.1")
+ 
+     testImplementation("org.jetbrains.kotlin:kotlin-test")
++    // `DoclensPluginTest` has always imported Mockito, but nothing declared it,
++    // so `testDebugUnitTest` fails to compile on a clean checkout — which is
++    // also why the unit tests for this change could not otherwise be run.
++    testImplementation("org.mockito:mockito-core:5.12.0")
+ }
