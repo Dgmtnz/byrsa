@@ -82,7 +82,8 @@ class _CaptureScreenState extends ConsumerState<CaptureScreen> {
           ),
         _ => CapturePreview(
             controller: _controller,
-            hintBuilder: (context, hint) => _hint(hint),
+            hintBuilder: (context, hint) =>
+                _hint(AppLocalizations.of(context)!, hint),
           ),
       },
       floatingActionButton: _denied != null || _error != null
@@ -96,22 +97,29 @@ class _CaptureScreenState extends ConsumerState<CaptureScreen> {
 
   /// The guidance line, translated. The package ships English wording and this
   /// hook so an application does not inherit somebody else's localisation.
-  String _hint(CaptureHint hint) => switch (hint) {
-        CaptureHint.noDocument => 'Apunta a un documento',
-        CaptureHint.tooFar => 'Acércate',
-        CaptureHint.cropped => 'Encuadra la página entera',
-        CaptureHint.moving => 'No te muevas',
-        CaptureHint.blurry => 'Enfocando…',
-        CaptureHint.tooDark => 'Falta luz',
-        CaptureHint.ready => 'Listo',
+  ///
+  /// It used to return Spanish literals regardless of locale, which the first
+  /// run on a device made obvious: an English library screen handing over to a
+  /// camera that says "Apunta a un documento". This is the most-read text in the
+  /// application — it is what you look at while pointing the phone.
+  String _hint(AppLocalizations l10n, CaptureHint hint) => switch (hint) {
+        CaptureHint.noDocument => l10n.hintNoDocument,
+        CaptureHint.tooFar => l10n.hintTooFar,
+        CaptureHint.cropped => l10n.hintCropped,
+        CaptureHint.moving => l10n.hintMoving,
+        CaptureHint.blurry => l10n.hintBlurry,
+        CaptureHint.tooDark => l10n.hintTooDark,
+        CaptureHint.ready => l10n.hintReady,
       };
 
   Future<void> _save() async {
     setState(() => _saving = true);
+    // Read the localisation before the first await: the widget may be gone by
+    // the time the library future completes.
+    final title = AppLocalizations.of(context)!
+        .scanTitle(DateTime.now().toIso8601String().substring(0, 16));
     try {
       final library = await ref.read(libraryProvider.future);
-      final title =
-          'Escaneo ${DateTime.now().toIso8601String().substring(0, 16)}';
       final documentId = library.createDocument(title);
       for (final page in _controller.pages) {
         library.addPage(

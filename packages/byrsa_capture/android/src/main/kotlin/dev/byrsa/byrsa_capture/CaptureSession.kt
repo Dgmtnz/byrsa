@@ -74,6 +74,19 @@ class CaptureSession(
         val preview = Preview.Builder().build().also {
             it.setSurfaceProvider { request ->
                 producer.setSize(request.resolution.width, request.resolution.height)
+                previewWidth = request.resolution.width
+                previewHeight = request.resolution.height
+                // CameraX writes frames in sensor orientation and reports the
+                // rotation that makes them upright rather than applying it. The
+                // analysis path already rotates its corners by the same amount,
+                // so a preview that ignores this puts the image and the outline
+                // in two different coordinate systems — which is exactly what
+                // the first run on a device looked like: a stretched picture
+                // with an outline that appeared mirrored.
+                request.setTransformationInfoListener(analysisExecutor) { info ->
+                    previewRotation = info.rotationDegrees
+                    main.post { sink.onDetection(geometryOnly()) }
+                }
                 request.provideSurface(producer.surface, analysisExecutor) { }
             }
         }
@@ -107,6 +120,32 @@ class CaptureSession(
         )
         if (torch) setTorch(true)
         return producer.id()
+    }
+
+    /** Reported to Dart so the preview can be rotated and shaped correctly. */
+    private var previewWidth = 0
+    private var previewHeight = 0
+    private var previewRotation = 0
+
+    /**
+     * A payload carrying only the preview geometry.
+     *
+     * Sent as soon as CameraX knows it, because the preview cannot be laid out
+     * before then and waiting for the first detection would leave the texture
+     * visibly wrong for as long as detection throttling takes.
+     */
+    private fun geometryOnly(): HashMap<String, Any?> {
+        val payload = HashMap<String, Any?>()
+        addGeometry(payload)
+        payload["hint"] = "noDocument"
+        return payload
+    }
+
+    private fun addGeometry(payload: HashMap<String, Any?>) {
+        if (previewWidth <= 0 || previewHeight <= 0) return
+        payload["previewWidth"] = previewWidth
+        payload["previewHeight"] = previewHeight
+        payload["previewRotation"] = previewRotation
     }
 
     private fun analyse(image: ImageProxy, sink: DetectionSink) {
@@ -151,6 +190,7 @@ class CaptureSession(
             // Stability and the user-facing hint are decided in Dart, where they
             // are unit-tested on a laptop instead of on a phone.
             payload["hint"] = if (rotated == null) "noDocument" else "moving"
+            addGeometry(payload)
             main.post { sink.onDetection(payload) }
         } finally {
             image.close()

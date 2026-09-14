@@ -41,11 +41,33 @@ class CapturePreview extends StatelessWidget {
           return const Center(child: CircularProgressIndicator());
         }
         final detection = controller.latest;
+        final geometry = controller.previewGeometry;
+
+        // The camera's buffer is neither upright nor the shape of the box it is
+        // given. Rotating and letterboxing it is what puts the image into the
+        // same coordinate system as the detected corners, which the platform
+        // side already reports upright — and the first run on a device is what
+        // showed the cost of not doing it: a stretched preview with an outline
+        // that looked mirrored.
+        //
+        // `contain`, never `cover`: cropping to fill the screen would move the
+        // corners off the page they outline, and an outline that does not sit
+        // on the document is worse than a letterbox.
         return Stack(
           fit: StackFit.expand,
           children: <Widget>[
-            Texture(textureId: textureId),
-            QuadOverlay(quad: detection?.quad, color: overlayColor),
+            Center(
+              child: _sized(
+                geometry,
+                Stack(
+                  fit: StackFit.expand,
+                  children: <Widget>[
+                    _rotated(geometry, Texture(textureId: textureId)),
+                    QuadOverlay(quad: detection?.quad, color: overlayColor),
+                  ],
+                ),
+              ),
+            ),
             if (showHint && detection != null)
               Align(
                 alignment: Alignment.bottomCenter,
@@ -68,6 +90,21 @@ class CapturePreview extends StatelessWidget {
       },
     );
   }
+
+  /// Constrains the preview to the camera's real shape, once it is known.
+  ///
+  /// Before the first frame's geometry arrives there is nothing to constrain
+  /// it to, and guessing would produce exactly the wrong-shaped preview this
+  /// exists to prevent.
+  static Widget _sized(CapturePreviewGeometry? geometry, Widget child) =>
+      geometry == null
+          ? child
+          : AspectRatio(aspectRatio: geometry.displayAspectRatio, child: child);
+
+  static Widget _rotated(CapturePreviewGeometry? geometry, Widget child) =>
+      geometry == null || geometry.quarterTurns == 0
+          ? child
+          : RotatedBox(quarterTurns: geometry.quarterTurns, child: child);
 
   /// English fallback wording.
   ///

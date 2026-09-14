@@ -95,5 +95,20 @@
     }
   },
   "dewarpReady": "Downloaded. Curved pages will be flattened.",
-  "remove": "Remove"
+  "remove": "Remove",
+  "hintNoDocument": "Point at a document",
+  "hintTooFar": "Move closer",
+  "hintCropped": "Fit the whole page",
+  "hintMoving": "Hold still",
+  "hintBlurry": "Focusing…",
+  "hintTooDark": "Not enough light",
+  "hintReady": "Ready",
+  "scanTitle": "Scan {timestamp}",
+  "@scanTitle": {
+    "placeholders": {
+      "timestamp": {
+        "type": "String"
+      }
+    }
+  }
 }

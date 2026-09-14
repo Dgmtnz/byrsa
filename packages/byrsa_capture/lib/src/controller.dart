@@ -47,6 +47,7 @@ class ByrsaCaptureController extends ChangeNotifier {
   StreamSubscription<CaptureDetection>? _subscription;
   int? _textureId;
   CaptureDetection? _latest;
+  CapturePreviewGeometry? _previewGeometry;
   bool _capturing = false;
   final List<CapturedPage> _pages = <CapturedPage>[];
 
@@ -55,6 +56,12 @@ class ByrsaCaptureController extends ChangeNotifier {
 
   /// The most recent detection, already smoothed.
   CaptureDetection? get latest => _latest;
+
+  /// How the preview texture has to be rotated and shaped to match the world.
+  ///
+  /// Null until the first frame, because it is the camera that decides it and
+  /// guessing produced a visibly wrong preview on the first device it ran on.
+  CapturePreviewGeometry? get previewGeometry => _previewGeometry;
 
   /// Pages captured in this session, in order.
   List<CapturedPage> get pages => List<CapturedPage>.unmodifiable(_pages);
@@ -69,6 +76,9 @@ class ByrsaCaptureController extends ChangeNotifier {
   }
 
   void _onDetection(CaptureDetection detection) {
+    // Latched rather than replaced: frames that carry no geometry must not blank
+    // a preview that is already laid out correctly.
+    _previewGeometry = detection.previewGeometry ?? _previewGeometry;
     final smoothed = _smoother.add(detection.quad);
     final verdict = _stability.update(
       quad: smoothed,
@@ -83,6 +93,7 @@ class ByrsaCaptureController extends ChangeNotifier {
       sharpness: detection.sharpness,
       brightness: detection.brightness,
       stableFor: verdict.stableFor,
+      previewGeometry: _previewGeometry,
     );
     notifyListeners();
 

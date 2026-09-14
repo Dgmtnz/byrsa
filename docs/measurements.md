@@ -614,3 +614,40 @@ error rate: a result that exists but carries no text is **not measured**.
 
 A document the run never produced at all still scores a complete failure, which
 is a different thing and has its own test. Both cases are now asserted.
+
+### The preview was wrong, and a human saw it before any screenshot did
+
+Two bugs, both reported by Diego watching the live preview — neither visible in
+the dark-scene screenshots this session had been taking, and neither reachable
+by any test.
+
+**The texture was stretched.** `CapturePreview` put `Texture` straight into a
+`Stack` with `StackFit.expand`, so the camera buffer was scaled to whatever box
+it was given with no aspect ratio applied. A 4:3 sensor in a tall portrait slot
+is squashed along one axis and pulled along the other, which is precisely how it
+was described: "as if scaling the sensor's x axis onto y and vice versa".
+
+**The outline looked mirrored.** Not a detector fault. `CaptureSession.analyse`
+already rotates its corners by `image.imageInfo.rotationDegrees`, so the quad
+arrives in *display* space — while `Preview.Builder().build()` sets no target
+rotation and the texture showed *sensor* space. Image and outline were in two
+coordinate systems a quarter turn apart.
+
+CameraX reports the rotation rather than applying it, through
+`SurfaceRequest.setTransformationInfoListener`. The session now reads it there,
+sends `previewWidth`, `previewHeight` and `previewRotation` to Dart, and
+`CapturePreview` applies a `RotatedBox` inside an `AspectRatio`, with the
+overlay sharing that same box rather than the screen's.
+
+Confirmed on the device afterwards: the preview is letterboxed at roughly 3:4 —
+a 4:3 buffer shown through a quarter turn — instead of filling the screen edge
+to edge.
+
+`contain` and not `cover`, deliberately: cropping to fill would move the corners
+off the page they outline.
+
+**What this says about the test suite.** 194 tests, and none of them could have
+caught either bug: one is a layout property of a platform texture, the other is
+an agreement between two coordinate systems that only exists at runtime. The six
+new assertions cover the arithmetic; the agreement itself still needs eyes on a
+phone.

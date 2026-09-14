@@ -427,6 +427,54 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Remove'**
   String get remove;
+
+  /// No description provided for @hintNoDocument.
+  ///
+  /// In en, this message translates to:
+  /// **'Point at a document'**
+  String get hintNoDocument;
+
+  /// No description provided for @hintTooFar.
+  ///
+  /// In en, this message translates to:
+  /// **'Move closer'**
+  String get hintTooFar;
+
+  /// No description provided for @hintCropped.
+  ///
+  /// In en, this message translates to:
+  /// **'Fit the whole page'**
+  String get hintCropped;
+
+  /// No description provided for @hintMoving.
+  ///
+  /// In en, this message translates to:
+  /// **'Hold still'**
+  String get hintMoving;
+
+  /// No description provided for @hintBlurry.
+  ///
+  /// In en, this message translates to:
+  /// **'Focusing…'**
+  String get hintBlurry;
+
+  /// No description provided for @hintTooDark.
+  ///
+  /// In en, this message translates to:
+  /// **'Not enough light'**
+  String get hintTooDark;
+
+  /// No description provided for @hintReady.
+  ///
+  /// In en, this message translates to:
+  /// **'Ready'**
+  String get hintReady;
+
+  /// No description provided for @scanTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Scan {timestamp}'**
+  String scanTitle(String timestamp);
 }
 
 class _AppLocalizationsDelegate

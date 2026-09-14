@@ -195,4 +195,30 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get remove => 'Remove';
+
+  @override
+  String get hintNoDocument => 'Point at a document';
+
+  @override
+  String get hintTooFar => 'Move closer';
+
+  @override
+  String get hintCropped => 'Fit the whole page';
+
+  @override
+  String get hintMoving => 'Hold still';
+
+  @override
+  String get hintBlurry => 'Focusing…';
+
+  @override
+  String get hintTooDark => 'Not enough light';
+
+  @override
+  String get hintReady => 'Ready';
+
+  @override
+  String scanTitle(String timestamp) {
+    return 'Scan $timestamp';
+  }
 }

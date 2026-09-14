@@ -95,5 +95,20 @@
         "type": "String"
       }
     }
+  },
+  "hintNoDocument": "Apunta a un documento",
+  "hintTooFar": "Acércate",
+  "hintCropped": "Encuadra la página entera",
+  "hintMoving": "No te muevas",
+  "hintBlurry": "Enfocando…",
+  "hintTooDark": "Falta luz",
+  "hintReady": "Listo",
+  "scanTitle": "Escaneo {timestamp}",
+  "@scanTitle": {
+    "placeholders": {
+      "timestamp": {
+        "type": "String"
+      }
+    }
   }
 }

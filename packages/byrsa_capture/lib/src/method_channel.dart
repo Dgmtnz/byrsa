@@ -69,6 +69,25 @@ class MethodChannelByrsaCapture extends ByrsaCapturePlatform {
       brightness: (map['brightness'] as num?)?.toDouble() ?? 0,
       stableFor:
           Duration(milliseconds: (map['stableForMs'] as num?)?.toInt() ?? 0),
+      previewGeometry: _toGeometry(map),
+    );
+  }
+
+  /// Preview geometry, when the platform reports it.
+  ///
+  /// All three fields or none: a width without a rotation would lay the texture
+  /// out with a confident wrong shape, which is worse than leaving it alone
+  /// until the platform says something complete.
+  static CapturePreviewGeometry? _toGeometry(Map<Object?, Object?> map) {
+    final width = (map['previewWidth'] as num?)?.toInt();
+    final height = (map['previewHeight'] as num?)?.toInt();
+    final rotation = (map['previewRotation'] as num?)?.toInt();
+    if (width == null || height == null || rotation == null) return null;
+    if (width <= 0 || height <= 0) return null;
+    return CapturePreviewGeometry(
+      width: width,
+      height: height,
+      rotationDegrees: rotation,
     );
   }
 
