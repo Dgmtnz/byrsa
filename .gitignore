@@ -48,3 +48,6 @@ harness/dataset/private/
 # a scratch directory, and one reached a commit before this line existed.
 /*.html
 /*.tmp
+
+# Generated from the drafts by tool/upstream_ready.sh. One source, no copies.
+docs/upstream/out/

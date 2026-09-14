@@ -5,6 +5,7 @@ SPDX-License-Identifier: CC-BY-4.0
 
 # onnxruntime_flutter: the Android module cannot be built in release any more
 
+<!-- internal -->
 **Repository:** `github.com/gtbluesky/onnxruntime_flutter`
 **Version examined:** `onnxruntime` 1.4.1 on pub.dev — note the **package** is
 `onnxruntime`, the repository is `onnxruntime_flutter`
@@ -29,6 +30,7 @@ SPDX-License-Identifier: CC-BY-4.0
 > Because a reply is unlikely, put the workaround consumers need in the issue
 > body itself rather than leaving it for a follow-up comment — it is done below.
 
+<!-- /internal -->
 ---
 
 ## Issue text

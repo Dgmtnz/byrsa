@@ -5,6 +5,7 @@ SPDX-License-Identifier: CC-BY-4.0
 
 # doclens: two pull requests to get Play Services out of the default build
 
+<!-- internal -->
 **Repository:** `github.com/govindmaheshwari2/doclens`
 **Version examined:** 0.0.12 (pub.dev, published 2026-09-12), at `e1fe7d7`
 **Status:** draft, ready to file
@@ -24,6 +25,7 @@ SPDX-License-Identifier: CC-BY-4.0
 > references in the six core files; zero in the entire iOS tree; and the
 > `QuadDetector.kt:26` comment quoted below, verbatim.
 
+<!-- /internal -->
 ---
 
 ## The shape of the proposal
@@ -99,7 +101,8 @@ unzip -p build/app/outputs/flutter-apk/app-debug.apk 'classes*.dex' \
 ```
 
 A CameraX-only plugin returns `0` on the same check. We run exactly that
-assertion in CI: [`tool/check_no_play_services.sh`](../../tool/check_no_play_services.sh).
+assertion in CI:
+https://github.com/dgmtnz/byrsa/blob/main/tool/check_no_play_services.sh
 
 ---
 

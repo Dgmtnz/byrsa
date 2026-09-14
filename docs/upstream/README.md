@@ -35,6 +35,36 @@ already pinned deterministically on our side. Asking from a position of not
 needing the favour makes for a better patch and a better ask — and it means no
 milestone depends on a stranger's calendar.
 
+## Filing them
+
+```
+tool/upstream_ready.sh
+```
+
+writes each draft's postable body to `docs/upstream/out/`, with this
+repository's own notes stripped — the `<!-- internal -->` blocks that record
+which version was examined and when it was last re-verified, which a maintainer
+has no use for. One source, no second copy to drift.
+
+Then, with your own account:
+
+```
+gh issue create --repo govindmaheshwari2/doclens \
+  --title "ML Kit / Play Services is an unconditional dependency, which rules the plugin out for F-Droid" \
+  --body-file docs/upstream/out/doclens-play-services.md
+
+gh issue create --repo ente-io/mobile_ocr \
+  --title "Licence audit of the three PP-OCR models, and a question about cls.onnx" \
+  --body-file docs/upstream/out/mobile-ocr-pub-dev.md
+
+gh issue create --repo gtbluesky/onnxruntime_flutter \
+  --title "compileSdkVersion 33 breaks release builds against current AndroidX" \
+  --body-file docs/upstream/out/onnxruntime-flutter-compilesdk.md
+```
+
+The `mobile_ocr` draft carries two issues in one file; the second, the pub.dev
+request, is worth filing separately once the first has an answer.
+
 The order to file them in is the order of the table. `doclens` first, because it
 is the one a maintainer is demonstrably reading; `mobile_ocr` second, leading
 with what the licence audit found rather than with the request; the ONNX issue

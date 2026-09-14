@@ -5,6 +5,7 @@ SPDX-License-Identifier: CC-BY-4.0
 
 # mobile_ocr: please publish to pub.dev
 
+<!-- internal -->
 **Repository:** `github.com/ente-io/mobile_ocr`
 **Version examined:** `1.0.0` at `HEAD`, re-verified 2026-09-14
 **Status:** draft, ready to file
@@ -18,14 +19,14 @@ SPDX-License-Identifier: CC-BY-4.0
 >
 > This file now leads with something to give rather than something to ask.
 
+<!-- /internal -->
 ---
 
 ## Note on framing
 
 This used to be a blocker for us. It is not any more: `byrsa_ocr` now keeps the
 API and the logic, and a separate `byrsa_ocr_mobile_ocr` holds the git
-dependency, so our publishable package stays publishable (repository decision
-D-027).
+dependency, so our publishable package stays publishable.
 
 That is deliberate in how the ask is written. Nobody should be asked to
 rearrange their release process to unblock a stranger's milestone. What follows
@@ -43,7 +44,7 @@ plausibly a real defect in what you serve.*
 We ship your plugin, so we had to answer "what licence are these weights under?"
 for our own distribution. Rather than assume, we traced it. The result is yours
 to use; the method is written up at
-`docs/model-licence-audit.md` in our repository.
+https://github.com/dgmtnz/byrsa/blob/main/docs/model-licence-audit.md
 
 **The chain, for `det.onnx`, `rec.onnx`, `cls.onnx` and `ppocrv5_dict.txt`:**
 
@@ -147,9 +148,6 @@ Concretely, publishing needs three small things — checked against `HEAD` on
   quoted off PaddlePaddle's own model cards rather than an inference. The honest
   version of the sentence also names the one thing that does not close — the
   training corpus is undisclosed.
-
-The `LICENSE` file is already there (MIT, © 2025 Laurens Priem); an earlier
-version of this note claimed otherwise and was wrong.
 
 **I would be glad to send a pull request with all three.** Say the word and it
 will be open within the day.
