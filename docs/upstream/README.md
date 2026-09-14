@@ -22,11 +22,11 @@ and the cost of finding that out from a maintainer instead of from `HEAD` is pai
 in credibility. Each file now carries the date it was last checked and against
 which commit.
 
-| # | Project | What | Estado (re-verificado 2026-09-14) |
+| # | Project | What | Estado |
 |---|---|---|---|
-| [1](doclens-play-services.md) | `doclens` | Play Services is an unconditional dependency, which makes the plugin unusable for F-Droid. Two pull requests, the first of which removes a dependency without removing a feature | **listo para enviar — enviar primero.** Reafirmado contra 0.0.12; el mantenedor mergeó dos PRs de fuera el 12-sep, así que es el único de los tres con probabilidad real de merge |
-| [2](mobile-ocr-pub-dev.md) | `mobile_ocr` | Ahora son dos issues: el primero **aporta** la traza de licencias de los cuatro artefactos y pregunta por una discrepancia medida en `cls.onnx`; el segundo pide pub.dev y avisa del KGP | **listo para enviar.** Una de las cuatro peticiones originales era falsa (el `LICENSE` sí existe) y se ha quitado |
-| [3](onnxruntime-flutter-compilesdk.md) | `onnxruntime_flutter` | `compileSdkVersion 33` breaks every release build against current AndroidX, and its vendored `libonnxruntime.so` collides with the official AAR | **listo para enviar, sin esperar respuesta.** La afirmación se sostiene en HEAD, pero el proyecto lleva 21 meses sin commits y 37 issues abiertos. Vale como documentación pública, no como relación |
+| [1](doclens-play-services.md) | `doclens` | Play Services is an unconditional dependency, which makes the plugin unusable for F-Droid. Two pull requests, the first of which removes a dependency without removing a feature | **ENVIADO 2026-09-14 · [#20](https://github.com/govindmaheshwari2/doclens/issues/20).** Reafirmado contra 0.0.12; el mantenedor mergeó dos PRs de fuera el 12-sep, así que es el único de los tres con probabilidad real de merge |
+| [2](mobile-ocr-pub-dev.md) | `mobile_ocr` | Ahora son dos issues: el primero **aporta** la traza de licencias de los cuatro artefactos y pregunta por una discrepancia medida en `cls.onnx`; el segundo pide pub.dev y avisa del KGP | **ENVIADO 2026-09-14 · [#26](https://github.com/ente-io/mobile_ocr/issues/26).** Una de las cuatro peticiones originales era falsa (el `LICENSE` sí existe) y se ha quitado |
+| [3](onnxruntime-flutter-compilesdk.md) | `onnxruntime_flutter` | `compileSdkVersion 33` breaks every release build against current AndroidX, and its vendored `libonnxruntime.so` collides with the official AAR | **ENVIADO 2026-09-14 · [#55](https://github.com/gtbluesky/onnxruntime_flutter/issues/55), sin esperar respuesta.** La afirmación se sostiene en HEAD, pero el proyecto lleva 21 meses sin commits y 37 issues abiertos. Vale como documentación pública, no como relación |
 
 None of the three is a blocker for Byrsa any more, and all of them are written
 that way on purpose. `byrsa_capture` carries its own detector; `byrsa_ocr` keeps
