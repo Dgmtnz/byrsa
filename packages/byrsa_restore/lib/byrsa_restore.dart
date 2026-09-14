@@ -9,6 +9,11 @@
 /// The **neural** tier runs quantised ONNX models that the user opts into
 /// downloading; when a model is missing or a platform cannot run it, the stage
 /// reports itself as skipped instead of failing the pipeline.
+///
+/// This entry point needs `dart:io`, because [ModelStore] writes downloaded
+/// models to disk. Where there is no disk — a browser — import
+/// `package:byrsa_restore/byrsa_restore_core.dart` instead: same restoration
+/// code, minus the one class that cannot exist there.
 library;
 
 export 'src/classical.dart' show ClassicalRestore, PageFilter;

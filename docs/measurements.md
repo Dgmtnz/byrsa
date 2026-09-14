@@ -651,3 +651,80 @@ caught either bug: one is a layout property of a platform texture, the other is
 an agreement between two coordinate systems that only exists at runtime. The six
 new assertions cover the arithmetic; the agreement itself still needs eyes on a
 phone.
+
+---
+
+## 2026-09-14 — the browser demo, and the bug it uncovered
+
+### `byrsa_restore` was silently wrong on the web
+
+The package is published as pure Dart that runs anywhere. It did not.
+
+Compiling it to JavaScript and running the same restoration produced, at every
+size tried:
+
+```
+RangeError (index): Index out of range: index should be less than 48: 34359738359
+```
+
+An index of roughly 2^35 into a list of 48. Isolated to one line of arithmetic,
+then reproduced in nine words:
+
+| | Dart VM | dart2js |
+|---|---|---|
+| `-1 >> 8` | **-1** | **4294967295** |
+
+On the VM, `>>` on a negative int is an arithmetic shift. Under dart2js the
+receiver is treated as an unsigned 32-bit value. Two consequences, and the
+second is worse than the first:
+
+1. **The guard did not guard.** `math.max(0, position >> 8)` was written exactly
+   to clamp the negative case. On the web `position >> 8` has already become a
+   huge positive, so the clamp is a no-op and the index escapes the array. Three
+   sites.
+2. **The interpolations were silently wrong.** Every bilinear blend read
+   `a + (((b - a) * weight) >> 8)`. When `b < a` the difference is negative, so
+   on the web that shift produced an enormous positive instead — wrong pixels,
+   no error, no crash. Seven sites, including one in `intrusion.dart`.
+
+Fixed without a helper and without a branch in the hot loop, by not letting a
+negative reach a shift at all. The guards clamp before shifting; the blends were
+rewritten as the weighted average `(a * (256 - w) + b * w) >> 8`, which is
+algebraically identical for non-negative samples and never subtracts.
+
+Verified by checksumming the restored bytes on both platforms, three sizes and
+all three filters:
+
+| | |
+|---|---|
+| Before | crash on every one |
+| After | **identical, byte for byte, 9 of 9** |
+
+`tool/check_web_parity.sh` is that comparison with an exit code. The VM test
+suite is unchanged by the fix, which is the other half of the claim.
+
+**Nothing in 194 tests could have found this.** They all run on the VM, where
+the code was always correct. The bug needed a second platform to exist at all.
+
+### The demo, measured in a headless Chrome
+
+`demo/` restores a 1240x1158 page entirely in the browser:
+
+| Stage | Time |
+|---|---|
+| Decode (JPEG, `package:image`) | 877 ms |
+| **Restoration (`ClassicalRestore`)** | **304 ms** |
+| Re-encode (JPEG, quality 90) | 394 ms |
+
+The same shape as the desktop numbers: restoration is the cheapest of the three,
+and the codecs cost more than the work. Measured in Chrome 153 headless with
+software WebGL on this desktop, which is not a claim about anyone else's
+machine.
+
+### The page makes no network request at all
+
+Built with `--no-web-resources-cdn`, so CanvasKit is served from the same origin
+instead of `gstatic.com`. A page whose argument is that nothing leaves the tab
+should not begin by fetching seven megabytes from Google. Instrumented in
+Chrome: **zero external requests, zero failed requests** on load and through a
+full restoration.

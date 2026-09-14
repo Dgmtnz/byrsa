@@ -431,7 +431,7 @@ class _Analysis {
 
   ({int low, int high, int weight}) backgroundRow(int y, int fullHeight) {
     final position = ((y * 2 + 1) * height * 128) ~/ fullHeight - 128;
-    final low = math.max(0, position >> 8);
+    final low = position < 0 ? 0 : position >> 8;
     final high = math.min(height - 1, low + 1);
     return (
       low: low,
@@ -452,11 +452,14 @@ class _Analysis {
     final right = columns[index + 1];
     final weight = columns[index + 2];
 
-    final top = scale[lowRow + left] +
-        (((scale[lowRow + right] - scale[lowRow + left]) * weight) >> 8);
-    final bottom = scale[highRow + left] +
-        (((scale[highRow + right] - scale[highRow + left]) * weight) >> 8);
-    return top + (((bottom - top) * row.weight) >> 8);
+    final inverse = 256 - weight;
+    final top =
+        (scale[lowRow + left] * inverse + scale[lowRow + right] * weight) >> 8;
+    final bottom =
+        (scale[highRow + left] * inverse + scale[highRow + right] * weight) >>
+            8;
+    final rowInverse = 256 - row.weight;
+    return (top * rowInverse + bottom * row.weight) >> 8;
   }
 
   /// Triples of `(low, high, weight)` mapping a full-resolution axis onto an
@@ -465,7 +468,7 @@ class _Analysis {
     final out = Int32List(fullLength * 3);
     for (var i = 0; i < fullLength; i++) {
       final position = ((i * 2 + 1) * shortLength * 128) ~/ fullLength - 128;
-      final low = math.max(0, position >> 8);
+      final low = position < 0 ? 0 : position >> 8;
       final high = math.min(shortLength - 1, low + 1);
       out[i * 3] = low;
       out[i * 3 + 1] = high;
@@ -560,7 +563,7 @@ class _TileMaps {
 
   ({int low, int high, int weight}) rowWeight(int y, int height) {
     final position = ((y * 2 + 1) * tilesY * 128) ~/ height - 128;
-    final low = math.max(0, position >> 8);
+    final low = position < 0 ? 0 : position >> 8;
     final high = math.min(tilesY - 1, low + 1);
     return (
       low: low,
@@ -585,9 +588,11 @@ class _TileMaps {
     final bottomLeft = maps[row.high * tilesX + left][value];
     final bottomRight = maps[row.high * tilesX + right][value];
 
-    final top = topLeft + (((topRight - topLeft) * weight) >> 8);
-    final bottom = bottomLeft + (((bottomRight - bottomLeft) * weight) >> 8);
-    final result = top + (((bottom - top) * row.weight) >> 8);
+    final inverse = 256 - weight;
+    final top = (topLeft * inverse + topRight * weight) >> 8;
+    final bottom = (bottomLeft * inverse + bottomRight * weight) >> 8;
+    final result =
+        (top * (256 - row.weight) + bottom * row.weight) >> 8;
     return result < 0 ? 0 : (result > 255 ? 255 : result);
   }
 }

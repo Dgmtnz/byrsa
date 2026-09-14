@@ -1205,3 +1205,63 @@ Un documento que la ejecución nunca produjo sigue contando como fallo completo,
 cosa, y ambos casos tienen ahora su test.
 
 Es reproducible: `content.json` más `tool/make_corpus.py` regeneran los mismos bytes.
+
+---
+
+## D-046 · La demo web existe, y encontró que `byrsa_restore` estaba mal en web
+**Fecha:** 2026-09-14 · **Estado:** ratificar
+
+La pregunta era si una demo web valdría lo mismo que el móvil, razonando que Dart y
+Flutter deben funcionar igual en las dos plataformas. **No funcionan igual**, y la demo lo
+demostró de la peor manera posible: reventando.
+
+**Qué corre en navegador y qué no.** El pipeline entero de restauración —clásico, dewarp,
+intrusiones, buffer— importa sólo `dart:math`, `dart:typed_data` y `package:meta`. Es
+portable. Lo que no: la cámara (CameraX/AVFoundation), el motor de OCR (nativo en ambas
+plataformas) y la etapa ONNX. Es decir, **el centro del pipeline sí, las dos puntas no** —
+y las puntas son las que producen el CER.
+
+Como `model_store.dart` necesita `dart:io` y su `install()` devuelve un `File`, no se puede
+simular honestamente en web. Así que el paquete gana una segunda entrada,
+`byrsa_restore_core.dart`, con todo lo portable. La división es por capacidad, no por
+gusto.
+
+**Y entonces apareció el fallo de verdad.** En la VM, `>>` sobre un entero negativo es un
+desplazamiento aritmético; en dart2js el receptor se trata como un entero **sin signo de 32
+bits**. `-1 >> 8` vale `-1` en una y `4294967295` en la otra.
+
+Dos consecuencias, y la segunda es peor:
+
+1. **El guardia no guardaba.** `math.max(0, position >> 8)` estaba escrito justo para
+   atrapar el caso negativo. En web el valor ya llega positivo y enorme, así que el clamp
+   no hace nada y el índice se sale del array: 2³⁵ sobre una lista de 48. Tres sitios.
+2. **Las interpolaciones daban píxeles mal, en silencio.** Toda mezcla bilineal hacía
+   `a + (((b - a) * weight) >> 8)`. Con `b < a` la diferencia es negativa, y en web ese
+   desplazamiento producía un positivo gigante. Ni error ni aviso: resultado incorrecto.
+   Siete sitios, uno de ellos en `intrusion.dart`.
+
+**Arreglado sin ayudante y sin rama en el bucle caliente**: los guardias recortan antes de
+desplazar, y las mezclas se reescriben como media ponderada `(a * (256 - w) + b * w) >> 8`,
+que es algebraicamente idéntica para muestras no negativas y nunca resta.
+
+**Verificado por checksum de los bytes restaurados en las dos plataformas**, tres tamaños y
+los tres filtros: antes reventaba en los nueve casos, ahora salen idénticos byte por byte
+en los nueve. `tool/check_web_parity.sh` es esa comparación con código de salida, y entra
+en CI. Los tests de la VM no cambian, que es la otra mitad de la afirmación.
+
+**Ninguno de los 194 tests podía encontrarlo.** Todos corren en la VM, donde el código
+siempre estuvo bien. El fallo necesitaba una segunda plataforma para existir.
+
+**La demo se construye sin CDN.** `--no-web-resources-cdn` sirve CanvasKit desde el mismo
+origen en vez de `gstatic.com`: una página cuyo argumento es que nada sale de tu pestaña no
+puede empezar pidiéndole siete megas a Google. Instrumentado en Chrome: **cero peticiones
+externas**.
+
+**Lo que la demo no hace, y se dice en la propia página:** no hay OCR. El reconocimiento es
+código nativo, así que un navegador no tiene qué ejecutar. La página restaura y nada más.
+
+**Respuesta a la pregunta que la originó:** la web y el móvil no demuestran lo mismo. La web
+demuestra que la restauración es real y que funciona sin servidor, y la puede probar un
+evaluador en treinta segundos sin instalar nada. El móvil demuestra que el conjunto
+funciona y da el CER. Son complementarias, y hoy cada una encontró fallos que la otra no
+podía ver.

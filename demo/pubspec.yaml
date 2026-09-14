@@ -1,0 +1,28 @@
+name: byrsa_web_demo
+description: >-
+  Byrsa's restoration pipeline, running in a browser. The same Dart code the
+  phone runs, with nothing uploaded anywhere.
+publish_to: none
+version: 0.1.0
+
+resolution: workspace
+
+environment:
+  sdk: ^3.6.0
+  flutter: '>=3.24.0'
+
+dependencies:
+  byrsa_restore: ^0.1.0
+  flutter:
+    sdk: flutter
+  image: ^4.3.0
+
+dev_dependencies:
+  flutter_lints: ^6.0.0
+  flutter_test:
+    sdk: flutter
+
+flutter:
+  uses-material-design: true
+  assets:
+    - assets/samples/

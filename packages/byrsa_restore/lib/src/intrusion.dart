@@ -228,7 +228,7 @@ class BorderIntrusion {
         final original = image.data[i * channels + c];
         final replacement = fillFull.data[i * channels + c];
         out[i * channels + c] =
-            original + (((replacement - original) * weight) >> 8);
+            (original * (256 - weight) + replacement * weight) >> 8;
       }
     }
     return ImageBuffer(
