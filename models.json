@@ -49,6 +49,7 @@
     },
     {
       "id": "ppocr-v5-det",
+      "fileName": "det.onnx",
       "url": "https://models.ente.io/PP-OCRv5/det.onnx",
       "sizeBytes": 4748769,
       "sha256": "d7fe3ea74652890722c0f4d02458b7261d9f5ae6c92904d05707c9eb155c7924",
@@ -61,6 +62,7 @@
     },
     {
       "id": "ppocr-v5-cls",
+      "fileName": "cls.onnx",
       "url": "https://models.ente.io/PP-OCRv5/cls.onnx",
       "sizeBytes": 582663,
       "sha256": "f4bb53707100c5f3d59ba834eb05bb400369f20aed35d4b26807b1bfadd2a70e",
@@ -73,6 +75,7 @@
     },
     {
       "id": "ppocr-v5-rec",
+      "fileName": "rec.onnx",
       "url": "https://models.ente.io/PP-OCRv5/rec.onnx",
       "sizeBytes": 16517247,
       "sha256": "bf66820f48fa99f779974c4df78e5274a9d8e0458c4137e8c5357e40e2c3faf2",
@@ -85,6 +88,7 @@
     },
     {
       "id": "ppocrv5-dict",
+      "fileName": "ppocrv5_dict.txt",
       "url": "https://models.ente.io/PP-OCRv5/ppocrv5_dict.txt",
       "sizeBytes": 74012,
       "sha256": "d1979e9f794c464c0d2e0b70a7fe14dd978e9dc644c0e71f14158cdf8342af1b",
