@@ -1,0 +1,33 @@
+PATRIMONIAL VILLA MONDOÑEDO, S.L.
+Calle Arenal Quebrado 9, entresuelo - 15703 Santiago de Compostela (A Coruña) - Teléfono +34 981 55 74 10 -
+arrendamientos@villamondonedo.example
+CIF B-15448023
+FACTURA DE ARRENDAMIENTO Nº ARR-2026-09-014
+Fecha de emisión 01/09/2026
+Periodo devengado Septiembre de 2026
+Contrato Arrendamiento de local de negocio de 18/10/2021
+ARRENDATARIO
+Razón social Librería El Higo Chumbo, S.L.
+CIF B-15990234
+Domicilio Rúa das Ameixeiras 23, bajo - 15704 Santiago de Compostela
+Local arrendado Bajo comercial de 86 metros cuadrados con dos escaparates a vía pública
+Referencia catastral 3374902NH3437S0001XK
+Concepto Cant. Precio unit. Importe
+Renta mensual del local sito en Rúa das Ameixeiras 23, bajo 1 1.250,00 € 1.250,00 €
+Repercusión de gastos de comunidad del tercer trimestre 1 138,60 € 138,60 €
+Repercusión del IBI, prorrata mensual del ejercicio 1 74,25 € 74,25 €
+Consumo de agua, lectura de 2.171 a 2.184 metros cúbicos 13 2,35 € 30,55 €
+Base imponible 1.493,40 €
+IVA (21 %) 313,61 €
+Retención IRPF sobre arrendamientos (19 %) -283,75 €
+TOTAL A PAGAR 1.523,26 €
+DOMICILIACIÓN
+Fecha de cargo 05/09/2026
+IBAN de cargo ES52 2080 5417 6630 0918 4472
+Referencia del mandato SEPA MND-00871
+Fianza depositada 2.500,00 €, equivalente a dos mensualidades
+La renta se actualizará el próximo 18 de octubre conforme a la variación anual del índice de referencia pactado en la cláusula quinta del contrato, sin que
+la actualización pueda ser negativa. Los gastos de comunidad se repercuten según el coeficiente de participación del local, que es del 7,40 por ciento.
+Las obras de conservación del inmueble corresponden a la propiedad, salvo las derivadas del uso del arrendatario o de la instalación de rótulos, toldos y
+climatización, que serán por su cuenta. Cualquier discrepancia sobre las lecturas de agua deberá comunicarse antes del día quince del mes siguiente al
+de la emisión de esta factura.

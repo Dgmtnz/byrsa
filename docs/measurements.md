@@ -511,3 +511,106 @@ Measured: it is a Paddle export, of a different generation, with a 2-class head.
 Inferred, and labelled as inference: that it is `ch_ppocr_mobile_v2.0_cls`.
 Closing it needs the upstream `ch_ppocr_mobile_v2.0_cls_infer.tar` exported
 through paddle2onnx and fingerprinted the same way, or an answer from Ente.
+
+---
+
+## 2026-09-14 — the Android application compiles, and a corpus that can be read
+
+Machine: this desktop, Flutter 3.47.2, `JAVA_HOME=/opt/android-studio/jbr`.
+
+### `flutter build apk --debug` succeeds
+
+Never previously recorded, and worth recording because it is the precondition
+for everything the device run will settle:
+
+```
+Running Gradle task 'assembleDebug'...   141.2s
+✓ Built build/app/outputs/flutter-apk/app-debug.apk
+```
+
+Exit 0. Every native piece links: `byrsa_capture`'s CameraX side, `mobile_ocr`,
+and the ONNX Runtime the root Gradle file pins. **This is a compile, not a run.**
+Nothing here says the camera opens or the OCR returns a word; it says the
+application can be installed, which is the step before finding that out.
+
+### The KGP warning names two plugins, not one
+
+U-32 records `mobile_ocr` as applying the Kotlin Gradle Plugin that Flutter
+warns will stop building. The build says:
+
+```
+WARNING: Your app uses the following plugins that apply Kotlin Gradle Plugin (KGP): mobile_ocr, share_plus
+```
+
+**`share_plus` has the same problem**, and it is a far more widely used package
+than `mobile_ocr`. That widens U-32: the eventual hard break takes the export
+feature with it, not only OCR.
+
+### The synthetic corpus renders text an OCR engine can actually read
+
+`package:image`'s bundled bitmap fonts are ASCII-only. Asked for
+`Ñandú, cigüeña, äöü — ¿cuánto? ¡Sí!` they draw ` and , cig e a, cu nto? S !` —
+every diacritic and both Spanish inverted marks silently dropped. A ground truth
+containing characters the renderer cannot draw would have produced a character
+error rate that blamed the OCR engine for the corpus's own gap, so the renderer
+is Python and Pillow over the Liberation faces, which cover Latin-1 and Latin
+Extended-A.
+
+Legibility was then checked rather than assumed. Tesseract is installed here with
+only Afrikaans and orientation data — the wrong language model entirely — and on
+a clean French page it returns:
+
+```
+Chapitre VII — L'hiver 4 Compiëgne
+Le brouillard s'était levé três têt ce matin-la, et la forêt paraissait suspendue
+```
+
+against a ground truth of
+
+```
+Chapitre VII — L'hiver à Compiègne
+Le brouillard s'était levé très tôt ce matin-là, et la forêt paraissait suspendue
+```
+
+Word structure, punctuation and most accents survive; the errors that remain
+(`4` for `à`, `g` for `q`, `três têt` for `très tôt`) are exactly what the wrong
+language model produces. **This is not a CER measurement** — an Afrikaans model
+on a French page is not a number anyone should quote. It is evidence that the
+glyphs are present, distinguishable, and that the ground truth matches what was
+drawn. The project's own OCR engine runs only on a device, so the first real CER
+still comes from the phone.
+
+### The pipeline over fifty synthetic pages
+
+First time the harness has run over a corpus this size. `harness run` then
+`score`, restoration filter `colour`, analysis width 512, on this desktop.
+
+| | |
+|---|---|
+| Documents | 50, none skipped, none failed |
+| Median per document | **448 ms** |
+| 90th percentile | **578 ms** |
+| `decode` | 123 ms mean |
+| `classical:colour` | **121 ms** mean |
+| `encode` | 185 ms mean |
+
+The restoration itself is the cheapest of the three stages. Decoding and
+re-encoding cost more than the work, which is worth remembering before anyone
+optimises the filter.
+
+### The report now refuses to score what it did not measure
+
+Scoring that run first produced a table of **100.00% CER for all eight
+categories**. That is not a result: `harness run` has no OCR engine — the
+recogniser is a platform plugin — so every hypothesis is empty by design, and an
+empty hypothesis against a real reference is exactly 100% by arithmetic.
+
+Published unchanged, that table would have read as a measured catastrophe rather
+than as a measurement that never happened, and it is precisely the kind of
+number `tool/check_claims.sh` exists to keep out of this repository. The same
+rule `psnr` already follows — null instead of infinity, because "an infinite
+score in a report is a bug that looks like a triumph" — now applies to character
+error rate: a result that exists but carries no text is **not measured**.
+
+A document the run never produced at all still scores a complete failure, which
+is a different thing and has its own test. Both cases are now asserted.

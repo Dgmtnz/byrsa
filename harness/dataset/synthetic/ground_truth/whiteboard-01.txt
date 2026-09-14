@@ -1,0 +1,9 @@
+Sprint 24 - Planificación
+Equipo Núcleo Ávila
+Fechas 14/09/2026 - 25/09/2026
+Objetivo Reducir la cola de sincronización
+Comprometido
+- Migrar el índice de búsqueda
+- Añadir caché de miniaturas
+- Corregir el desfase horario en informes
+Reparto

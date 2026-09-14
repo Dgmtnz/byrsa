@@ -1,0 +1,47 @@
+SUPERMERCADO LA ESPIGA DORADA
+Avda. de los Almendrales, 47 - 28935 Móstoles (Madrid)
+CIF B-84729361
+TEL. 916 44 02 87
+CENTRO 0037 - MÓSTOLES SUR
+FACTURA SIMPL. Nº 000418/07
+CAJA / OP. 03 / 27
+FECHA 14/09/2026   19:42:11
+UD ARTÍCULO P/U IMP
+2 LECHE ENTERA UHT 1 L 0,89 1,78
+1 PLÁTANO CANARIAS 1,240 kg 2,15 2,67
+1 JAMÓN COCIDO EXTRA 200 g 3,45 3,45
+1 CAFÉ MOLIDO NATURAL 250 g 2,99 2,99
+3 YOGUR NAT. AZUC. P/4 1,29 3,87
+1 MERLUZA RODAJAS 0,685 kg 9,90 6,78
+2 JUDÍAS VERDES CONG. 450 g 1,75 3,50
+1 AZÚCAR MORENO CAÑA 1 kg 1,55 1,55
+1 CHAMPIÑÓN LAMINADO 400 g 1,19 1,19
+1 MANTEQUILLA S/SAL 250 g 2,45 2,45
+2 ATÚN CLARO AC. OLIVA P/3 2,89 5,78
+1 PIMENTÓN DE LA VERA 75 g 2,10 2,10
+1 SIDRA NATURAL ASTUR. 70 cl 3,25 3,25
+1 QUESO MANCHEGO CUR. 300 g 6,95 6,95
+1 PAN CHAPATA RÚSTICO 1,10 1,10
+1 DETERGENTE LÍQ. 30 DOS. 5,49 5,49
+2 PAPEL COCINA 2 ROLLOS 2,35 4,70
+1 ACEITE OLIVA VIRGEN EX. 1 L 8,75 8,75
+TOTAL UNIDADES 24
+TOTAL A PAGAR 68,35 EUR
+IVA % BASE CUOTA TOTAL
+4,0 12,02 0,48 12,50
+10,0 38,55 3,86 42,41
+21,0 11,11 2,33 13,44
+SUMA 61,68 6,67 68,35
+TARJ. CRÉDITO **** **** **** 4417
+IMPORTE 68,35 EUR
+AUT. 042871
+AID A0000009921010
+TERM. 0032981
+ARQC 9F27A4C1B0D3E856
+MODO SIN CONTACTO - SIN PIN
+TARJ. CLIENTE 8841 0293 77
+PTOS. ACUM. 68 (SALDO 1.247)
+AHORRO EN ESTA COMPRA 4,12 EUR
+Conserve este ticket. Admitimos cambios y devoluciones durante treinta días naturales presentando este comprobante y el artículo en su envase original. No se admiten devoluciones de
+productos frescos, refrigerados ni congelados. Las promociones señaladas con asterisco no son acumulables entre sí. Atención al cliente: atencion@espigadorada.example, de lunes a viernes
+de 9:00 a 14:00 h. Este establecimiento dispone de hojas de reclamación a disposición del consumidor. Gracias por su visita, ¡le esperamos pronto!

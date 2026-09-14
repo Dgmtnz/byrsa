@@ -1,0 +1,36 @@
+Manuale d'uso e manutenzione - Pompa di circolazione TM-480 17
+4. Messa in servizio dell'unità
+Modello TM-480 / TM-480 S
+Tensione nominale 230 V - 50 Hz
+Potenza assorbita da 12 a 45 W
+Grado di protezione IP 44
+Temperatura del fluido da 2 °C a 95 °C
+4.1 Prima di collegare l'unità alla rete, verificare che la tensione di alimentazione corrisponda a quella riportata sulla targhetta
+applicata al corpo motore. Un'alimentazione diversa da quella prevista danneggia in modo irreversibile l'elettronica di controllo e fa
+decadere ogni diritto di garanzia. L'impianto deve essere dotato di un interruttore differenziale da 30 mA e di un collegamento di terra
+efficiente.
+4.2 Attenzione: la pompa non è adatta al pompaggio di liquidi infiammabili, corrosivi o contenenti parti solide in sospensione.
+L'apparecchio può essere utilizzato da bambini di età non inferiore a otto anni soltanto sotto sorveglianza e dopo aver ricevuto
+istruzioni sull'uso sicuro. Non intervenire mai sull'unità senza aver tolto tensione e atteso il raffreddamento del corpo pompa: il fluido
+può superare gli 80 °C anche a impianto spento.
+4.3 Riempire lentamente il circuito e sfiatare l'aria agendo sulla vite centrale con un cacciavite a taglio, ruotandola di mezzo giro in
+senso antiorario. Durante questa operazione può fuoriuscire una piccola quantità d'acqua calda; proteggere le mani e l'apparecchiatura
+elettrica sottostante. Non far funzionare la pompa a secco, nemmeno per pochi secondi, perché i cuscinetti sono lubrificati dal fluido
+stesso.
+4.4 Al primo avviamento l'unità esegue un ciclo di autodiagnosi della durata di circa venti secondi, durante il quale il display
+lampeggia alternando la sigla del modello e la revisione del firmware. Se al termine del ciclo la spia verde resta accesa in modo fisso,
+la pompa è pronta. Se invece lampeggia in rosso, consultare la tabella dei codici riportata di seguito prima di ripetere l'accensione.
+4.5 La modalità a pressione proporzionale è quella consigliata per gli impianti a radiatori con valvole termostatiche, perché riduce il
+consumo elettrico e attenua i rumori di flusso. Negli impianti a pavimento è preferibile la curva a pressione costante. La velocità fissa
+va utilizzata soltanto in fase di collaudo e non deve essere lasciata attiva a lungo.
+4.6 Codici di errore
+Codice Descrizione Intervento
+E01 Sovratemperatura del motore Verificare la temperatura del fluido e la ventilazione del vano
+E02 Rotore bloccato Togliere tensione, sfiatare e sbloccare l'albero con un cacciavite
+E05 Funzionamento a secco Riempire il circuito e ripetere lo sfiato
+E07 Tensione di rete fuori tolleranza Controllare l'impianto elettrico e il differenziale
+E11 Guasto interno dell'elettronica Rivolgersi a un centro di assistenza autorizzato
+Per qualsiasi intervento non descritto in questo capitolo, contattare il servizio tecnico: Idrotecnica Sanvalle S.r.l., via delle Fornaci 18,
+36040 Sanvalle (VI), telefono 0444 77 21 90. Conservare il presente manuale per tutta la vita utile dell'apparecchio e consegnarlo
+all'eventuale nuovo proprietario.
+Revisione 3.2 - marzo 2026 17

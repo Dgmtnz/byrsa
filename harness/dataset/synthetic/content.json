@@ -1,0 +1,6776 @@
+{
+ "documents": [
+  {
+   "id": "adversarial-01",
+   "language": "es",
+   "density": "dense",
+   "blocks": [
+    {
+     "kind": "heading",
+     "text": "SUPERMERCADO LA ESPIGA DORADA"
+    },
+    {
+     "kind": "paragraph",
+     "text": "Avda. de los Almendrales, 47 - 28935 Móstoles (Madrid)"
+    },
+    {
+     "kind": "kv",
+     "label": "CIF",
+     "value": "B-84729361"
+    },
+    {
+     "kind": "kv",
+     "label": "TEL.",
+     "value": "916 44 02 87"
+    },
+    {
+     "kind": "kv",
+     "label": "CENTRO",
+     "value": "0037 - MÓSTOLES SUR"
+    },
+    {
+     "kind": "rule"
+    },
+    {
+     "kind": "kv",
+     "label": "FACTURA SIMPL. Nº",
+     "value": "000418/07"
+    },
+    {
+     "kind": "kv",
+     "label": "CAJA / OP.",
+     "value": "03 / 27"
+    },
+    {
+     "kind": "kv",
+     "label": "FECHA",
+     "value": "14/09/2026   19:42:11"
+    },
+    {
+     "kind": "rule"
+    },
+    {
+     "kind": "table",
+     "rows": [
+      [
+       "UD",
+       "ARTÍCULO",
+       "P/U",
+       "IMP"
+      ],
+      [
+       "2",
+       "LECHE ENTERA UHT 1 L",
+       "0,89",
+       "1,78"
+      ],
+      [
+       "1",
+       "PLÁTANO CANARIAS 1,240 kg",
+       "2,15",
+       "2,67"
+      ],
+      [
+       "1",
+       "JAMÓN COCIDO EXTRA 200 g",
+       "3,45",
+       "3,45"
+      ],
+      [
+       "1",
+       "CAFÉ MOLIDO NATURAL 250 g",
+       "2,99",
+       "2,99"
+      ],
+      [
+       "3",
+       "YOGUR NAT. AZUC. P/4",
+       "1,29",
+       "3,87"
+      ],
+      [
+       "1",
+       "MERLUZA RODAJAS 0,685 kg",
+       "9,90",
+       "6,78"
+      ],
+      [
+       "2",
+       "JUDÍAS VERDES CONG. 450 g",
+       "1,75",
+       "3,50"
+      ],
+      [
+       "1",
+       "AZÚCAR MORENO CAÑA 1 kg",
+       "1,55",
+       "1,55"
+      ],
+      [
+       "1",
+       "CHAMPIÑÓN LAMINADO 400 g",
+       "1,19",
+       "1,19"
+      ],
+      [
+       "1",
+       "MANTEQUILLA S/SAL 250 g",
+       "2,45",
+       "2,45"
+      ],
+      [
+       "2",
+       "ATÚN CLARO AC. OLIVA P/3",
+       "2,89",
+       "5,78"
+      ],
+      [
+       "1",
+       "PIMENTÓN DE LA VERA 75 g",
+       "2,10",
+       "2,10"
+      ],
+      [
+       "1",
+       "SIDRA NATURAL ASTUR. 70 cl",
+       "3,25",
+       "3,25"
+      ],
+      [
+       "1",
+       "QUESO MANCHEGO CUR. 300 g",
+       "6,95",
+       "6,95"
+      ],
+      [
+       "1",
+       "PAN CHAPATA RÚSTICO",
+       "1,10",
+       "1,10"
+      ],
+      [
+       "1",
+       "DETERGENTE LÍQ. 30 DOS.",
+       "5,49",
+       "5,49"
+      ],
+      [
+       "2",
+       "PAPEL COCINA 2 ROLLOS",
+       "2,35",
+       "4,70"
+      ],
+      [
+       "1",
+       "ACEITE OLIVA VIRGEN EX. 1 L",
+       "8,75",
+       "8,75"
+      ]
+     ]
+    },
+    {
+     "kind": "rule"
+    },
+    {
+     "kind": "kv",
+     "label": "TOTAL UNIDADES",
+     "value": "24"
+    },
+    {
+     "kind": "kv",
+     "label": "TOTAL A PAGAR",
+     "value": "68,35 EUR"
+    },
+    {
+     "kind": "spacer"
+    },
+    {
+     "kind": "table",
+     "rows": [
+      [
+       "IVA %",
+       "BASE",
+       "CUOTA",
+       "TOTAL"
+      ],
+      [
+       "4,0",
+       "12,02",
+       "0,48",
+       "12,50"
+      ],
+      [
+       "10,0",
+       "38,55",
+       "3,86",
+       "42,41"
+      ],
+      [
+       "21,0",
+       "11,11",
+       "2,33",
+       "13,44"
+      ],
+      [
+       "SUMA",
+       "61,68",
+       "6,67",
+       "68,35"
+      ]
+     ]
+    },
+    {
+     "kind": "rule"
+    },
+    {
+     "kind": "kv",
+     "label": "TARJ. CRÉDITO",
+     "value": "**** **** **** 4417"
+    },
+    {
+     "kind": "kv",
+     "label": "IMPORTE",
+     "value": "68,35 EUR"
+    },
+    {
+     "kind": "kv",
+     "label": "AUT.",
+     "value": "042871"
+    },
+    {
+     "kind": "kv",
+     "label": "AID",
+     "value": "A0000009921010"
+    },
+    {
+     "kind": "kv",
+     "label": "TERM.",
+     "value": "0032981"
+    },
+    {
+     "kind": "kv",
+     "label": "ARQC",
+     "value": "9F27A4C1B0D3E856"
+    },
+    {
+     "kind": "kv",
+     "label": "MODO",
+     "value": "SIN CONTACTO - SIN PIN"
+    },
+    {
+     "kind": "rule"
+    },
+    {
+     "kind": "kv",
+     "label": "TARJ. CLIENTE",
+     "value": "8841 0293 77"
+    },
+    {
+     "kind": "kv",
+     "label": "PTOS. ACUM.",
+     "value": "68 (SALDO 1.247)"
+    },
+    {
+     "kind": "kv",
+     "label": "AHORRO EN ESTA COMPRA",
+     "value": "4,12 EUR"
+    },
+    {
+     "kind": "rule"
+    },
+    {
+     "kind": "paragraph",
+     "text": "Conserve este ticket. Admitimos cambios y devoluciones durante treinta días naturales presentando este comprobante y el artículo en su envase original. No se admiten devoluciones de productos frescos, refrigerados ni congelados. Las promociones señaladas con asterisco no son acumulables entre sí. Atención al cliente: atencion@espigadorada.example, de lunes a viernes de 9:00 a 14:00 h. Este establecimiento dispone de hojas de reclamación a disposición del consumidor. Gracias por su visita, ¡le esperamos pronto!"
+    }
+   ]
+  },
+  {
+   "id": "adversarial-02",
+   "language": "es",
+   "density": "dense",
+   "blocks": [
+    {
+     "kind": "heading",
+     "text": "CONDICIONES GENERALES DE ARRENDAMIENTO DE VEHÍCULOS SIN CONDUCTOR"
+    },
+    {
+     "kind": "paragraph",
+     "text": "Rodamar Peninsular, S.L., con domicilio social en la calle Herreros del Cauce, 12, 3º B, 41014 Sevilla, CIF B-71028453, inscrita en el Registro Mercantil de Sevilla, tomo 4.812, folio 118, hoja SE-92341. Edición 7, vigente desde el 1 de julio de 2026. Documento entregado al arrendatario junto con el contrato y el parte de entrega del vehículo."
+    },
+    {
+     "kind": "rule"
+    },
+    {
+     "kind": "paragraph",
+     "text": "1. Objeto. Las presentes condiciones generales regulan el arrendamiento de vehículos sin conductor concertado entre Rodamar Peninsular, S.L. (en adelante, el arrendador) y la persona física o jurídica identificada como arrendatario en el anverso del contrato. La firma del contrato implica la aceptación íntegra y sin reservas de estas condiciones, que prevalecerán sobre cualquier comunicación anterior, verbal o escrita, salvo pacto posterior suscrito por ambas partes."
+    },
+    {
+     "kind": "paragraph",
+     "text": "2. Entrega y devolución. El vehículo se entrega en perfecto estado de uso, con la documentación reglamentaria, el equipamiento obligatorio y el depósito de combustible lleno, según se detalla en el parte de entrega que el arrendatario firma en el momento de la recogida. El arrendatario se obliga a devolverlo en la oficina, fecha y hora pactadas. Cada fracción de retraso superior a cincuenta y nueve minutos devengará un día completo de alquiler, salvo autorización expresa y por escrito del arrendador."
+    },
+    {
+     "kind": "paragraph",
+     "text": "3. Conductores autorizados. Únicamente podrán conducir el vehículo las personas identificadas en el contrato, mayores de veintiún años y titulares de un permiso de conducción en vigor con una antigüedad mínima de dos años. La cesión del vehículo a terceros no autorizados constituye un incumplimiento grave y faculta al arrendador para resolver el contrato, recuperar el vehículo por sus propios medios y reclamar los daños y perjuicios ocasionados."
+    },
+    {
+     "kind": "paragraph",
+     "text": "4. Combustible y kilometraje. La tarifa incluye doscientos kilómetros diarios acumulables durante la vigencia del contrato. El exceso se facturará a razón de 0,19 EUR por kilómetro. Si el vehículo se devuelve con un nivel de combustible inferior al de la entrega, se repostará por cuenta del arrendatario al precio vigente en el surtidor más un cargo por servicio de 24,50 EUR. El repostaje con carburante inadecuado se considerará negligencia del arrendatario."
+    },
+    {
+     "kind": "paragraph",
+     "text": "5. Responsabilidad y franquicia. El arrendatario responde de los daños sufridos por el vehículo hasta el importe de la franquicia señalada en el anverso, que asciende a 950,00 EUR para turismos y a 1.400,00 EUR para vehículos industriales ligeros. La franquicia se aplicará por cada siniestro y con independencia de la responsabilidad en el mismo. Quedan excluidos de toda cobertura los daños en neumáticos, lunas, bajos, techo e interior del habitáculo, así como los producidos bajo los efectos del alcohol o de sustancias estupefacientes."
+    },
+    {
+     "kind": "paragraph",
+     "text": "6. Siniestros. En caso de accidente, robo o incendio, el arrendatario deberá avisar de inmediato a la policía, cumplimentar el parte amistoso con los datos completos del tercero implicado y remitirlo al arrendador en un plazo máximo de veinticuatro horas. El incumplimiento de esta obligación dejará sin efecto cualquier reducción de franquicia contratada y hará recaer sobre el arrendatario la totalidad del importe reclamado."
+    },
+    {
+     "kind": "paragraph",
+     "text": "7. Multas y sanciones. El arrendatario asume las multas, tasas de estacionamiento y peajes devengados durante el periodo de alquiler, incluso cuando se notifiquen con posterioridad a la devolución del vehículo. El arrendador facilitará los datos del conductor al organismo sancionador conforme a la normativa de tráfico y repercutirá un cargo de gestión de 38,00 EUR por cada expediente tramitado."
+    },
+    {
+     "kind": "paragraph",
+     "text": "8. Cancelación y reembolso. Las reservas anuladas con más de cuarenta y ocho horas de antelación se reembolsarán íntegramente en el mismo medio de pago empleado. Entre cuarenta y ocho y veinticuatro horas se retendrá el treinta por ciento del importe. Por debajo de veinticuatro horas, o si el arrendatario no se presenta en la oficina dentro de las dos horas siguientes a la hora pactada, se retendrá el importe del primer día de alquiler."
+    },
+    {
+     "kind": "paragraph",
+     "text": "9. Protección de datos. Los datos personales facilitados serán tratados por Rodamar Peninsular, S.L. con la finalidad de gestionar el contrato, atender las obligaciones legales derivadas del mismo y prevenir el fraude, y se conservarán durante los plazos de prescripción legalmente establecidos. El interesado podrá ejercer sus derechos de acceso, rectificación, supresión, oposición, limitación y portabilidad dirigiéndose por escrito al domicilio social o a proteccion.datos@rodamarpeninsular.example."
+    },
+    {
+     "kind": "paragraph",
+     "text": "10. Ley aplicable y jurisdicción. El presente contrato se rige por la legislación española. Para cuantas cuestiones se susciten sobre su interpretación o cumplimiento, las partes se someten a los juzgados y tribunales del domicilio del consumidor, sin perjuicio del fuero que legalmente le corresponda."
+    },
+    {
+     "kind": "rule"
+    },
+    {
+     "kind": "heading",
+     "text": "¿Qué ocurre si devuelvo el vehículo fuera de horario?"
+    },
+    {
+     "kind": "paragraph",
+     "text": "Si la oficina está cerrada, deposite las llaves en el buzón exterior señalizado y deje el vehículo en las plazas reservadas del aparcamiento. La devolución se considerará efectuada a la hora de apertura del día hábil siguiente y el arrendatario seguirá siendo responsable del vehículo hasta ese momento. ¡Atención! El buzón no admite mandos de garaje ni documentación; entréguelos en mano."
+    },
+    {
+     "kind": "spacer"
+    },
+    {
+     "kind": "table",
+     "rows": [
+      [
+       "Concepto",
+       "Importe"
+      ],
+      [
+       "Conductor adicional (por día)",
+       "7,50 EUR"
+      ],
+      [
+       "Silla infantil o elevador (por día)",
+       "6,00 EUR"
+      ],
+      [
+       "Devolución en oficina distinta",
+       "65,00 EUR"
+      ],
+      [
+       "Limpieza extraordinaria del habitáculo",
+       "90,00 EUR"
+      ],
+      [
+       "Pérdida de llave o mando a distancia",
+       "210,00 EUR"
+      ],
+      [
+       "Reposición de documentación extraviada",
+       "45,00 EUR"
+      ],
+      [
+       "Gestión administrativa de multa",
+       "38,00 EUR"
+      ],
+      [
+       "Asistencia por repostaje erróneo",
+       "325,00 EUR"
+      ]
+     ]
+    },
+    {
+     "kind": "paragraph",
+     "text": "Todos los importes indicados se entienden con el IVA incluido al tipo general del 21 %. Los precios podrán actualizarse anualmente conforme a la variación del índice de precios de consumo publicado en diciembre del ejercicio anterior."
+    }
+   ]
+  },
+  {
+   "id": "adversarial-03",
+   "language": "es",
+   "density": "dense",
+   "blocks": [
+    {
+     "kind": "heading",
+     "text": "XXIV FESTIVAL DE MÚSICAS ANTIGUAS DE VILLANUEVA DEL ALCOR"
+    },
+    {
+     "kind": "paragraph",
+     "text": "Del 18 al 20 de septiembre de 2026 - Programa general y espacios escénicos. Organiza la Fundación Añil para el Patrimonio Sonoro con la colaboración del Ayuntamiento de Villanueva del Alcor y la Diputación Provincial."
+    },
+    {
+     "kind": "rule"
+    },
+    {
+     "kind": "heading",
+     "text": "Viernes 18 de septiembre"
+    },
+    {
+     "kind": "table",
+     "rows": [
+      [
+       "Hora",
+       "Espacio",
+       "Intérpretes",
+       "Programa"
+      ],
+      [
+       "19:00",
+       "Claustro de San Millán",
+       "Ensemble Aurea Lyra",
+       "Cantigas de Santa María: milagros y loores"
+      ],
+      [
+       "20:30",
+       "Iglesia de la Asunción",
+       "Capilla Peñaflor",
+       "Códice de las Huelgas: polifonía del siglo XIII"
+      ],
+      [
+       "22:15",
+       "Patio del Hospital Viejo",
+       "Dúo Tañer y Glosar",
+       "Diferencias sobre 'Guárdame las vacas' y otras glosas"
+      ]
+     ]
+    },
+    {
+     "kind": "heading",
+     "text": "Sábado 19 de septiembre"
+    },
+    {
+     "kind": "table",
+     "rows": [
+      [
+       "Hora",
+       "Espacio",
+       "Intérpretes",
+       "Programa"
+      ],
+      [
+       "11:00",
+       "Sala Capitular",
+       "Taller abierto",
+       "¿Cómo suena una vihuela? Charla con demostración"
+      ],
+      [
+       "12:30",
+       "Plaza del Almirez",
+       "Los Menestriles del Alcor",
+       "Danzas de corte y música al aire libre"
+      ],
+      [
+       "16:30",
+       "Casa de los Arcos",
+       "Íñigo Valcárcel, clave",
+       "Tientos, batallas y obras de atribución dudosa"
+      ],
+      [
+       "18:00",
+       "Iglesia de la Asunción",
+       "Coro de Cámara Vox Serena",
+       "Tonos humanos y divinos del Siglo de Oro"
+      ],
+      [
+       "20:00",
+       "Claustro de San Millán",
+       "Sofía Bermejo, soprano",
+       "¡Ay, amor! Villancicos, seguidillas y jácaras"
+      ],
+      [
+       "22:00",
+       "Auditorio del Molino",
+       "Orquesta Barroca del Guadamiel",
+       "Conciertos para dos violines y bajo continuo"
+      ]
+     ]
+    },
+    {
+     "kind": "heading",
+     "text": "Domingo 20 de septiembre"
+    },
+    {
+     "kind": "table",
+     "rows": [
+      [
+       "Hora",
+       "Espacio",
+       "Intérpretes",
+       "Programa"
+      ],
+      [
+       "10:30",
+       "Ermita de la Vega",
+       "Schola Gregoriana Alcorense",
+       "Misa dominical en canto llano"
+      ],
+      [
+       "12:00",
+       "Sala Capitular",
+       "Mesa redonda",
+       "La restauración de órganos ibéricos históricos"
+      ],
+      [
+       "17:30",
+       "Iglesia de la Asunción",
+       "Capilla Peñaflor y Vox Serena",
+       "Misa de Réquiem a ocho voces y dos coros"
+      ],
+      [
+       "19:30",
+       "Patio del Hospital Viejo",
+       "Todos los intérpretes",
+       "Concierto de clausura y entrega del Premio Añil"
+      ]
+     ]
+    },
+    {
+     "kind": "rule"
+    },
+    {
+     "kind": "table",
+     "rows": [
+      [
+       "Localidades",
+       "Anticipada",
+       "Taquilla"
+      ],
+      [
+       "Abono completo (once conciertos)",
+       "78,00 EUR",
+       "92,00 EUR"
+      ],
+      [
+       "Abono de un día",
+       "34,00 EUR",
+       "39,00 EUR"
+      ],
+      [
+       "Entrada suelta",
+       "12,00 EUR",
+       "15,00 EUR"
+      ],
+      [
+       "Reducida (estudiantes, desempleados, mayores de 65)",
+       "8,00 EUR",
+       "10,00 EUR"
+      ],
+      [
+       "Talleres y mesas redondas",
+       "Gratuito",
+       "Aforo limitado"
+      ]
+     ]
+    },
+    {
+     "kind": "paragraph",
+     "text": "Venta anticipada hasta el 16 de septiembre en la Oficina de Turismo, plaza del Almirez, 3, de martes a sábado de 10:00 a 13:30 h, y en el teléfono 955 70 18 24. La entrada reducida exige acreditación documental en el acceso. Las puertas se cierran cinco minutos antes del comienzo de cada concierto y no se permite el acceso una vez iniciada la interpretación, salvo en los descansos. El Claustro de San Millán y el Patio del Hospital Viejo son espacios al aire libre: en caso de lluvia, los conciertos se trasladan al Auditorio del Molino, con aforo reducido y acceso por riguroso orden de llegada. Todos los recintos son accesibles para personas con movilidad reducida, salvo la Sala Capitular, a la que se accede por una escalera de dieciocho peldaños. Se ruega desconectar los teléfonos móviles. La organización se reserva el derecho de modificar el programa por causas ajenas a su voluntad, anunciándolo con la mayor antelación posible."
+    }
+   ]
+  },
+  {
+   "id": "adversarial-04",
+   "language": "es",
+   "density": "dense",
+   "blocks": [
+    {
+     "kind": "heading",
+     "text": "ESCUELA MUNICIPAL DE MÚSICA Y DANZA DE CAÑADA VIEJA"
+    },
+    {
+     "kind": "heading",
+     "text": "Solicitud de plaza - Curso 2026/2027 (Mod. EMMD-03)"
+    },
+    {
+     "kind": "paragraph",
+     "text": "Rellene todos los campos en MAYÚSCULAS y con bolígrafo azul. No escriba en las casillas sombreadas. ¿Duda sobre algún epígrafe? Consulte las instrucciones del dorso antes de firmar."
+    },
+    {
+     "kind": "rule"
+    },
+    {
+     "kind": "table",
+     "rows": [
+      [
+       "Nº EXPTE.",
+       "2026/EMMD/01487",
+       "F. ENTRADA",
+       "14/09/2026"
+      ],
+      [
+       "REG. Nº",
+       "R-2026-9331",
+       "SEDE",
+       "CV-01"
+      ],
+      [
+       "DNI/NIE",
+       "51 720 934-Y",
+       "Nº AFIL. S.S.",
+       "28/11743980-22"
+      ],
+      [
+       "APELLIDO 1º",
+       "BERROCAL",
+       "APELLIDO 2º",
+       "QUESADA"
+      ],
+      [
+       "NOMBRE",
+       "MARÍA JESÚS",
+       "F. NAC.",
+       "03/11/2014"
+      ],
+      [
+       "SEXO",
+       "M",
+       "NACION.",
+       "ESPAÑOLA"
+      ],
+      [
+       "DOMICILIO",
+       "C/ TEJEDORES DEL PÁRAMO",
+       "Nº",
+       "18"
+      ],
+      [
+       "BL./ESC.",
+       "2 / B",
+       "PISO/PTA.",
+       "4º C"
+      ],
+      [
+       "C.P.",
+       "45319",
+       "MUNICIPIO",
+       "CAÑADA VIEJA"
+      ],
+      [
+       "PROVINCIA",
+       "TOLEDO",
+       "TEL. FIJO",
+       "925 61 04 77"
+      ],
+      [
+       "MÓVIL",
+       "644 903 118",
+       "CORREO-E",
+       "mj.berrocal@correo.example"
+      ],
+      [
+       "TUTOR/A",
+       "ANDRÉS BERROCAL LIÉBANA",
+       "DNI TUT.",
+       "04 118 265-T"
+      ],
+      [
+       "IBAN",
+       "ES80 8146 0037 5198 1240 7753",
+       "TITULAR",
+       "A. BERROCAL LIÉBANA"
+      ],
+      [
+       "FAM. NUM.",
+       "SÍ - GEN.",
+       "Nº TÍTULO",
+       "TO-045/2023"
+      ],
+      [
+       "GRADO",
+       "ELEMENTAL 2º",
+       "TURNO",
+       "T (16-20 h)"
+      ],
+      [
+       "INSTR. 1ª OPC.",
+       "VIOLONCHELO",
+       "INSTR. 2ª OPC.",
+       "PERCUSIÓN"
+      ],
+      [
+       "ASIG. OPT.",
+       "LENGUAJE MUS. B",
+       "CONJUNTO",
+       "ORQUESTA INF."
+      ],
+      [
+       "BONIF.",
+       "30 % (R.M.I.)",
+       "CUOTA/MES",
+       "42,70 EUR"
+      ],
+      [
+       "MATRÍCULA",
+       "61,50 EUR",
+       "FORMA PAGO",
+       "DOMICILIADO"
+      ],
+      [
+       "ALERGIAS",
+       "NINGUNA",
+       "OBSERV.",
+       "REPITE CURSO"
+      ]
+     ]
+    },
+    {
+     "kind": "rule"
+    },
+    {
+     "kind": "paragraph",
+     "text": "Espacio reservado a la Administración. No cumplimentar."
+    },
+    {
+     "kind": "table",
+     "rows": [
+      [
+       "BAREMO",
+       "PTOS.",
+       "RESOL.",
+       "FECHA"
+      ],
+      [
+       "EMPADRONAMIENTO",
+       "4,0",
+       "ADM.",
+       "21/09/2026"
+      ],
+      [
+       "RENTA UNIDAD FAM.",
+       "2,5",
+       "LISTA",
+       "A-07"
+      ],
+      [
+       "HERMANOS EN CENTRO",
+       "1,5",
+       "PLAZA",
+       "V-12"
+      ],
+      [
+       "CONTINUIDAD",
+       "3,0",
+       "REV.",
+       "-"
+      ],
+      [
+       "TOTAL",
+       "11,0",
+       "FIRMA TÉC.",
+       "J.M.R."
+      ]
+     ]
+    },
+    {
+     "kind": "rule"
+    },
+    {
+     "kind": "kv",
+     "label": "DECLARO bajo mi responsabilidad que los datos consignados son ciertos",
+     "value": "SÍ"
+    },
+    {
+     "kind": "kv",
+     "label": "AUTORIZO la consulta telemática de datos de empadronamiento y renta",
+     "value": "SÍ"
+    },
+    {
+     "kind": "kv",
+     "label": "AUTORIZO el uso de imágenes en audiciones y memoria del curso",
+     "value": "NO"
+    },
+    {
+     "kind": "kv",
+     "label": "SOLICITO recibir las comunicaciones por correo electrónico",
+     "value": "SÍ"
+    },
+    {
+     "kind": "spacer"
+    },
+    {
+     "kind": "kv",
+     "label": "Lugar y fecha",
+     "value": "Cañada Vieja, a 14 de septiembre de 2026"
+    },
+    {
+     "kind": "kv",
+     "label": "Firma del solicitante o tutor legal",
+     "value": "................................................"
+    },
+    {
+     "kind": "rule"
+    },
+    {
+     "kind": "paragraph",
+     "text": "Información básica sobre protección de datos. Responsable: Ayuntamiento de Cañada Vieja, plaza de la Constitución, 1, 45319 Cañada Vieja (Toledo). Finalidad: gestionar la admisión, la matriculación y el cobro de las cuotas de la Escuela Municipal de Música y Danza. Legitimación: ejercicio de potestades públicas y consentimiento del interesado para los usos señalados como opcionales. Destinatarios: entidad bancaria colaboradora para la domiciliación de recibos; no se prevén otras cesiones ni transferencias internacionales. Conservación: durante la tramitación del expediente y los plazos de prescripción de las obligaciones económicas. Derechos: acceso, rectificación, supresión, oposición, limitación del tratamiento y portabilidad, ante el Delegado de Protección de Datos en dpd@canadavieja.example. Plazo de presentación: del 1 al 20 de septiembre. La presentación fuera de plazo, la omisión de la firma o la falta de acreditación de las bonificaciones solicitadas determinará la exclusión del baremo y la adjudicación de plaza únicamente por vacante. La reserva de plaza no se entiende formalizada hasta el abono íntegro de la matrícula, cuyo importe no será reembolsable una vez iniciado el curso."
+    }
+   ]
+  },
+  {
+   "id": "adversarial-05",
+   "language": "pt",
+   "density": "dense",
+   "blocks": [
+    {
+     "kind": "heading",
+     "text": "LINHA ATLÂNTICA SUL - AVISO AOS PASSAGEIROS / AVISO A LOS PASAJEROS"
+    },
+    {
+     "kind": "paragraph",
+     "text": "Travessia Porto Sardinha - Ilha Marfim / Isla Marfil. Documento bilingue de afixação obrigatória no terminal marítimo. Documento bilingüe de exposición obligatoria en la terminal marítima."
+    },
+    {
+     "kind": "rule"
+    },
+    {
+     "kind": "kv",
+     "label": "Navio / Buque",
+     "value": "Rainha do Tejo (IMO 9471228)"
+    },
+    {
+     "kind": "kv",
+     "label": "Travessia / Travesía",
+     "value": "AT-214"
+    },
+    {
+     "kind": "kv",
+     "label": "Partida / Salida",
+     "value": "14/09/2026 - 08:15"
+    },
+    {
+     "kind": "kv",
+     "label": "Chegada prevista / Llegada prevista",
+     "value": "14/09/2026 - 12:40"
+    },
+    {
+     "kind": "kv",
+     "label": "Portão / Puerta",
+     "value": "C3 - Cais Norte"
+    },
+    {
+     "kind": "kv",
+     "label": "Reserva / Localizador",
+     "value": "LAS-7Q4M28"
+    },
+    {
+     "kind": "rule"
+    },
+    {
+     "kind": "table",
+     "rows": [
+      [
+       "Português",
+       "Español"
+      ],
+      [
+       "Apresente-se no cais com 45 minutos de antecedência.",
+       "Preséntese en el muelle con 45 minutos de antelación."
+      ],
+      [
+       "O cartão de embarque é obrigatório e intransmissível.",
+       "La tarjeta de embarque es obligatoria e intransferible."
+      ],
+      [
+       "A bagagem de porão não pode exceder 23 kg por passageiro.",
+       "El equipaje de bodega no puede exceder los 23 kg por pasajero."
+      ],
+      [
+       "Os veículos embarcam pela rampa norte, segundo a ordem indicada.",
+       "Los vehículos embarcan por la rampa norte, según el orden indicado."
+      ],
+      [
+       "As crianças com menos de 12 anos viajam acompanhadas.",
+       "Los niños menores de 12 años viajan acompañados."
+      ],
+      [
+       "É proibido fumar em todo o navio, incluindo os camarotes.",
+       "Está prohibido fumar en todo el buque, incluidos los camarotes."
+      ],
+      [
+       "Em caso de atraso superior a 90 minutos, peça o reembolso ao balcão.",
+       "En caso de retraso superior a 90 minutos, solicite el reembolso en el mostrador."
+      ],
+      [
+       "Os animais de companhia viajam em caixa de transporte, no convés 3.",
+       "Los animales de compañía viajan en transportín, en la cubierta 3."
+      ]
+     ]
+    },
+    {
+     "kind": "rule"
+    },
+    {
+     "kind": "paragraph",
+     "text": "Condições de transporte. O bilhete dá direito a uma viagem de ida na data e hora nele inscritas. As alterações são gratuitas até 24 horas antes da partida e ficam sujeitas à disponibilidade de lugares; depois desse prazo é cobrada uma taxa de 18,50 € por passageiro e de 32,00 € por viatura. O bilhete não utilizado sem aviso prévio não confere direito a qualquer reembolso. A companhia reserva-se o direito de suspender a travessia por razões meteorológicas ou de segurança da navegação, comunicando a decisão através dos painéis do terminal e por mensagem escrita para o contacto indicado na reserva."
+    },
+    {
+     "kind": "paragraph",
+     "text": "Condiciones de transporte. El billete da derecho a un viaje de ida en la fecha y hora que figuran en él. Los cambios son gratuitos hasta 24 horas antes de la salida y quedan sujetos a la disponibilidad de plazas; transcurrido ese plazo se cobrará una tasa de 18,50 € por pasajero y de 32,00 € por vehículo. El billete no utilizado sin aviso previo no da derecho a reembolso alguno. ¿Necesita asistencia especial para el embarque? Solicítela con 48 horas de antelación en el 218 440 790 o en asistencia@linhaatlanticasul.example, indicando el localizador de la reserva."
+    },
+    {
+     "kind": "spacer"
+    },
+    {
+     "kind": "table",
+     "rows": [
+      [
+       "Tarifa / Tarifa",
+       "Ida",
+       "Ida e volta / Ida y vuelta"
+      ],
+      [
+       "Adulto / Adulto",
+       "34,90 €",
+       "61,20 €"
+      ],
+      [
+       "Criança 4-11 / Niño 4-11",
+       "17,45 €",
+       "30,60 €"
+      ],
+      [
+       "Residente / Residente",
+       "12,80 €",
+       "22,40 €"
+      ],
+      [
+       "Viatura ligeira / Turismo",
+       "48,00 €",
+       "86,50 €"
+      ],
+      [
+       "Motociclo / Motocicleta",
+       "19,90 €",
+       "35,00 €"
+      ],
+      [
+       "Camarote interior / Camarote interior",
+       "26,00 €",
+       "48,00 €"
+      ]
+     ]
+    },
+    {
+     "kind": "paragraph",
+     "text": "Preços com IVA incluído à taxa em vigor. Precios con IVA incluido al tipo vigente. Reclamações: livro de reclamações disponível no balcão de atendimento e em formato eletrónico. Reclamaciones: hojas de reclamaciones a disposición del pasajero en el mostrador de atención."
+    },
+    {
+     "kind": "rule"
+    },
+    {
+     "kind": "paragraph",
+     "text": "Boa viagem! / ¡Buen viaje!"
+    }
+   ]
+  },
+  {
+   "id": "book-page-01",
+   "language": "es",
+   "density": "normal",
+   "blocks": [
+    {
+     "kind": "heading",
+     "text": "La casa de los vientos"
+    },
+    {
+     "kind": "rule"
+    },
+    {
+     "kind": "heading",
+     "text": "Capítulo séptimo"
+    },
+    {
+     "kind": "paragraph",
+     "text": "Amanecía despacio sobre el valle de Arrocamalva y la niebla se deshacía en jirones entre los almendros. Rosalía empujó el portón con el hombro, porque la madera seguía hinchada desde las lluvias de marzo y ya nadie en la casa se acordaba de cepillarla. Olía a tierra mojada y a leña húmeda, ese olor que allí había significado siempre que alguien estaba a punto de marcharse."
+    },
+    {
+     "kind": "paragraph",
+     "text": "Su abuela la esperaba en la cocina, muy derecha en la silla de anea, con las manos cruzadas sobre el regazo como quien aguarda una sentencia justa. No le preguntó de dónde venía ni por qué traía los zapatos llenos de barro. En treinta años no había preguntado jamás nada cuya respuesta no estuviera dispuesta a oír, y puede que aquélla fuera la única forma de cariño que supo enseñarle."
+    },
+    {
+     "kind": "paragraph",
+     "text": "- ¿Traes el papel? - dijo al cabo de un rato, sin levantar la vista del suelo de barro cocido."
+    },
+    {
+     "kind": "paragraph",
+     "text": "Rosalía se sentó frente a ella y dejó el sobre encima del hule. El sello del notario, azul y torcido, parecía más una mancha de tinta que un acto de autoridad. ¡Cuántas veces había imaginado ese momento en el tren, entre estación y estación! En sus cálculos había siempre gritos, portazos, una vergüenza limpia y rápida como un corte; y sin embargo allí no había más que dos mujeres cansadas y el gorgoteo terco del puchero."
+    },
+    {
+     "kind": "paragraph",
+     "text": "- Nos quedan los olivos de la loma, la era y las dos casas del camino viejo - explicó, y su propia voz le sonó ajena -. Lo demás se lo lleva el banco. El abogado dice que, si firmamos antes de San Miguel, todavía podríamos conservar el pozo y el derecho de paso."
+    },
+    {
+     "kind": "paragraph",
+     "text": "La abuela asintió con una lentitud que no era duda, sino cortesía con el pasado. Después se levantó, apartó la olla del fuego y abrió la ventana que daba al norte, la que no se abría nunca en invierno. Entró un aire frío y limpio, con sabor a lluvia lejana, y durante un instante las dos se quedaron escuchando el ruido del agua en la acequia."
+    },
+    {
+     "kind": "paragraph",
+     "text": "- Tu madre decía que esta casa no era nuestra - murmuró la anciana, de espaldas -, que sólo la estábamos guardando mientras alguien venía a reclamarla. Puede que llevara razón y que hayamos tardado demasiado en devolverla. Trae la pluma, niña, que con esta luz todavía veo dónde firmo."
+    },
+    {
+     "kind": "spacer"
+    },
+    {
+     "kind": "rule"
+    },
+    {
+     "kind": "kv",
+     "label": "Segunda parte",
+     "value": "113"
+    }
+   ]
+  },
+  {
+   "id": "book-page-02",
+   "language": "es",
+   "density": "dense",
+   "blocks": [
+    {
+     "kind": "kv",
+     "label": "Capítulo 4. Las rutas de la sal y del trigo",
+     "value": "87"
+    },
+    {
+     "kind": "rule"
+    },
+    {
+     "kind": "heading",
+     "text": "El comercio de cabotaje en el siglo XIV"
+    },
+    {
+     "kind": "paragraph",
+     "text": "Durante buena parte del siglo XIV, el tráfico marítimo del Mediterráneo occidental no se sostuvo sobre las grandes galeras que ilustran los manuales escolares, sino sobre una multitud de embarcaciones pequeñas que rara vez perdían de vista la costa. Barcas de cabotaje, laúdes y saetías de dos o tres tripulantes recorrían el litoral en jornadas cortas, fondeaban en calas sin muelle y descargaban sobre la arena con la ayuda de mulas. Aquella navegación humilde, casi doméstica, movía en conjunto más mercancía que las flotas solemnes que salían una vez al año hacia Levante."
+    },
+    {
+     "kind": "paragraph",
+     "text": "Los protocolos notariales conservados en los archivos municipales permiten reconstruir ese mundo con un detalle que ninguna crónica ofrece. En ellos aparecen los fletes, los plazos de entrega, las penalizaciones por demora y, sobre todo, los nombres de quienes ponían el dinero: viudas que invertían la dote en un cargamento de sal, clérigos que prestaban a interés encubierto, artesanos que reunían sus ahorros para comprar un octavo de barca. La empresa marítima medieval fue, antes que nada, una empresa de vecinos."
+    },
+    {
+     "kind": "paragraph",
+     "text": "El calendario mandaba sobre todo lo demás. Entre octubre y marzo, el temporal cerraba las travesías largas y encarecía cualquier flete; la sal se embarcaba al final del verano, cuando las salinas habían terminado la cosecha, y el trigo viajaba en primavera, justo antes de que el hambre de los meses previos a la siega elevara los precios en los mercados del interior. Quien acertaba con la fecha ganaba más que quien acertaba con la ruta."
+    },
+    {
+     "kind": "paragraph",
+     "text": "El instrumento jurídico más frecuente era la comanda: un socio aportaba el capital y otro el trabajo y el riesgo del viaje, y ambos repartían el beneficio según una proporción pactada de antemano ante notario. La fórmula tenía la ventaja de limitar la pérdida al capital invertido y de permitir que un patrón sin fortuna accediera al comercio. No era caridad: el prestamista cobraba en el reparto lo que la doctrina eclesiástica le prohibía cobrar en intereses."
+    },
+    {
+     "kind": "paragraph",
+     "text": "La epidemia de 1348 quebró ese equilibrio en pocos meses. Los puertos perdieron entre un tercio y la mitad de su población, los fletes se dispararon por falta de marineros y muchas sociedades quedaron disueltas por la simple desaparición de uno de los socios. Sin embargo, la recuperación fue más rápida de lo que suele suponerse: hacia 1365 el volumen registrado en varias escribanías portuarias había vuelto a los niveles anteriores, aunque concentrado en menos manos y con salarios notablemente más altos."
+    },
+    {
+     "kind": "paragraph",
+     "text": "Conviene desconfiar, con todo, de las cifras redondas. Los registros que se conservan son fiscales, y sólo dejan constancia de aquello que pagaba derechos; el contrabando de sal, abundantísimo en toda la costa, escapa por definición a esa contabilidad. Las series que se ofrecen a continuación deben leerse, por tanto, como un mínimo demostrable y nunca como un total."
+    },
+    {
+     "kind": "spacer"
+    },
+    {
+     "kind": "table",
+     "rows": [
+      [
+       "Puerto",
+       "Sacas de sal",
+       "Cahíces de trigo"
+      ],
+      [
+       "Santaverde de la Marina",
+       "1.240",
+       "860"
+      ],
+      [
+       "Puerto Alhama",
+       "980",
+       "1.310"
+      ],
+      [
+       "La Rábita Vieja",
+       "415",
+       "270"
+      ],
+      [
+       "Cala Peñuelas",
+       "192",
+       "55"
+      ]
+     ]
+    },
+    {
+     "kind": "paragraph",
+     "text": "Tabla 4.2. Cargas declaradas en cuatro escribanías del litoral, año contable de 1371. Elaboración propia a partir de los libros de derechos portuarios; las cantidades se han redondeado a la unidad."
+    },
+    {
+     "kind": "rule"
+    },
+    {
+     "kind": "kv",
+     "label": "Las rutas de la sal y del trigo",
+     "value": "87"
+    }
+   ]
+  },
+  {
+   "id": "book-page-03",
+   "language": "es",
+   "density": "dense",
+   "blocks": [
+    {
+     "kind": "kv",
+     "label": "Ciencia para curiosos",
+     "value": "31"
+    },
+    {
+     "kind": "rule"
+    },
+    {
+     "kind": "heading",
+     "text": "El compás que llevamos dentro"
+    },
+    {
+     "kind": "paragraph",
+     "text": "¿Cómo sabe un pájaro de doce gramos, que nunca ha salido de un bosque del norte, hacia dónde queda África? La pregunta parece infantil y lleva doscientos años resistiéndose. Un petirrojo que emigra por primera vez lo hace solo, de noche y sin guía, y aun así llega a una región que jamás ha visto. No aprende la ruta: la trae puesta."
+    },
+    {
+     "kind": "paragraph",
+     "text": "Las primeras pistas serias llegaron a mediados del siglo pasado, cuando se encerró a varias aves migratorias en jaulas cónicas con el fondo entintado. Las aves, inquietas por la estación, saltaban una y otra vez hacia el mismo punto del cielo y dejaban sus huellas marcadas en el papel. Bastaba rodear la jaula con una bobina que alterase el campo magnético para que las huellas cambiaran de lugar. El animal no veía nada distinto; sencillamente, su norte se había movido."
+    },
+    {
+     "kind": "paragraph",
+     "text": "Lo más desconcertante vino después. El compás de las aves no distingue el norte del sur como lo hace una brújula de aguja, sino que reconoce la inclinación de las líneas del campo respecto a la superficie terrestre: no busca un polo, busca un ángulo. Por eso, si se invierte la polaridad del campo en el laboratorio, el ave sigue volando igual, y en cambio se desorienta por completo cuando se altera la inclinación en unos pocos grados."
+    },
+    {
+     "kind": "paragraph",
+     "text": "La hipótesis que hoy reúne más apoyo sitúa el sensor en el ojo. Ciertas proteínas de la retina, los criptocromos, absorben luz azul y generan durante unas millonésimas de segundo una pareja de moléculas con electrones desapareados. El campo magnético terrestre, aunque es débil, basta para inclinar la balanza entre los dos estados posibles de esa pareja y para modificar así la señal que llega al cerebro. Si la idea es correcta, el ave no siente el campo: lo ve, superpuesto al paisaje como una sombra tenue que cambia al girar la cabeza."
+    },
+    {
+     "kind": "paragraph",
+     "text": "Quedan cabos sueltos, y son gordos. El efecto debería desvanecerse en un instante por el ruido térmico de la propia retina, y sin embargo se mantiene el tiempo suficiente para ser útil; nadie ha conseguido todavía reproducirlo con esa sensibilidad en un tubo de ensayo. Tampoco está claro cómo se combina esa brújula con el mapa, porque orientarse exige saber también dónde se está, y para eso el animal parece usar el olfato, las estrellas y la posición del sol al atardecer."
+    },
+    {
+     "kind": "paragraph",
+     "text": "La conclusión provisional es incómoda y magnífica a la vez: un organismo diminuto resuelve cada otoño, con unos gramos de tejido nervioso, un problema de navegación que a nosotros nos costó siglos y un satélite. ¡Y lo hace mientras duerme la mitad del cerebro! Convendría recordarlo la próxima vez que llamemos primitivo a un cerebro pequeño."
+    },
+    {
+     "kind": "rule"
+    },
+    {
+     "kind": "kv",
+     "label": "Número 42 - otoño",
+     "value": "31"
+    }
+   ]
+  },
+  {
+   "id": "book-page-04",
+   "language": "es",
+   "density": "normal",
+   "blocks": [
+    {
+     "kind": "kv",
+     "label": "Cocina de secano",
+     "value": "54"
+    },
+    {
+     "kind": "rule"
+    },
+    {
+     "kind": "heading",
+     "text": "Arroz caldoso de conejo y alcachofas"
+    },
+    {
+     "kind": "kv",
+     "label": "Raciones",
+     "value": "4 personas"
+    },
+    {
+     "kind": "kv",
+     "label": "Tiempo total",
+     "value": "1 h 15 min"
+    },
+    {
+     "kind": "kv",
+     "label": "Dificultad",
+     "value": "Media"
+    },
+    {
+     "kind": "rule"
+    },
+    {
+     "kind": "heading",
+     "text": "Ingredientes"
+    },
+    {
+     "kind": "table",
+     "rows": [
+      [
+       "Conejo troceado",
+       "1 kg"
+      ],
+      [
+       "Arroz redondo",
+       "320 g"
+      ],
+      [
+       "Alcachofas",
+       "6 unidades"
+      ],
+      [
+       "Tomate maduro rallado",
+       "2 cucharadas"
+      ],
+      [
+       "Ajo",
+       "4 dientes"
+      ],
+      [
+       "Pimentón dulce de la Vera",
+       "1 cucharadita"
+      ],
+      [
+       "Azafrán en hebra",
+       "unas 12 hebras"
+      ],
+      [
+       "Caldo de ave",
+       "1,8 litros"
+      ],
+      [
+       "Aceite de oliva virgen extra",
+       "60 ml"
+      ],
+      [
+       "Sal y pimienta negra",
+       "al gusto"
+      ]
+     ]
+    },
+    {
+     "kind": "rule"
+    },
+    {
+     "kind": "heading",
+     "text": "Elaboración"
+    },
+    {
+     "kind": "paragraph",
+     "text": "Limpie las alcachofas sin piedad: quite las hojas exteriores hasta llegar al corazón tierno, recorte el tallo dejando dos dedos y frote la superficie cortada con medio limón para que no ennegrezca. Pártalas en cuartos y resérvelas en agua fría con un puñado de perejil, que mantiene el color mejor que el propio limón."
+    },
+    {
+     "kind": "paragraph",
+     "text": "Caliente el aceite en una cazuela ancha y de fondo grueso, salpimiente el conejo y dórelo a fuego vivo por todas sus caras. Es el paso que decide el plato: si la carne se cuece en lugar de dorarse, el caldo saldrá pálido y sin fondo. Retire los trozos a una fuente y déjelos reposar mientras sigue con el sofrito."
+    },
+    {
+     "kind": "paragraph",
+     "text": "En esa misma grasa, y ya con el fuego moderado, rehogue los ajos laminados hasta que empiecen a bailar, añada el tomate rallado y deje que pierda toda el agua; debe quedar oscuro y casi seco, cosa de diez minutos. Aparte la cazuela del fuego, incorpore el pimentón, remueva tres segundos y vierta enseguida un cazo de caldo, porque el pimentón se quema con una facilidad asombrosa y amarga el guiso entero."
+    },
+    {
+     "kind": "paragraph",
+     "text": "Devuelva el conejo a la cazuela con las alcachofas escurridas, cubra con el caldo caliente y deje cocer a fuego suave veinticinco minutos. Tueste las hebras de azafrán unos segundos en un papel sobre la tapadera, desmenúcelas entre los dedos y añádalas. Pruebe de sal en este punto, y no después: una vez dentro el arroz, cualquier corrección sabe a parche."
+    },
+    {
+     "kind": "paragraph",
+     "text": "Suba el fuego hasta que rompa a hervir, eche el arroz en lluvia y cuéntele dieciséis minutos exactos sin removerlo más que una vez. Apague, tape y espere dos minutos escasos. Debe llegar a la mesa caldoso y suelto, con el grano entero; si al inclinar la cazuela el arroz no se mueve, ha esperado usted demasiado."
+    },
+    {
+     "kind": "paragraph",
+     "text": "El consejo de la casa: guarde las hojas exteriores de las alcachofas y los huesos del espinazo del conejo, cúbralos de agua con un puerro y hierva media hora. Ese caldo, colado, mejora la receta más que cualquier ingrediente caro que pueda comprar."
+    },
+    {
+     "kind": "rule"
+    },
+    {
+     "kind": "kv",
+     "label": "Arroces y guisos de cuchara",
+     "value": "54"
+    }
+   ]
+  },
+  {
+   "id": "book-page-05",
+   "language": "de",
+   "density": "normal",
+   "blocks": [
+    {
+     "kind": "kv",
+     "label": "Reiseführer Südschwarzwald",
+     "value": "128"
+    },
+    {
+     "kind": "rule"
+    },
+    {
+     "kind": "heading",
+     "text": "Von Oberrinkenbach ins hintere Tal"
+    },
+    {
+     "kind": "paragraph",
+     "text": "Wer das hintere Tal zum ersten Mal besucht, sollte den Wagen in Oberrinkenbach stehen lassen und zu Fuß weitergehen. Die Straße windet sich noch eine halbe Stunde an Obstwiesen und alten Sägewerken vorbei, dann hört sie einfach auf. Was danach kommt, gehört den Kühen, den Bussarden und einem Wanderweg, der seit 1904 kaum verändert wurde. Genau darin liegt der Reiz dieses Winkels: Es gibt hier nichts zu besichtigen, und deshalb sieht man alles."
+    },
+    {
+     "kind": "paragraph",
+     "text": "Das Tal war jahrhundertelang ärmer als der übrige Schwarzwald. Der Boden ist steinig, der Winter dauert bis weit in den April hinein, und wer überleben wollte, musste im Nebenerwerb Bürsten binden oder Uhrenschilder bemalen. Von dieser doppelten Arbeit erzählt heute das kleine Museum in der Talmühle, das eine Bürstenmacherwerkstatt vollständig erhalten hat. Die Führung dauert vierzig Minuten und lohnt sich auch bei schönem Wetter."
+    },
+    {
+     "kind": "paragraph",
+     "text": "Mittags isst man im Gasthaus Lindenhöhe, das seit vier Generationen derselben Familie gehört. Auf der Vesperkarte stehen geräucherter Schinken, Bibeleskäs und im Herbst eine kräftige Suppe aus Steinpilzen; die Spätzle werden noch von Hand geschabt, was die Wirtin auf Nachfrage gern und ausführlich erklärt. Wer danach den Zwetschgenbrand probiert, sollte den Rückweg besser auf den nächsten Tag verschieben."
+    },
+    {
+     "kind": "paragraph",
+     "text": "Die schönste Runde führt von der Talmühle über den Kapellenbuck zur Hochweide und durch den Buchenwald zurück. Sie ist elf Kilometer lang, überwindet knapp 480 Höhenmeter und braucht mit Pausen etwa vier Stunden. Der Aufstieg ist kurz und steil, der Rest bequem. Festes Schuhwerk ist Pflicht, denn der obere Abschnitt bleibt nach Regen tagelang rutschig."
+    },
+    {
+     "kind": "paragraph",
+     "text": "Die beste Zeit ist der späte September, wenn die Wiesen abgemäht sind und das Licht flach über die Hänge fällt. Im Hochsommer ist der Weg an Wochenenden überlaufen, im Winter wird er nicht geräumt. Und noch ein praktischer Hinweis: Im ganzen hinteren Tal gibt es weder einen Geldautomaten noch verlässlichen Mobilfunk, also nehmen Sie Bargeld mit und drucken Sie die Karte lieber aus."
+    },
+    {
+     "kind": "spacer"
+    },
+    {
+     "kind": "kv",
+     "label": "Anreise",
+     "value": "Stündlich mit der Regionalbahn RB 47, Fahrzeit 52 Minuten, dann Bus 7231"
+    },
+    {
+     "kind": "kv",
+     "label": "Öffnungszeiten",
+     "value": "Museum Talmühle: Di bis So, 10-17 Uhr, montags geschlossen"
+    },
+    {
+     "kind": "kv",
+     "label": "Eintritt",
+     "value": "6,50 € / ermäßigt 4,00 €"
+    },
+    {
+     "kind": "table",
+     "rows": [
+      [
+       "Unterkunft",
+       "Preis pro Nacht",
+       "Telefon"
+      ],
+      [
+       "Gasthaus Lindenhöhe",
+       "78,00 €",
+       "07671 44 28 10"
+      ],
+      [
+       "Pension Wiesenrain",
+       "62,00 €",
+       "07671 44 03 55"
+      ],
+      [
+       "Berghütte Kapellenbuck",
+       "24,00 €",
+       "07671 44 91 07"
+      ]
+     ]
+    },
+    {
+     "kind": "rule"
+    },
+    {
+     "kind": "kv",
+     "label": "Kapitel 9: Täler abseits der Bundesstraße",
+     "value": "128"
+    }
+   ]
+  },
+  {
+   "id": "book-page-06",
+   "language": "pt",
+   "density": "normal",
+   "blocks": [
+    {
+     "kind": "kv",
+     "label": "Ensaios sobre o tempo e a memória",
+     "value": "45"
+    },
+    {
+     "kind": "rule"
+    },
+    {
+     "kind": "heading",
+     "text": "A promessa e o estranho poder de obrigar o futuro"
+    },
+    {
+     "kind": "paragraph",
+     "text": "Prometer é talvez o gesto mais estranho de que somos capazes. Quem promete dispõe hoje de um tempo que ainda não existe e compromete alguém que ainda não é inteiramente ele próprio. Nada garante que a pessoa que amanhã terá de cumprir a palavra dada reconheça sequer as razões de quem a deu; e, no entanto, exigimos dela o cumprimento como se fosse a mesma."
+    },
+    {
+     "kind": "paragraph",
+     "text": "A dificuldade não é apenas lógica, é vivida. Todos nós conhecemos a experiência de acordar sem nenhuma vontade de sermos aquilo que decidimos ser na véspera. As células mudam, as convicções mudam, os afectos arrefecem por motivos que nenhuma vontade controla. Se a identidade fosse somente continuidade material, a promessa seria uma ficção jurídica sem fundamento algum."
+    },
+    {
+     "kind": "paragraph",
+     "text": "Proponho inverter a questão. A promessa não descreve o futuro: constrói-o. Não é uma previsão sobre aquilo que virei a sentir, mas a decisão de manter aberta uma dívida perante o outro, aconteça o que acontecer com os meus sentimentos. É por isso que uma promessa condicionada ao humor de quem a fez não é promessa nenhuma, mas apenas uma intenção declarada em voz alta."
+    },
+    {
+     "kind": "paragraph",
+     "text": "Daqui decorre uma consequência que raramente se aceita de bom grado: a fidelidade não é uma virtude do coração, é uma virtude do tempo. Não consiste em sentir sempre o mesmo, coisa que ninguém pode garantir, mas em responder por aquilo que se disse quando já não se sente o mesmo. Quem só cumpre enquanto lhe apetece não é fiel, é apenas coerente com o seu apetite."
+    },
+    {
+     "kind": "paragraph",
+     "text": "Resta a objecção mais séria, e vem em nome da liberdade. Não estaremos a transformar cada palavra dada numa corrente lançada sobre uma pessoa futura que não foi consultada? A objecção teria razão se a promessa fosse irrevogável. Mas existe um segundo gesto, tão humano como o primeiro: aquele pelo qual alguém liberta o outro do que lhe foi prometido. Perdoar e desobrigar são formas de devolver o tempo a quem já não pode carregá-lo."
+    },
+    {
+     "kind": "paragraph",
+     "text": "No fim, a promessa e o perdão formam um par: a primeira lança uma ponte sobre o vazio do que ainda não é, o segundo desmonta a ponte quando ela deixou de levar a algum lado. Sem a primeira, viveríamos dispersos em instantes sem relação entre si; sem o segundo, ficaríamos acorrentados a decisões tomadas por quem já não somos. É neste equilíbrio precário, e não numa qualquer substância imutável, que se constrói aquilo a que damos o nome de vida."
+    },
+    {
+     "kind": "rule"
+    },
+    {
+     "kind": "kv",
+     "label": "Capítulo terceiro",
+     "value": "45"
+    }
+   ]
+  },
+  {
+   "id": "book-page-07",
+   "language": "it",
+   "density": "dense",
+   "blocks": [
+    {
+     "kind": "kv",
+     "label": "Manuale d'uso e manutenzione - Pompa di circolazione TM-480",
+     "value": "17"
+    },
+    {
+     "kind": "rule"
+    },
+    {
+     "kind": "heading",
+     "text": "4. Messa in servizio dell'unità"
+    },
+    {
+     "kind": "kv",
+     "label": "Modello",
+     "value": "TM-480 / TM-480 S"
+    },
+    {
+     "kind": "kv",
+     "label": "Tensione nominale",
+     "value": "230 V - 50 Hz"
+    },
+    {
+     "kind": "kv",
+     "label": "Potenza assorbita",
+     "value": "da 12 a 45 W"
+    },
+    {
+     "kind": "kv",
+     "label": "Grado di protezione",
+     "value": "IP 44"
+    },
+    {
+     "kind": "kv",
+     "label": "Temperatura del fluido",
+     "value": "da 2 °C a 95 °C"
+    },
+    {
+     "kind": "rule"
+    },
+    {
+     "kind": "paragraph",
+     "text": "4.1 Prima di collegare l'unità alla rete, verificare che la tensione di alimentazione corrisponda a quella riportata sulla targhetta applicata al corpo motore. Un'alimentazione diversa da quella prevista danneggia in modo irreversibile l'elettronica di controllo e fa decadere ogni diritto di garanzia. L'impianto deve essere dotato di un interruttore differenziale da 30 mA e di un collegamento di terra efficiente."
+    },
+    {
+     "kind": "paragraph",
+     "text": "4.2 Attenzione: la pompa non è adatta al pompaggio di liquidi infiammabili, corrosivi o contenenti parti solide in sospensione. L'apparecchio può essere utilizzato da bambini di età non inferiore a otto anni soltanto sotto sorveglianza e dopo aver ricevuto istruzioni sull'uso sicuro. Non intervenire mai sull'unità senza aver tolto tensione e atteso il raffreddamento del corpo pompa: il fluido può superare gli 80 °C anche a impianto spento."
+    },
+    {
+     "kind": "paragraph",
+     "text": "4.3 Riempire lentamente il circuito e sfiatare l'aria agendo sulla vite centrale con un cacciavite a taglio, ruotandola di mezzo giro in senso antiorario. Durante questa operazione può fuoriuscire una piccola quantità d'acqua calda; proteggere le mani e l'apparecchiatura elettrica sottostante. Non far funzionare la pompa a secco, nemmeno per pochi secondi, perché i cuscinetti sono lubrificati dal fluido stesso."
+    },
+    {
+     "kind": "paragraph",
+     "text": "4.4 Al primo avviamento l'unità esegue un ciclo di autodiagnosi della durata di circa venti secondi, durante il quale il display lampeggia alternando la sigla del modello e la revisione del firmware. Se al termine del ciclo la spia verde resta accesa in modo fisso, la pompa è pronta. Se invece lampeggia in rosso, consultare la tabella dei codici riportata di seguito prima di ripetere l'accensione."
+    },
+    {
+     "kind": "paragraph",
+     "text": "4.5 La modalità a pressione proporzionale è quella consigliata per gli impianti a radiatori con valvole termostatiche, perché riduce il consumo elettrico e attenua i rumori di flusso. Negli impianti a pavimento è preferibile la curva a pressione costante. La velocità fissa va utilizzata soltanto in fase di collaudo e non deve essere lasciata attiva a lungo."
+    },
+    {
+     "kind": "spacer"
+    },
+    {
+     "kind": "heading",
+     "text": "4.6 Codici di errore"
+    },
+    {
+     "kind": "table",
+     "rows": [
+      [
+       "Codice",
+       "Descrizione",
+       "Intervento"
+      ],
+      [
+       "E01",
+       "Sovratemperatura del motore",
+       "Verificare la temperatura del fluido e la ventilazione del vano"
+      ],
+      [
+       "E02",
+       "Rotore bloccato",
+       "Togliere tensione, sfiatare e sbloccare l'albero con un cacciavite"
+      ],
+      [
+       "E05",
+       "Funzionamento a secco",
+       "Riempire il circuito e ripetere lo sfiato"
+      ],
+      [
+       "E07",
+       "Tensione di rete fuori tolleranza",
+       "Controllare l'impianto elettrico e il differenziale"
+      ],
+      [
+       "E11",
+       "Guasto interno dell'elettronica",
+       "Rivolgersi a un centro di assistenza autorizzato"
+      ]
+     ]
+    },
+    {
+     "kind": "paragraph",
+     "text": "Per qualsiasi intervento non descritto in questo capitolo, contattare il servizio tecnico: Idrotecnica Sanvalle S.r.l., via delle Fornaci 18, 36040 Sanvalle (VI), telefono 0444 77 21 90. Conservare il presente manuale per tutta la vita utile dell'apparecchio e consegnarlo all'eventuale nuovo proprietario."
+    },
+    {
+     "kind": "rule"
+    },
+    {
+     "kind": "kv",
+     "label": "Revisione 3.2 - marzo 2026",
+     "value": "17"
+    }
+   ]
+  },
+  {
+   "id": "book-page-08",
+   "language": "fr",
+   "density": "dense",
+   "blocks": [
+    {
+     "kind": "kv",
+     "label": "Passages - revue mensuelle",
+     "value": "72"
+    },
+    {
+     "kind": "rule"
+    },
+    {
+     "kind": "heading",
+     "text": "Le retour des trains de nuit"
+    },
+    {
+     "kind": "kv",
+     "label": "Reportage",
+     "value": "Ludivine Barraquet"
+    },
+    {
+     "kind": "kv",
+     "label": "Photographies",
+     "value": "Étienne Rouvrais"
+    },
+    {
+     "kind": "paragraph",
+     "text": "Il est 21 h 12 sur le quai numéro 4 et le contrôleur remonte la rame en frappant du plat de la main sur les portes récalcitrantes. La voiture-couchettes numéro 12 sent le café tiède et le métal chaud. Une famille s'installe avec trois valises et une guitare, un étudiant compte ses pièces devant le distributeur en panne, et tout au bout du couloir une dame âgée demande, sans vraiment s'adresser à quelqu'un, si l'on arrivera bien à l'heure. Le train partira à 21 h 26. Il roulera toute la nuit et déposera ses voyageurs à huit cent quarante kilomètres de là, juste après le lever du jour."
+    },
+    {
+     "kind": "paragraph",
+     "text": "Il y a quinze ans, ce départ n'existait plus. Les lignes de nuit avaient été fermées les unes après les autres, jugées trop coûteuses à entretenir et trop lentes pour rivaliser avec l'avion. Les rames dormaient dans des hangars du Centre, rongées par l'humidité, et les mécaniciens qui savaient encore réparer les vieux essieux partaient à la retraite sans former personne."
+    },
+    {
+     "kind": "paragraph",
+     "text": "Ce sont finalement de petites structures qui ont rallumé les feux. La Compagnie ferroviaire du Levant, créée en 2021 par sept anciens cheminots et un collectif d'usagers, a racheté onze voitures à un opérateur autrichien, les a restaurées dans un atelier de Saint-Aubin-le-Vieil et a ouvert sa première liaison régulière avec trois départs par semaine. La deuxième année, le taux de remplissage dépassait déjà quatre-vingts pour cent."
+    },
+    {
+     "kind": "paragraph",
+     "text": "Rien de tout cela n'était acquis. Faire circuler un train de nuit suppose de trouver des sillons horaires aux heures où le réseau appartient aux équipes de maintenance, de négocier avec chaque gestionnaire d'infrastructure traversé et de démontrer que du matériel âgé de quarante ans respecte des normes écrites bien après sa construction. \"Nous avons passé plus de temps devant des dossiers que devant des locomotives\", résume le directeur technique de la compagnie, qui reconnaît avoir failli tout abandonner à l'automne 2023."
+    },
+    {
+     "kind": "paragraph",
+     "text": "À bord, l'expérience n'a pourtant rien d'héroïque, et c'est précisément ce qui séduit. On y dort mal, on partage un lavabo minuscule, on se réveille en Vénétie ou dans le Jura sans avoir rien fait d'autre que s'allonger. Les voyageurs les plus fidèles ne sont pas des militants du climat mais des gens pressés qui ont compris qu'une nuit dans un train remplace une nuit d'hôtel et une matinée perdue."
+    },
+    {
+     "kind": "paragraph",
+     "text": "Reste la question qui fâche : le modèle économique tient-il sans argent public ? Les comptes publiés par la compagnie montrent un équilibre fragile, obtenu grâce à des salaires modestes et à un matériel entièrement amorti. Le jour où il faudra commander des voitures neuves, la facture se comptera en dizaines de millions d'euros, et personne ne sait encore qui la réglera."
+    },
+    {
+     "kind": "paragraph",
+     "text": "À 6 h 40, le train ralentit le long d'une rivière grise. Dans le couloir, les voyageurs plient les draps et cherchent leurs chaussures sous les banquettes. Quelqu'un ouvre une fenêtre, l'air froid entre d'un coup, et l'on entend distinctement le crissement des freins sur les derniers mètres. Ce n'est pas une révolution des transports ; c'est simplement un moyen de voyager que l'on avait rangé trop vite au musée."
+    },
+    {
+     "kind": "rule"
+    },
+    {
+     "kind": "kv",
+     "label": "Numéro 58 - septembre",
+     "value": "72"
+    }
+   ]
+  },
+  {
+   "id": "form-01",
+   "language": "es",
+   "density": "dense",
+   "blocks": [
+    {
+     "kind": "heading",
+     "text": "Contrato de arrendamiento de vivienda habitual"
+    },
+    {
+     "kind": "paragraph",
+     "text": "Extracto de las estipulaciones esenciales. El texto íntegro consta de doce cláusulas y tres anexos, firmados por duplicado ejemplar y a un solo efecto."
+    },
+    {
+     "kind": "rule"
+    },
+    {
+     "kind": "kv",
+     "label": "Número de contrato",
+     "value": "ARR-2026/0417"
+    },
+    {
+     "kind": "kv",
+     "label": "Fecha de firma",
+     "value": "14/09/2026"
+    },
+    {
+     "kind": "kv",
+     "label": "Lugar de firma",
+     "value": "Villanueva del Sauce (Madrid)"
+    },
+    {
+     "kind": "spacer"
+    },
+    {
+     "kind": "kv",
+     "label": "Arrendadora",
+     "value": "Doña Remedios Alcántara Quiñones"
+    },
+    {
+     "kind": "kv",
+     "label": "DNI de la arrendadora",
+     "value": "51.238.904-K"
+    },
+    {
+     "kind": "kv",
+     "label": "Domicilio a efectos de notificaciones",
+     "value": "Avenida del Peral Silvestre, 112, 28930 Villanueva del Sauce"
+    },
+    {
+     "kind": "kv",
+     "label": "Arrendatario",
+     "value": "Don Íñigo Beltrán Cifuentes"
+    },
+    {
+     "kind": "kv",
+     "label": "DNI del arrendatario",
+     "value": "09.774.312-R"
+    },
+    {
+     "kind": "kv",
+     "label": "Teléfono de contacto",
+     "value": "+34 651 08 34 72"
+    },
+    {
+     "kind": "spacer"
+    },
+    {
+     "kind": "kv",
+     "label": "Inmueble arrendado",
+     "value": "Calle Olmos Torcidos, 27, 3.º B, 28934 Villanueva del Sauce"
+    },
+    {
+     "kind": "kv",
+     "label": "Referencia catastral",
+     "value": "7382910VK4778S0003MN"
+    },
+    {
+     "kind": "kv",
+     "label": "Superficie útil",
+     "value": "68,40 m²"
+    },
+    {
+     "kind": "kv",
+     "label": "Plaza de garaje",
+     "value": "Sí, número 14, sótano -1"
+    },
+    {
+     "kind": "kv",
+     "label": "Estado de conservación",
+     "value": "Bueno, según inventario del Anexo I"
+    },
+    {
+     "kind": "kv",
+     "label": "Duración pactada",
+     "value": "Cinco años, con prórrogas anuales hasta un máximo de siete"
+    },
+    {
+     "kind": "kv",
+     "label": "Inicio del arrendamiento",
+     "value": "01/10/2026"
+    },
+    {
+     "kind": "kv",
+     "label": "Vencimiento del plazo inicial",
+     "value": "30/09/2031"
+    },
+    {
+     "kind": "spacer"
+    },
+    {
+     "kind": "kv",
+     "label": "Renta mensual",
+     "value": "745,00 EUR"
+    },
+    {
+     "kind": "kv",
+     "label": "Día de pago",
+     "value": "Entre el 1 y el 5 de cada mes"
+    },
+    {
+     "kind": "kv",
+     "label": "Forma de pago",
+     "value": "Transferencia a ES21 4517 0093 2210 0048 7721"
+    },
+    {
+     "kind": "kv",
+     "label": "Fianza legal depositada",
+     "value": "745,00 EUR (una mensualidad)"
+    },
+    {
+     "kind": "kv",
+     "label": "Gastos de comunidad",
+     "value": "A cargo de la arrendadora"
+    },
+    {
+     "kind": "kv",
+     "label": "Impuesto sobre bienes inmuebles",
+     "value": "A cargo de la arrendadora"
+    },
+    {
+     "kind": "kv",
+     "label": "Suministros de luz, agua y gas",
+     "value": "A cargo del arrendatario"
+    },
+    {
+     "kind": "rule"
+    },
+    {
+     "kind": "paragraph",
+     "text": "Cláusula quinta. La renta se actualizará cada año, en la fecha de aniversario del contrato, conforme a la variación anual del índice de referencia para la actualización de los contratos de alquiler de vivienda. La actualización no será automática: deberá notificarse por escrito al arrendatario con un mes de antelación, indicando el porcentaje aplicado y el importe resultante."
+    },
+    {
+     "kind": "paragraph",
+     "text": "Cláusula séptima. Las pequeñas reparaciones derivadas del desgaste ordinario de la vivienda serán por cuenta del arrendatario. Las obras necesarias para conservar el inmueble en condiciones de habitabilidad corresponden a la arrendadora, salvo que el deterioro sea imputable al arrendatario o a las personas que con él convivan."
+    },
+    {
+     "kind": "paragraph",
+     "text": "Cláusula novena. Queda prohibido el subarriendo total o parcial de la vivienda, así como la cesión del contrato, sin consentimiento previo y por escrito de la arrendadora. El incumplimiento de esta estipulación será causa de resolución anticipada."
+    },
+    {
+     "kind": "spacer"
+    },
+    {
+     "kind": "table",
+     "rows": [
+      [
+       "Anexo",
+       "Contenido",
+       "Hojas"
+      ],
+      [
+       "Anexo I",
+       "Inventario de mobiliario y electrodomésticos",
+       "2"
+      ],
+      [
+       "Anexo II",
+       "Certificado de eficiencia energética, letra D",
+       "1"
+      ],
+      [
+       "Anexo III",
+       "Lecturas iniciales de contadores y llaves entregadas",
+       "1"
+      ]
+     ]
+    },
+    {
+     "kind": "spacer"
+    },
+    {
+     "kind": "paragraph",
+     "text": "Y en prueba de conformidad, ambas partes firman el presente contrato en el lugar y fecha arriba indicados."
+    },
+    {
+     "kind": "table",
+     "rows": [
+      [
+       "La arrendadora",
+       "El arrendatario"
+      ],
+      [
+       "Fdo.: Remedios Alcántara Quiñones",
+       "Fdo.: Íñigo Beltrán Cifuentes"
+      ]
+     ]
+    }
+   ]
+  },
+  {
+   "id": "form-02",
+   "language": "es",
+   "density": "dense",
+   "blocks": [
+    {
+     "kind": "heading",
+     "text": "Clínica Vallehondo - Ficha de admisión del paciente"
+    },
+    {
+     "kind": "kv",
+     "label": "Número de historia clínica",
+     "value": "HC-2026-08831"
+    },
+    {
+     "kind": "kv",
+     "label": "Fecha de la consulta",
+     "value": "14/09/2026"
+    },
+    {
+     "kind": "kv",
+     "label": "Hora de llegada",
+     "value": "11:45"
+    },
+    {
+     "kind": "kv",
+     "label": "Servicio",
+     "value": "Medicina interna, consulta 4"
+    },
+    {
+     "kind": "rule"
+    },
+    {
+     "kind": "heading",
+     "text": "Datos del paciente"
+    },
+    {
+     "kind": "kv",
+     "label": "Apellidos y nombre",
+     "value": "Ruzafa Ibarrondo, María Ángeles"
+    },
+    {
+     "kind": "kv",
+     "label": "Fecha de nacimiento",
+     "value": "03/02/1978"
+    },
+    {
+     "kind": "kv",
+     "label": "Edad",
+     "value": "48 años"
+    },
+    {
+     "kind": "kv",
+     "label": "DNI",
+     "value": "33.671.205-B"
+    },
+    {
+     "kind": "kv",
+     "label": "Tarjeta sanitaria",
+     "value": "VLHD 4472 9810 06"
+    },
+    {
+     "kind": "kv",
+     "label": "Domicilio",
+     "value": "Camino de la Fuente Rota, 9, 2.º izquierda, 47008 Peñarrubia del Duero"
+    },
+    {
+     "kind": "kv",
+     "label": "Teléfono",
+     "value": "+34 983 47 22 18"
+    },
+    {
+     "kind": "kv",
+     "label": "Correo electrónico",
+     "value": "mruzafa@correoinventado.es"
+    },
+    {
+     "kind": "kv",
+     "label": "Persona de contacto",
+     "value": "Sabino Ibarrondo Etxegaray (hermano), +34 618 90 44 27"
+    },
+    {
+     "kind": "kv",
+     "label": "Compañía aseguradora",
+     "value": "Mutua Sierra Clara, póliza 77-441209"
+    },
+    {
+     "kind": "spacer"
+    },
+    {
+     "kind": "heading",
+     "text": "Motivo de consulta"
+    },
+    {
+     "kind": "paragraph",
+     "text": "La paciente acude por episodios de mareo y sensación de palpitaciones de tres semanas de evolución, más frecuentes al levantarse por la mañana. Refiere cansancio al subir escaleras y dos despertares nocturnos con sensación de falta de aire. Niega dolor torácico, fiebre y pérdida de peso."
+    },
+    {
+     "kind": "spacer"
+    },
+    {
+     "kind": "heading",
+     "text": "Antecedentes"
+    },
+    {
+     "kind": "table",
+     "rows": [
+      [
+       "Apartado",
+       "Detalle"
+      ],
+      [
+       "Alergias medicamentosas",
+       "Penicilina (exantema en 2011)"
+      ],
+      [
+       "Otras alergias",
+       "Ácaros del polvo, polen de gramíneas"
+      ],
+      [
+       "Enfermedades crónicas",
+       "Hipotiroidismo diagnosticado en 2019"
+      ],
+      [
+       "Intervenciones",
+       "Apendicectomía en 2003; cesárea en 2012"
+      ],
+      [
+       "Medicación habitual",
+       "Levotiroxina 75 microgramos, un comprimido en ayunas"
+      ],
+      [
+       "Hábitos",
+       "No fumadora; consumo de alcohol ocasional"
+      ],
+      [
+       "Antecedentes familiares",
+       "Padre con hipertensión arterial; madre con anemia ferropénica"
+      ]
+     ]
+    },
+    {
+     "kind": "spacer"
+    },
+    {
+     "kind": "heading",
+     "text": "Constantes en la admisión"
+    },
+    {
+     "kind": "table",
+     "rows": [
+      [
+       "Parámetro",
+       "Valor",
+       "Observación"
+      ],
+      [
+       "Tensión arterial",
+       "128/82 mmHg",
+       "Brazo izquierdo, sentada"
+      ],
+      [
+       "Frecuencia cardíaca",
+       "76 lpm",
+       "Rítmica"
+      ],
+      [
+       "Temperatura",
+       "36,8 °C",
+       "Timpánica"
+      ],
+      [
+       "Saturación de oxígeno",
+       "98 %",
+       "Aire ambiente"
+      ],
+      [
+       "Peso",
+       "64,3 kg",
+       ""
+      ],
+      [
+       "Talla",
+       "1,63 m",
+       ""
+      ]
+     ]
+    },
+    {
+     "kind": "spacer"
+    },
+    {
+     "kind": "kv",
+     "label": "Facultativo responsable",
+     "value": "Dra. Purificación Ochoa Zubeldía"
+    },
+    {
+     "kind": "kv",
+     "label": "Número de colegiada",
+     "value": "47/4471902"
+    },
+    {
+     "kind": "kv",
+     "label": "Pruebas solicitadas",
+     "value": "Analítica completa, electrocardiograma y radiografía de tórax"
+    },
+    {
+     "kind": "kv",
+     "label": "Próxima revisión",
+     "value": "06/10/2026 a las 10:15"
+    },
+    {
+     "kind": "rule"
+    },
+    {
+     "kind": "paragraph",
+     "text": "La paciente declara que la información facilitada es veraz y autoriza al personal sanitario del centro a acceder a su historia clínica con la única finalidad de prestarle asistencia. Los datos se tratarán conforme a la normativa vigente de protección de datos y se conservarán durante los plazos legalmente establecidos. Puede ejercer sus derechos de acceso, rectificación, supresión y oposición dirigiéndose por escrito a la dirección del centro."
+    },
+    {
+     "kind": "spacer"
+    },
+    {
+     "kind": "kv",
+     "label": "Peñarrubia del Duero, a",
+     "value": "14 de septiembre de 2026"
+    },
+    {
+     "kind": "table",
+     "rows": [
+      [
+       "Firma de la paciente",
+       "Firma y sello del facultativo"
+      ],
+      [
+       "Fdo.: María Ángeles Ruzafa Ibarrondo",
+       "Fdo.: Purificación Ochoa Zubeldía"
+      ]
+     ]
+    }
+   ]
+  },
+  {
+   "id": "form-03",
+   "language": "es",
+   "density": "normal",
+   "blocks": [
+    {
+     "kind": "heading",
+     "text": "Ateneo Cultural y Deportivo La Almadraba Vieja"
+    },
+    {
+     "kind": "heading",
+     "text": "Solicitud de alta como socio"
+    },
+    {
+     "kind": "kv",
+     "label": "Número de solicitud",
+     "value": "SOC-2026-1188"
+    },
+    {
+     "kind": "kv",
+     "label": "Fecha de presentación",
+     "value": "14/09/2026"
+    },
+    {
+     "kind": "kv",
+     "label": "Modalidad solicitada",
+     "value": "Socio numerario"
+    },
+    {
+     "kind": "rule"
+    },
+    {
+     "kind": "kv",
+     "label": "Apellidos y nombre",
+     "value": "Iriarte Mendizábal, Covadonga"
+    },
+    {
+     "kind": "kv",
+     "label": "DNI",
+     "value": "44.902.517-T"
+    },
+    {
+     "kind": "kv",
+     "label": "Fecha de nacimiento",
+     "value": "26/11/1991"
+    },
+    {
+     "kind": "kv",
+     "label": "Domicilio",
+     "value": "Travesía del Herrador Manco, 5, bajo C"
+    },
+    {
+     "kind": "kv",
+     "label": "Población y código postal",
+     "value": "11402 Jerez de los Alcornoques (Cádiz)"
+    },
+    {
+     "kind": "kv",
+     "label": "Teléfono móvil",
+     "value": "+34 654 21 87 09"
+    },
+    {
+     "kind": "kv",
+     "label": "Correo electrónico",
+     "value": "c.iriarte@correoficticio.es"
+    },
+    {
+     "kind": "kv",
+     "label": "Profesión",
+     "value": "Técnica de sonido"
+    },
+    {
+     "kind": "kv",
+     "label": "Socio presentador",
+     "value": "Jacinto Peñalver Aristegui, número 0472"
+    },
+    {
+     "kind": "kv",
+     "label": "Secciones de interés",
+     "value": "Coro, cineclub y senderismo"
+    },
+    {
+     "kind": "spacer"
+    },
+    {
+     "kind": "table",
+     "rows": [
+      [
+       "Modalidad",
+       "Cuota anual",
+       "Derechos"
+      ],
+      [
+       "Socio numerario",
+       "96,00 EUR",
+       "Voz y voto en la asamblea general"
+      ],
+      [
+       "Socio juvenil hasta 25 años",
+       "48,00 EUR",
+       "Voz sin voto"
+      ],
+      [
+       "Socio colaborador",
+       "180,00 EUR",
+       "Voz sin voto y mención en la memoria anual"
+      ]
+     ]
+    },
+    {
+     "kind": "spacer"
+    },
+    {
+     "kind": "kv",
+     "label": "Cuota de inscripción",
+     "value": "25,00 EUR (pago único)"
+    },
+    {
+     "kind": "kv",
+     "label": "Forma de pago",
+     "value": "Domiciliación bancaria semestral"
+    },
+    {
+     "kind": "kv",
+     "label": "IBAN",
+     "value": "ES64 2085 7731 4409 0035 2216"
+    },
+    {
+     "kind": "kv",
+     "label": "Titular de la cuenta",
+     "value": "La propia solicitante"
+    },
+    {
+     "kind": "kv",
+     "label": "Importe del primer recibo",
+     "value": "73,00 EUR"
+    },
+    {
+     "kind": "rule"
+    },
+    {
+     "kind": "paragraph",
+     "text": "La Junta Directiva resolverá la presente solicitud en el plazo máximo de treinta días naturales desde su registro de entrada. La admisión se comunicará por correo electrónico junto con el número de socio y el carné provisional. La denegación será siempre motivada y podrá recurrirse ante la asamblea general ordinaria."
+    },
+    {
+     "kind": "paragraph",
+     "text": "El solicitante declara conocer y aceptar los estatutos y el reglamento de régimen interno del Ateneo. La baja voluntaria deberá comunicarse por escrito con quince días de antelación al inicio de cada semestre; en caso contrario se girará el recibo correspondiente al periodo ya comenzado."
+    },
+    {
+     "kind": "paragraph",
+     "text": "Los datos personales facilitados se incorporarán al fichero de socios, cuyo responsable es el Ateneo Cultural y Deportivo La Almadraba Vieja, con la finalidad de gestionar la condición de socio y comunicar las actividades de la entidad. No se cederán a terceros salvo obligación legal."
+    },
+    {
+     "kind": "spacer"
+    },
+    {
+     "kind": "kv",
+     "label": "En Jerez de los Alcornoques, a",
+     "value": "14 de septiembre de 2026"
+    },
+    {
+     "kind": "table",
+     "rows": [
+      [
+       "Firma del solicitante",
+       "Por la Junta Directiva"
+      ],
+      [
+       "Fdo.: Covadonga Iriarte Mendizábal",
+       "Fdo.: Herminia Basurto Calatayud, secretaria"
+      ]
+     ]
+    }
+   ]
+  },
+  {
+   "id": "form-04",
+   "language": "fr",
+   "density": "normal",
+   "blocks": [
+    {
+     "kind": "heading",
+     "text": "Bon de livraison"
+    },
+    {
+     "kind": "kv",
+     "label": "Numéro du bon",
+     "value": "BL-2026-4471"
+    },
+    {
+     "kind": "kv",
+     "label": "Date d'émission",
+     "value": "14/09/2026"
+    },
+    {
+     "kind": "kv",
+     "label": "Page",
+     "value": "1 sur 1"
+    },
+    {
+     "kind": "rule"
+    },
+    {
+     "kind": "kv",
+     "label": "Fournisseur",
+     "value": "Ateliers Beaulieu-Sancerre SARL"
+    },
+    {
+     "kind": "kv",
+     "label": "Adresse",
+     "value": "14 rue des Peupliers Tordus, 69340 Chaponost-le-Bas"
+    },
+    {
+     "kind": "kv",
+     "label": "SIRET",
+     "value": "812 349 761 00027"
+    },
+    {
+     "kind": "kv",
+     "label": "TVA intracommunautaire",
+     "value": "FR47 812349761"
+    },
+    {
+     "kind": "kv",
+     "label": "Téléphone",
+     "value": "04 78 55 31 02"
+    },
+    {
+     "kind": "spacer"
+    },
+    {
+     "kind": "kv",
+     "label": "Client",
+     "value": "Maison Thévenot et Filles"
+    },
+    {
+     "kind": "kv",
+     "label": "Code client",
+     "value": "CL-00934"
+    },
+    {
+     "kind": "kv",
+     "label": "Adresse de livraison",
+     "value": "8 impasse du Vieux Lavoir, 33210 Preignac-sur-Ciron"
+    },
+    {
+     "kind": "kv",
+     "label": "Commande de référence",
+     "value": "CM-2026-2207 du 02/09/2026"
+    },
+    {
+     "kind": "kv",
+     "label": "Transporteur",
+     "value": "Roulages Grandchamp"
+    },
+    {
+     "kind": "kv",
+     "label": "Immatriculation du véhicule",
+     "value": "EV-471-QT"
+    },
+    {
+     "kind": "kv",
+     "label": "Créneau de livraison convenu",
+     "value": "Le 14/09/2026 entre 8 h et 12 h"
+    },
+    {
+     "kind": "spacer"
+    },
+    {
+     "kind": "table",
+     "rows": [
+      [
+       "Référence",
+       "Désignation",
+       "Quantité",
+       "Unité"
+      ],
+      [
+       "REF-1140",
+       "Plateau en chêne massif huilé, 180 x 90 cm",
+       "4",
+       "pièce"
+      ],
+      [
+       "REF-1178",
+       "Piétement métal noir mat, hauteur 72 cm",
+       "4",
+       "jeu"
+      ],
+      [
+       "REF-2032",
+       "Étagère murale en frêne clair, 120 cm",
+       "12",
+       "pièce"
+      ],
+      [
+       "REF-2100",
+       "Sachet de visserie : vis, chevilles et équerres",
+       "16",
+       "sachet"
+      ],
+      [
+       "REF-3005",
+       "Cire d'entretien incolore, flacon de 250 ml",
+       "6",
+       "flacon"
+      ]
+     ]
+    },
+    {
+     "kind": "spacer"
+    },
+    {
+     "kind": "kv",
+     "label": "Nombre total de colis",
+     "value": "27"
+    },
+    {
+     "kind": "kv",
+     "label": "Poids brut",
+     "value": "412,50 kg"
+    },
+    {
+     "kind": "kv",
+     "label": "Palettes consignées à retourner",
+     "value": "3"
+    },
+    {
+     "kind": "kv",
+     "label": "Réserves émises à la réception",
+     "value": "Aucune"
+    },
+    {
+     "kind": "rule"
+    },
+    {
+     "kind": "paragraph",
+     "text": "Les marchandises voyagent aux risques et périls du destinataire. Toute réserve portant sur l'état des colis ou sur les quantités livrées doit être inscrite sur le présent bon au moment de la réception, puis confirmée au transporteur par lettre recommandée dans un délai de trois jours ouvrables."
+    },
+    {
+     "kind": "paragraph",
+     "text": "La marchandise demeure la propriété du fournisseur jusqu'au paiement intégral du prix convenu. Le présent bon ne vaut pas facture : la facture correspondante sera adressée en fin de mois, payable à trente jours date de facture."
+    },
+    {
+     "kind": "spacer"
+    },
+    {
+     "kind": "kv",
+     "label": "Reçu le",
+     "value": "14/09/2026 à 9 h 35"
+    },
+    {
+     "kind": "table",
+     "rows": [
+      [
+       "Signature du livreur",
+       "Signature et cachet du client"
+      ],
+      [
+       "Nom : Serge Vaubourdolle",
+       "Nom : Ombline Thévenot, gérante"
+      ]
+     ]
+    }
+   ]
+  },
+  {
+   "id": "form-05",
+   "language": "de",
+   "density": "dense",
+   "blocks": [
+    {
+     "kind": "heading",
+     "text": "Stadt Wielandsbrück - Bürgeramt"
+    },
+    {
+     "kind": "heading",
+     "text": "Anmeldung einer Wohnung nach § 17 Bundesmeldegesetz"
+    },
+    {
+     "kind": "kv",
+     "label": "Aktenzeichen",
+     "value": "MW-2026/14-08873"
+    },
+    {
+     "kind": "kv",
+     "label": "Eingang beim Bürgeramt",
+     "value": "14.09.2026"
+    },
+    {
+     "kind": "kv",
+     "label": "Bearbeitungsstelle",
+     "value": "Zimmer 118, Schalter 3"
+    },
+    {
+     "kind": "rule"
+    },
+    {
+     "kind": "heading",
+     "text": "Angaben zur meldepflichtigen Person"
+    },
+    {
+     "kind": "kv",
+     "label": "Familienname",
+     "value": "Kerschensteiner"
+    },
+    {
+     "kind": "kv",
+     "label": "Geburtsname",
+     "value": "Wöllnitz"
+    },
+    {
+     "kind": "kv",
+     "label": "Vornamen",
+     "value": "Annegret Sieglinde"
+    },
+    {
+     "kind": "kv",
+     "label": "Geburtsdatum",
+     "value": "12.03.1989"
+    },
+    {
+     "kind": "kv",
+     "label": "Geburtsort",
+     "value": "Gerstenbach an der Zell"
+    },
+    {
+     "kind": "kv",
+     "label": "Geschlecht",
+     "value": "weiblich"
+    },
+    {
+     "kind": "kv",
+     "label": "Staatsangehörigkeit",
+     "value": "deutsch"
+    },
+    {
+     "kind": "kv",
+     "label": "Familienstand",
+     "value": "verheiratet seit 21.06.2014"
+    },
+    {
+     "kind": "kv",
+     "label": "Religionszugehörigkeit",
+     "value": "römisch-katholisch"
+    },
+    {
+     "kind": "kv",
+     "label": "Ausweisdokument",
+     "value": "Personalausweis Nr. L9ZT4KR8M, gültig bis 07.11.2031"
+    },
+    {
+     "kind": "kv",
+     "label": "Telefon (freiwillige Angabe)",
+     "value": "0170 4478192"
+    },
+    {
+     "kind": "spacer"
+    },
+    {
+     "kind": "heading",
+     "text": "Angaben zur Wohnung"
+    },
+    {
+     "kind": "kv",
+     "label": "Einzugsdatum",
+     "value": "01.09.2026"
+    },
+    {
+     "kind": "kv",
+     "label": "Neue Wohnung",
+     "value": "Krummer Lindenweg 46a, 04779 Wielandsbrück"
+    },
+    {
+     "kind": "kv",
+     "label": "Wohnungsstatus",
+     "value": "Hauptwohnung"
+    },
+    {
+     "kind": "kv",
+     "label": "Bisherige Wohnung",
+     "value": "Obere Schmiedgasse 3, 91578 Gräfenwörth"
+    },
+    {
+     "kind": "kv",
+     "label": "Weitere Wohnungen im Inland",
+     "value": "keine"
+    },
+    {
+     "kind": "kv",
+     "label": "Wohnungsgeber",
+     "value": "Hausverwaltung Zwölfeichen GmbH, Am Krähenbühl 2, 04779 Wielandsbrück"
+    },
+    {
+     "kind": "kv",
+     "label": "Wohnungsgeberbestätigung",
+     "value": "liegt vor, ausgestellt am 02.09.2026"
+    },
+    {
+     "kind": "spacer"
+    },
+    {
+     "kind": "heading",
+     "text": "Mitziehende Familienangehörige"
+    },
+    {
+     "kind": "table",
+     "rows": [
+      [
+       "Name, Vorname",
+       "Geburtsdatum",
+       "Verwandtschaftsverhältnis"
+      ],
+      [
+       "Kerschensteiner, Hauke Ferdinand",
+       "09.05.1986",
+       "Ehemann"
+      ],
+      [
+       "Kerschensteiner, Jorinde",
+       "17.02.2017",
+       "Tochter"
+      ],
+      [
+       "Kerschensteiner, Mattis Cornelius",
+       "30.08.2020",
+       "Sohn"
+      ]
+     ]
+    },
+    {
+     "kind": "rule"
+    },
+    {
+     "kind": "paragraph",
+     "text": "Wer eine Wohnung bezieht, hat sich innerhalb von zwei Wochen nach dem Einzug bei der Meldebehörde anzumelden. Wird diese Frist ohne hinreichenden Grund überschritten, kann das Versäumnis als Ordnungswidrigkeit mit einer Geldbuße von bis zu 1.000,00 € geahndet werden."
+    },
+    {
+     "kind": "paragraph",
+     "text": "Der Übermittlung meiner Daten an Parteien und Wählergruppen vor Wahlen, an Adressbuchverlage sowie an Anschriftenermittlungsdienste widerspreche ich hiermit. Der Widerspruch gilt bis zu seinem schriftlichen Widerruf. Die Übermittlung an öffentlich-rechtliche Religionsgesellschaften bleibt unberührt."
+    },
+    {
+     "kind": "paragraph",
+     "text": "Ich versichere, dass die vorstehenden Angaben vollständig sind und der Wahrheit entsprechen. Änderungen der Wohnverhältnisse werde ich der Meldebehörde unverzüglich mitteilen."
+    },
+    {
+     "kind": "spacer"
+    },
+    {
+     "kind": "kv",
+     "label": "Gebühr",
+     "value": "gebührenfrei"
+    },
+    {
+     "kind": "kv",
+     "label": "Ausgestellte Meldebestätigung",
+     "value": "1 Exemplar, ausgehändigt am 14.09.2026"
+    },
+    {
+     "kind": "kv",
+     "label": "Ort und Datum",
+     "value": "Wielandsbrück, 14.09.2026"
+    },
+    {
+     "kind": "table",
+     "rows": [
+      [
+       "Unterschrift der meldepflichtigen Person",
+       "Bearbeitungsvermerk der Meldebehörde"
+      ],
+      [
+       "Annegret Kerschensteiner",
+       "geprüft: Sachbearbeiter Bodo Nüßlein"
+      ]
+     ]
+    }
+   ]
+  },
+  {
+   "id": "handwriting-01",
+   "language": "es",
+   "density": "sparse",
+   "blocks": [
+    {
+     "kind": "heading",
+     "text": "Compra sábado - mercado"
+    },
+    {
+     "kind": "rule"
+    },
+    {
+     "kind": "paragraph",
+     "text": "2 kg naranjas (de zumo)"
+    },
+    {
+     "kind": "paragraph",
+     "text": "pan de payés grande"
+    },
+    {
+     "kind": "paragraph",
+     "text": "leche semi, pack de 6"
+    },
+    {
+     "kind": "paragraph",
+     "text": "huevos camperos, 1 docena"
+    },
+    {
+     "kind": "paragraph",
+     "text": "1/4 de queso manchego curado"
+    },
+    {
+     "kind": "paragraph",
+     "text": "jamón en lonchas finas"
+    },
+    {
+     "kind": "paragraph",
+     "text": "espinacas congeladas x2"
+    },
+    {
+     "kind": "paragraph",
+     "text": "papel de cocina + bolsas basura"
+    },
+    {
+     "kind": "paragraph",
+     "text": "pilas AA (las del mando)"
+    },
+    {
+     "kind": "spacer"
+    },
+    {
+     "kind": "kv",
+     "label": "Puesto",
+     "value": "el 12, el de la señora Fina"
+    },
+    {
+     "kind": "kv",
+     "label": "Presupuesto",
+     "value": "unos 45 EUR"
+    },
+    {
+     "kind": "spacer"
+    },
+    {
+     "kind": "paragraph",
+     "text": "OJO: atún NO, aún queda media caja"
+    },
+    {
+     "kind": "paragraph",
+     "text": "¿queda azúcar? mirar antes de salir"
+    },
+    {
+     "kind": "paragraph",
+     "text": "¡Que no se me olvide el ticket!"
+    }
+   ]
+  },
+  {
+   "id": "handwriting-02",
+   "language": "es",
+   "density": "normal",
+   "blocks": [
+    {
+     "kind": "heading",
+     "text": "Recado - llamada de las 11:20"
+    },
+    {
+     "kind": "rule"
+    },
+    {
+     "kind": "kv",
+     "label": "Para",
+     "value": "Marisol"
+    },
+    {
+     "kind": "kv",
+     "label": "De parte de",
+     "value": "Joaquín Peñalver"
+    },
+    {
+     "kind": "kv",
+     "label": "Empresa",
+     "value": "Talleres Valdeliebre"
+    },
+    {
+     "kind": "kv",
+     "label": "Teléfono",
+     "value": "655 31 84 02"
+    },
+    {
+     "kind": "spacer"
+    },
+    {
+     "kind": "paragraph",
+     "text": "Ha llamado dos veces esta mañana."
+    },
+    {
+     "kind": "paragraph",
+     "text": "Dice que la furgoneta ya está lista,"
+    },
+    {
+     "kind": "paragraph",
+     "text": "que la puedes recoger a partir del jueves."
+    },
+    {
+     "kind": "paragraph",
+     "text": "Sale más cara de lo hablado: 1.240,50 euros"
+    },
+    {
+     "kind": "paragraph",
+     "text": "porque hubo que cambiar la correa."
+    },
+    {
+     "kind": "paragraph",
+     "text": "¿Le puedes llamar antes de las 6?"
+    },
+    {
+     "kind": "paragraph",
+     "text": "Si no contesta, al fijo: 948 27 19 63."
+    },
+    {
+     "kind": "paragraph",
+     "text": "¡Urgente! Quiere cerrar la factura hoy."
+    },
+    {
+     "kind": "spacer"
+    },
+    {
+     "kind": "kv",
+     "label": "Lo cogió",
+     "value": "Nuria (recepción)"
+    }
+   ]
+  },
+  {
+   "id": "handwriting-03",
+   "language": "es",
+   "density": "normal",
+   "blocks": [
+    {
+     "kind": "heading",
+     "text": "Reunión de equipo - 14/09/26"
+    },
+    {
+     "kind": "rule"
+    },
+    {
+     "kind": "kv",
+     "label": "Asisten",
+     "value": "Álvaro, Begoña, Iñaki y yo"
+    },
+    {
+     "kind": "kv",
+     "label": "Falta",
+     "value": "Chus (sigue de baja)"
+    },
+    {
+     "kind": "spacer"
+    },
+    {
+     "kind": "paragraph",
+     "text": "Presupuesto Q4 aún sin cerrar, faltan 2 partidas."
+    },
+    {
+     "kind": "paragraph",
+     "text": "Begoña pasa el borrador el miércoles por la tarde."
+    },
+    {
+     "kind": "paragraph",
+     "text": "Iñaki: la web nueva se retrasa 3 semanas más."
+    },
+    {
+     "kind": "paragraph",
+     "text": "Motivo: el proveedor no entregó las fotos."
+    },
+    {
+     "kind": "paragraph",
+     "text": "¿Quién habla con ellos? Se encarga Álvaro esta semana."
+    },
+    {
+     "kind": "paragraph",
+     "text": "Pendiente: pedir 2 presupuestos alternativos."
+    },
+    {
+     "kind": "paragraph",
+     "text": "Vacaciones de octubre: mandar el cuadrante ya."
+    },
+    {
+     "kind": "spacer"
+    },
+    {
+     "kind": "kv",
+     "label": "Próxima",
+     "value": "martes 22, 10:00, sala pequeña"
+    },
+    {
+     "kind": "paragraph",
+     "text": "NO olvidar llevar las cifras de agosto impresas."
+    }
+   ]
+  },
+  {
+   "id": "handwriting-04",
+   "language": "es",
+   "density": "normal",
+   "blocks": [
+    {
+     "kind": "heading",
+     "text": "Flan de la abuela Remedios"
+    },
+    {
+     "kind": "rule"
+    },
+    {
+     "kind": "kv",
+     "label": "Para",
+     "value": "6 personas"
+    },
+    {
+     "kind": "kv",
+     "label": "Horno",
+     "value": "180 °C, unos 45 min"
+    },
+    {
+     "kind": "spacer"
+    },
+    {
+     "kind": "paragraph",
+     "text": "1/2 l de leche entera"
+    },
+    {
+     "kind": "paragraph",
+     "text": "4 huevos + 1 yema"
+    },
+    {
+     "kind": "paragraph",
+     "text": "120 g de azúcar (y 4 cdas. para el caramelo)"
+    },
+    {
+     "kind": "paragraph",
+     "text": "corteza de limón y una rama de canela"
+    },
+    {
+     "kind": "spacer"
+    },
+    {
+     "kind": "paragraph",
+     "text": "Calentar la leche con el limón y la canela, sin que hierva."
+    },
+    {
+     "kind": "paragraph",
+     "text": "Batir los huevos con el azúcar, sin hacer espuma."
+    },
+    {
+     "kind": "paragraph",
+     "text": "Añadir la leche templada poco a poco, colándola."
+    },
+    {
+     "kind": "paragraph",
+     "text": "Caramelizar el molde con unas gotas de agua."
+    },
+    {
+     "kind": "paragraph",
+     "text": "Al baño María, tapado con papel de aluminio."
+    },
+    {
+     "kind": "paragraph",
+     "text": "Está hecho cuando el cuchillo sale limpio."
+    },
+    {
+     "kind": "paragraph",
+     "text": "Enfriar en la nevera 4 h como mínimo."
+    },
+    {
+     "kind": "paragraph",
+     "text": "¡Mejor de un día para otro!"
+    }
+   ]
+  },
+  {
+   "id": "handwriting-05",
+   "language": "en",
+   "density": "sparse",
+   "blocks": [
+    {
+     "kind": "heading",
+     "text": "Gone to the market"
+    },
+    {
+     "kind": "rule"
+    },
+    {
+     "kind": "paragraph",
+     "text": "Back around half two, maybe three."
+    },
+    {
+     "kind": "paragraph",
+     "text": "Soup is in the blue pot - just heat it,"
+    },
+    {
+     "kind": "paragraph",
+     "text": "don't let it boil or it splits again."
+    },
+    {
+     "kind": "paragraph",
+     "text": "Bread in the tin, the good one."
+    },
+    {
+     "kind": "paragraph",
+     "text": "Dad rang. He wants the ladder back Sunday."
+    },
+    {
+     "kind": "paragraph",
+     "text": "Put the washing out if it stays dry."
+    },
+    {
+     "kind": "paragraph",
+     "text": "The cat HAS been fed. Twice. Don't believe her."
+    },
+    {
+     "kind": "spacer"
+    },
+    {
+     "kind": "kv",
+     "label": "Milk money",
+     "value": "under the salt jar"
+    },
+    {
+     "kind": "kv",
+     "label": "Keys",
+     "value": "took mine, so ring the bell"
+    },
+    {
+     "kind": "spacer"
+    },
+    {
+     "kind": "paragraph",
+     "text": "Love, M."
+    }
+   ]
+  },
+  {
+   "id": "handwriting-06",
+   "language": "de",
+   "density": "normal",
+   "blocks": [
+    {
+     "kind": "heading",
+     "text": "Vorlesung 4 - Statik, 14.09."
+    },
+    {
+     "kind": "rule"
+    },
+    {
+     "kind": "kv",
+     "label": "Dozent",
+     "value": "Prof. Dr. Rühlemann"
+    },
+    {
+     "kind": "kv",
+     "label": "Raum",
+     "value": "HS 2, Südflügel"
+    },
+    {
+     "kind": "spacer"
+    },
+    {
+     "kind": "paragraph",
+     "text": "Gleichgewicht: Summe aller Kräfte = 0"
+    },
+    {
+     "kind": "paragraph",
+     "text": "und Summe der Momente = 0 (wichtig!)"
+    },
+    {
+     "kind": "paragraph",
+     "text": "Auflager: Festlager, Loslager, Einspannung"
+    },
+    {
+     "kind": "paragraph",
+     "text": "Freikörperbild IMMER zuerst zeichnen"
+    },
+    {
+     "kind": "paragraph",
+     "text": "Bsp.: Träger 6 m, Last 12 kN in der Mitte"
+    },
+    {
+     "kind": "paragraph",
+     "text": "-> A = B = 6 kN, hat er zweimal erklärt"
+    },
+    {
+     "kind": "paragraph",
+     "text": "Streckenlast q mal l als Ersatzkraft, greift mittig an"
+    },
+    {
+     "kind": "paragraph",
+     "text": "beim Zeichnen den Maßstab beachten"
+    },
+    {
+     "kind": "spacer"
+    },
+    {
+     "kind": "paragraph",
+     "text": "Übungsblatt 3 bis Freitag abgeben, zu zweit"
+    },
+    {
+     "kind": "paragraph",
+     "text": "Klausur: nur Formelsammlung, kein Grafikrechner"
+    },
+    {
+     "kind": "paragraph",
+     "text": "nächste Woche Fachwerke - Kap. 5 vorher lesen!"
+    },
+    {
+     "kind": "kv",
+     "label": "Nächste Übung",
+     "value": "Di 16:00, R. 114"
+    }
+   ]
+  },
+  {
+   "id": "id-card-01",
+   "language": "es",
+   "density": "normal",
+   "blocks": [
+    {
+     "kind": "heading",
+     "text": "REPÚBLICA DE ALTRAVIA"
+    },
+    {
+     "kind": "heading",
+     "text": "DOCUMENTO NACIONAL DE IDENTIDAD"
+    },
+    {
+     "kind": "heading",
+     "text": "MUESTRA - SIN VALIDEZ"
+    },
+    {
+     "kind": "rule"
+    },
+    {
+     "kind": "kv",
+     "label": "Apellidos",
+     "value": "Vilamonte Quesadas"
+    },
+    {
+     "kind": "kv",
+     "label": "Nombre",
+     "value": "Ainhoa Soraya"
+    },
+    {
+     "kind": "kv",
+     "label": "Sexo",
+     "value": "F"
+    },
+    {
+     "kind": "kv",
+     "label": "Nacionalidad",
+     "value": "Altraviana"
+    },
+    {
+     "kind": "kv",
+     "label": "Fecha de nacimiento",
+     "value": "12/03/1991"
+    },
+    {
+     "kind": "kv",
+     "label": "Lugar de nacimiento",
+     "value": "Puerto Zafiral, Provincia de Ledaña"
+    },
+    {
+     "kind": "kv",
+     "label": "Número de documento",
+     "value": "ALT-4472913-Q"
+    },
+    {
+     "kind": "kv",
+     "label": "Número de soporte",
+     "value": "BXA0293147"
+    },
+    {
+     "kind": "spacer"
+    },
+    {
+     "kind": "kv",
+     "label": "Domicilio",
+     "value": "Calle de los Membrillos Altos, 14, 3.º B"
+    },
+    {
+     "kind": "kv",
+     "label": "Municipio",
+     "value": "Villanueva del Sauce Blanco"
+    },
+    {
+     "kind": "kv",
+     "label": "Provincia",
+     "value": "Ledaña"
+    },
+    {
+     "kind": "spacer"
+    },
+    {
+     "kind": "kv",
+     "label": "Fecha de expedición",
+     "value": "05/02/2024"
+    },
+    {
+     "kind": "kv",
+     "label": "Fecha de caducidad",
+     "value": "05/02/2034"
+    },
+    {
+     "kind": "kv",
+     "label": "Equipo expedidor",
+     "value": "Oficina 21 - Puerto Zafiral"
+    },
+    {
+     "kind": "kv",
+     "label": "Autoridad",
+     "value": "Dirección General de Identificación Ciudadana"
+    },
+    {
+     "kind": "rule"
+    },
+    {
+     "kind": "paragraph",
+     "text": "Este documento es un ejemplar de demostración impreso con fines de prueba. No acredita la identidad de ninguna persona, no ampara derechos de residencia ni de tránsito y carece de todo valor administrativo. La República de Altravia es un país ficticio y ningún organismo real ha emitido esta tarjeta."
+    }
+   ]
+  },
+  {
+   "id": "id-card-02",
+   "language": "es",
+   "density": "dense",
+   "blocks": [
+    {
+     "kind": "heading",
+     "text": "ESTADO LIBRE DE MARBELIA"
+    },
+    {
+     "kind": "heading",
+     "text": "TARJETA DE IDENTIDAD CIUDADANA"
+    },
+    {
+     "kind": "kv",
+     "label": "Validez",
+     "value": "MUESTRA - SIN VALIDEZ"
+    },
+    {
+     "kind": "kv",
+     "label": "Tipo de documento",
+     "value": "IDM"
+    },
+    {
+     "kind": "kv",
+     "label": "Código del Estado",
+     "value": "MRB"
+    },
+    {
+     "kind": "rule"
+    },
+    {
+     "kind": "kv",
+     "label": "Apellidos",
+     "value": "Etxebarría Doncel"
+    },
+    {
+     "kind": "kv",
+     "label": "Nombre",
+     "value": "Íñigo Ramón"
+    },
+    {
+     "kind": "kv",
+     "label": "Sexo",
+     "value": "M"
+    },
+    {
+     "kind": "kv",
+     "label": "Nacionalidad",
+     "value": "Marbeliense"
+    },
+    {
+     "kind": "kv",
+     "label": "Fecha de nacimiento",
+     "value": "27/11/1978"
+    },
+    {
+     "kind": "kv",
+     "label": "Lugar de nacimiento",
+     "value": "Sierra de Almadraque, Cantón de Vegabaja"
+    },
+    {
+     "kind": "kv",
+     "label": "Estado civil",
+     "value": "Casado"
+    },
+    {
+     "kind": "kv",
+     "label": "Número de documento",
+     "value": "MRB-8831207-K"
+    },
+    {
+     "kind": "kv",
+     "label": "Número de identificación fiscal",
+     "value": "88312077-K"
+    },
+    {
+     "kind": "spacer"
+    },
+    {
+     "kind": "kv",
+     "label": "Domicilio",
+     "value": "Avenida del Almendro Torcido, 236, 1.º A"
+    },
+    {
+     "kind": "kv",
+     "label": "Localidad",
+     "value": "Nueva Cañaveral"
+    },
+    {
+     "kind": "kv",
+     "label": "Cantón",
+     "value": "Vegabaja"
+    },
+    {
+     "kind": "kv",
+     "label": "Código postal",
+     "value": "41730"
+    },
+    {
+     "kind": "spacer"
+    },
+    {
+     "kind": "kv",
+     "label": "Fecha de expedición",
+     "value": "18/06/2025"
+    },
+    {
+     "kind": "kv",
+     "label": "Fecha de caducidad",
+     "value": "18/06/2035"
+    },
+    {
+     "kind": "kv",
+     "label": "Autoridad expedidora",
+     "value": "Registro Civil Unificado - Delegación Norte"
+    },
+    {
+     "kind": "kv",
+     "label": "Funcionario responsable",
+     "value": "D.ª Rosalía Mendigorría Puente"
+    },
+    {
+     "kind": "rule"
+    },
+    {
+     "kind": "heading",
+     "text": "Datos complementarios"
+    },
+    {
+     "kind": "table",
+     "rows": [
+      [
+       "Dato",
+       "Valor"
+      ],
+      [
+       "Estatura",
+       "1,82 m"
+      ],
+      [
+       "Color de ojos",
+       "Verde grisáceo"
+      ],
+      [
+       "Grupo sanguíneo",
+       "A positivo"
+      ],
+      [
+       "Lenguas oficiales",
+       "Castellano y marbeliano"
+      ],
+      [
+       "Señas particulares",
+       "Cicatriz en el dorso de la mano izquierda"
+      ]
+     ]
+    },
+    {
+     "kind": "kv",
+     "label": "Observaciones",
+     "value": "Usa gafas graduadas. Donante de órganos."
+    },
+    {
+     "kind": "rule"
+    },
+    {
+     "kind": "paragraph",
+     "text": "La presente tarjeta se ha impreso únicamente como muestra para ensayos de digitalización y reconocimiento óptico de caracteres. Carece de elementos de seguridad, no identifica a persona alguna y no debe presentarse ante ninguna administración. El Estado Libre de Marbelia, los nombres, los domicilios y los números que figuran en ella son enteramente ficticios y cualquier parecido con datos reales es pura coincidencia."
+    }
+   ]
+  },
+  {
+   "id": "id-card-03",
+   "language": "es",
+   "density": "sparse",
+   "blocks": [
+    {
+     "kind": "heading",
+     "text": "EJEMPLOLANDIA"
+    },
+    {
+     "kind": "heading",
+     "text": "CÉDULA DE IDENTIDAD PROVISIONAL"
+    },
+    {
+     "kind": "heading",
+     "text": "MUESTRA - SIN VALIDEZ"
+    },
+    {
+     "kind": "rule"
+    },
+    {
+     "kind": "kv",
+     "label": "Nombre y apellidos",
+     "value": "Consuelo Arriaga Peñalosa"
+    },
+    {
+     "kind": "kv",
+     "label": "Fecha de nacimiento",
+     "value": "02/08/2001"
+    },
+    {
+     "kind": "kv",
+     "label": "Lugar de nacimiento",
+     "value": "Aldea del Tejo Hueco"
+    },
+    {
+     "kind": "kv",
+     "label": "Nacionalidad",
+     "value": "Ejemplolandesa"
+    },
+    {
+     "kind": "spacer"
+    },
+    {
+     "kind": "kv",
+     "label": "Número de cédula",
+     "value": "EJL-0472-338-X"
+    },
+    {
+     "kind": "kv",
+     "label": "Fecha de expedición",
+     "value": "14/09/2026"
+    },
+    {
+     "kind": "kv",
+     "label": "Fecha de caducidad",
+     "value": "13/09/2027"
+    },
+    {
+     "kind": "kv",
+     "label": "Emitida por",
+     "value": "Oficina Municipal de Empadronamiento"
+    },
+    {
+     "kind": "rule"
+    },
+    {
+     "kind": "paragraph",
+     "text": "Ejemplar de prueba. No sirve para identificarse ni para ningún trámite."
+    }
+   ]
+  },
+  {
+   "id": "id-card-04",
+   "language": "it",
+   "density": "normal",
+   "blocks": [
+    {
+     "kind": "heading",
+     "text": "REPUBBLICA DI VALDORINA"
+    },
+    {
+     "kind": "heading",
+     "text": "CARTA D'IDENTITÀ ELETTRONICA"
+    },
+    {
+     "kind": "kv",
+     "label": "Validità",
+     "value": "FAC-SIMILE - NON VALIDA"
+    },
+    {
+     "kind": "rule"
+    },
+    {
+     "kind": "kv",
+     "label": "Cognome",
+     "value": "Marostella Pievani"
+    },
+    {
+     "kind": "kv",
+     "label": "Nome",
+     "value": "Giulia Annamaria"
+    },
+    {
+     "kind": "kv",
+     "label": "Sesso",
+     "value": "F"
+    },
+    {
+     "kind": "kv",
+     "label": "Cittadinanza",
+     "value": "Valdorinese"
+    },
+    {
+     "kind": "kv",
+     "label": "Data di nascita",
+     "value": "09/05/1986"
+    },
+    {
+     "kind": "kv",
+     "label": "Luogo di nascita",
+     "value": "Borgo Selvaggia (Provincia di Rondinara)"
+    },
+    {
+     "kind": "kv",
+     "label": "Statura",
+     "value": "1,64 m"
+    },
+    {
+     "kind": "kv",
+     "label": "Colore degli occhi",
+     "value": "Nocciola"
+    },
+    {
+     "kind": "spacer"
+    },
+    {
+     "kind": "kv",
+     "label": "Numero del documento",
+     "value": "VD 7741928 QT"
+    },
+    {
+     "kind": "kv",
+     "label": "Codice di identificazione",
+     "value": "MRSGNN86E49L719P"
+    },
+    {
+     "kind": "kv",
+     "label": "Residenza",
+     "value": "Via dei Gelsi Storti 48, Borgo Selvaggia"
+    },
+    {
+     "kind": "kv",
+     "label": "Data di rilascio",
+     "value": "21/01/2026"
+    },
+    {
+     "kind": "kv",
+     "label": "Data di scadenza",
+     "value": "20/01/2036"
+    },
+    {
+     "kind": "kv",
+     "label": "Comune emittente",
+     "value": "Comune di Borgo Selvaggia"
+    },
+    {
+     "kind": "kv",
+     "label": "Autorità emittente",
+     "value": "Ministero dell'Anagrafe Nazionale"
+    },
+    {
+     "kind": "kv",
+     "label": "Annotazioni",
+     "value": "Non valida per l'espatrio"
+    },
+    {
+     "kind": "rule"
+    },
+    {
+     "kind": "paragraph",
+     "text": "Il presente documento è un fac-simile stampato a soli fini dimostrativi. Non attesta l'identità di alcuna persona, non conferisce alcun diritto e non ha alcun valore legale. La Repubblica di Valdorina è uno Stato immaginario: i nomi, gli indirizzi e i numeri riportati sono inventati e ogni somiglianza con dati reali è puramente casuale."
+    }
+   ]
+  },
+  {
+   "id": "id-card-05",
+   "language": "pt",
+   "density": "dense",
+   "blocks": [
+    {
+     "kind": "heading",
+     "text": "REPÚBLICA DE SOBREIRINHA"
+    },
+    {
+     "kind": "heading",
+     "text": "CARTÃO DE CIDADÃO"
+    },
+    {
+     "kind": "kv",
+     "label": "Validade",
+     "value": "ESPÉCIME - SEM VALOR"
+    },
+    {
+     "kind": "rule"
+    },
+    {
+     "kind": "kv",
+     "label": "Apelidos",
+     "value": "Vasconcelos Brandão"
+    },
+    {
+     "kind": "kv",
+     "label": "Nome próprio",
+     "value": "Matilde Inês"
+    },
+    {
+     "kind": "kv",
+     "label": "Sexo",
+     "value": "F"
+    },
+    {
+     "kind": "kv",
+     "label": "Nacionalidade",
+     "value": "Sobreirinhense"
+    },
+    {
+     "kind": "kv",
+     "label": "Data de nascimento",
+     "value": "16/07/1993"
+    },
+    {
+     "kind": "kv",
+     "label": "Naturalidade",
+     "value": "Vila Nova do Zambujal, concelho de Alcarvão"
+    },
+    {
+     "kind": "kv",
+     "label": "Filiação",
+     "value": "João Brandão Sequeira e Mariana Vasconcelos Alpoim"
+    },
+    {
+     "kind": "kv",
+     "label": "Altura",
+     "value": "1,71 m"
+    },
+    {
+     "kind": "spacer"
+    },
+    {
+     "kind": "kv",
+     "label": "Número de documento",
+     "value": "SBR 3390174 8 ZZ4"
+    },
+    {
+     "kind": "kv",
+     "label": "Número de identificação fiscal",
+     "value": "419 772 083"
+    },
+    {
+     "kind": "kv",
+     "label": "Número de utente de saúde",
+     "value": "60 118 4472"
+    },
+    {
+     "kind": "kv",
+     "label": "Número de segurança social",
+     "value": "11 704 559 26"
+    },
+    {
+     "kind": "spacer"
+    },
+    {
+     "kind": "kv",
+     "label": "Morada",
+     "value": "Travessa das Oliveiras Tortas, n.º 27, 2.º esquerdo"
+    },
+    {
+     "kind": "kv",
+     "label": "Código postal",
+     "value": "4820-116 Alcarvão"
+    },
+    {
+     "kind": "kv",
+     "label": "Freguesia",
+     "value": "São Julião do Cabeço Verde"
+    },
+    {
+     "kind": "spacer"
+    },
+    {
+     "kind": "kv",
+     "label": "Data de emissão",
+     "value": "03/04/2026"
+    },
+    {
+     "kind": "kv",
+     "label": "Válido até",
+     "value": "02/04/2036"
+    },
+    {
+     "kind": "kv",
+     "label": "Entidade emissora",
+     "value": "Instituto dos Registos de Sobreirinha"
+    },
+    {
+     "kind": "kv",
+     "label": "Serviço de atendimento",
+     "value": "Balcão do Cidadão de Alcarvão - guiché 9"
+    },
+    {
+     "kind": "rule"
+    },
+    {
+     "kind": "heading",
+     "text": "Informação adicional"
+    },
+    {
+     "kind": "table",
+     "rows": [
+      [
+       "Campo",
+       "Conteúdo"
+      ],
+      [
+       "Contacto de emergência",
+       "Rúben Alpoim Brandão"
+      ],
+      [
+       "Telefone",
+       "(+999) 212 448 730"
+      ],
+      [
+       "Grupo sanguíneo",
+       "B positivo"
+      ],
+      [
+       "Observações",
+       "Dador de órgãos inscrito"
+      ]
+     ]
+    },
+    {
+     "kind": "rule"
+    },
+    {
+     "kind": "paragraph",
+     "text": "Este documento é um espécime de demonstração, impresso exclusivamente para ensaios de digitalização e leitura óptica. Não comprova a identidade de qualquer pessoa, não confere quaisquer direitos e não tem valor legal. A República de Sobreirinha é um país fictício e nenhuma entidade real emitiu este cartão; os nomes, as moradas e os números aqui inscritos foram inventados."
+    }
+   ]
+  },
+  {
+   "id": "invoice-01",
+   "language": "es",
+   "density": "dense",
+   "blocks": [
+    {
+     "kind": "heading",
+     "text": "TALLERES MARVERDE, S.L."
+    },
+    {
+     "kind": "paragraph",
+     "text": "Calle Olmo Torcido 42, nave 7 - Polígono Industrial La Bellota - 28934 Móstoles (Madrid) - Teléfono +34 916 47 22 08 - administracion@talleresmarverde.example"
+    },
+    {
+     "kind": "kv",
+     "label": "CIF",
+     "value": "B-87654321"
+    },
+    {
+     "kind": "kv",
+     "label": "Registro Mercantil",
+     "value": "Madrid, tomo 4.812, folio 133, hoja M-982.341"
+    },
+    {
+     "kind": "rule"
+    },
+    {
+     "kind": "heading",
+     "text": "FACTURA Nº FA-2026/00417"
+    },
+    {
+     "kind": "kv",
+     "label": "Fecha de emisión",
+     "value": "14/09/2026"
+    },
+    {
+     "kind": "kv",
+     "label": "Fecha de vencimiento",
+     "value": "14/10/2026"
+    },
+    {
+     "kind": "kv",
+     "label": "Nº de pedido del cliente",
+     "value": "PD-7741"
+    },
+    {
+     "kind": "kv",
+     "label": "Nº de albarán",
+     "value": "ALB-2026/3318"
+    },
+    {
+     "kind": "spacer"
+    },
+    {
+     "kind": "heading",
+     "text": "DATOS DEL CLIENTE"
+    },
+    {
+     "kind": "kv",
+     "label": "Razón social",
+     "value": "Distribuciones Peñalba e Hijos, S.A."
+    },
+    {
+     "kind": "kv",
+     "label": "NIF",
+     "value": "A-12398745"
+    },
+    {
+     "kind": "kv",
+     "label": "Domicilio fiscal",
+     "value": "Avenida del Aguacero 118, 3º B - 46023 Valencia"
+    },
+    {
+     "kind": "kv",
+     "label": "Persona de contacto",
+     "value": "Doña Maite Arrázola Quiñones"
+    },
+    {
+     "kind": "rule"
+    },
+    {
+     "kind": "table",
+     "rows": [
+      [
+       "Descripción",
+       "Cant.",
+       "Precio unit.",
+       "Importe"
+      ],
+      [
+       "Mantenimiento preventivo de compresor Ruixá RX-220",
+       "4",
+       "185,00 €",
+       "740,00 €"
+      ],
+      [
+       "Sustitución de juntas tóricas de alta presión",
+       "12",
+       "14,75 €",
+       "177,00 €"
+      ],
+      [
+       "Válvula de retención en acero inoxidable AISI 316",
+       "3",
+       "96,40 €",
+       "289,20 €"
+      ],
+      [
+       "Desplazamiento del técnico a planta (Valencia)",
+       "2",
+       "68,00 €",
+       "136,00 €"
+      ],
+      [
+       "Horas de taller fuera del horario habitual",
+       "6",
+       "52,50 €",
+       "315,00 €"
+      ]
+     ]
+    },
+    {
+     "kind": "rule"
+    },
+    {
+     "kind": "kv",
+     "label": "Suma de conceptos",
+     "value": "1.657,20 €"
+    },
+    {
+     "kind": "kv",
+     "label": "Descuento comercial (5 %)",
+     "value": "-82,86 €"
+    },
+    {
+     "kind": "kv",
+     "label": "Base imponible",
+     "value": "1.574,34 €"
+    },
+    {
+     "kind": "kv",
+     "label": "IVA (21 %)",
+     "value": "330,61 €"
+    },
+    {
+     "kind": "kv",
+     "label": "TOTAL A PAGAR",
+     "value": "1.904,95 €"
+    },
+    {
+     "kind": "rule"
+    },
+    {
+     "kind": "heading",
+     "text": "CONDICIONES DE PAGO"
+    },
+    {
+     "kind": "kv",
+     "label": "Forma de pago",
+     "value": "Transferencia bancaria a 30 días fecha factura"
+    },
+    {
+     "kind": "kv",
+     "label": "Entidad",
+     "value": "Banco Ribera del Duero"
+    },
+    {
+     "kind": "kv",
+     "label": "IBAN",
+     "value": "ES68 3117 0492 7783 0561 9204"
+    },
+    {
+     "kind": "kv",
+     "label": "BIC/SWIFT",
+     "value": "RIDUESMMXXX"
+    },
+    {
+     "kind": "paragraph",
+     "text": "Operación sujeta al régimen general del Impuesto sobre el Valor Añadido. La garantía de las piezas sustituidas es de doce meses desde la fecha de instalación y no cubre daños por uso indebido ni por falta de lubricación. El retraso en el pago devengará el interés de demora previsto en la normativa de lucha contra la morosidad en las operaciones comerciales, además de una compensación de 40,00 € por costes de recobro."
+    },
+    {
+     "kind": "paragraph",
+     "text": "Cualquier reclamación sobre esta factura deberá comunicarse por escrito en el plazo de diez días naturales desde su recepción. Las mercancías viajan por cuenta y riesgo del comprador."
+    }
+   ]
+  },
+  {
+   "id": "invoice-02",
+   "language": "es",
+   "density": "dense",
+   "blocks": [
+    {
+     "kind": "heading",
+     "text": "IGNACIO VALLEJO URBIETA"
+    },
+    {
+     "kind": "paragraph",
+     "text": "Consultoría informática y desarrollo a medida - Calle Ribera del Sauce 7, bajo - 41013 Sevilla - Teléfono +34 954 30 18 22 - ignacio@cuadernoazul.example"
+    },
+    {
+     "kind": "kv",
+     "label": "NIF",
+     "value": "51.204.887-J"
+    },
+    {
+     "kind": "kv",
+     "label": "Epígrafe IAE",
+     "value": "763 - Programadores y analistas de informática"
+    },
+    {
+     "kind": "rule"
+    },
+    {
+     "kind": "heading",
+     "text": "FACTURA Nº 2026-C-0091"
+    },
+    {
+     "kind": "kv",
+     "label": "Fecha de expedición",
+     "value": "02/09/2026"
+    },
+    {
+     "kind": "kv",
+     "label": "Vencimiento",
+     "value": "02/10/2026"
+    },
+    {
+     "kind": "kv",
+     "label": "Periodo facturado",
+     "value": "Del 01/07/2026 al 31/08/2026"
+    },
+    {
+     "kind": "spacer"
+    },
+    {
+     "kind": "heading",
+     "text": "CLIENTE"
+    },
+    {
+     "kind": "kv",
+     "label": "Razón social",
+     "value": "Hostelería La Cigüeña Dormida, S.L."
+    },
+    {
+     "kind": "kv",
+     "label": "CIF",
+     "value": "B-90874512"
+    },
+    {
+     "kind": "kv",
+     "label": "Dirección",
+     "value": "Plaza de los Tres Cántaros 4 - 18010 Granada"
+    },
+    {
+     "kind": "kv",
+     "label": "Nº de pedido",
+     "value": "PC-4471"
+    },
+    {
+     "kind": "rule"
+    },
+    {
+     "kind": "table",
+     "rows": [
+      [
+       "Concepto",
+       "Cant.",
+       "Precio unit.",
+       "Importe"
+      ],
+      [
+       "Auditoría de infraestructura y migración a servidor propio",
+       "1",
+       "2.450,00 €",
+       "2.450,00 €"
+      ],
+      [
+       "Desarrollo del módulo de reservas (horas de análisis y programación)",
+       "38",
+       "62,00 €",
+       "2.356,00 €"
+      ],
+      [
+       "Formación al personal de sala, sesiones de tres horas",
+       "4",
+       "180,00 €",
+       "720,00 €"
+      ],
+      [
+       "Licencia anual de mantenimiento correctivo y copias de seguridad",
+       "1",
+       "540,00 €",
+       "540,00 €"
+      ]
+     ]
+    },
+    {
+     "kind": "rule"
+    },
+    {
+     "kind": "kv",
+     "label": "Base imponible",
+     "value": "6.066,00 €"
+    },
+    {
+     "kind": "kv",
+     "label": "IVA (21 %)",
+     "value": "1.273,86 €"
+    },
+    {
+     "kind": "kv",
+     "label": "Retención IRPF (15 %)",
+     "value": "-909,90 €"
+    },
+    {
+     "kind": "kv",
+     "label": "TOTAL FACTURA",
+     "value": "6.429,96 €"
+    },
+    {
+     "kind": "rule"
+    },
+    {
+     "kind": "paragraph",
+     "text": "El importe de la retención practicada será ingresado por el cliente en la Agencia Tributaria conforme al modelo trimestral correspondiente. La migración incluye el traslado de la base de datos histórica de reservas y treinta días de soporte telefónico posteriores a la puesta en producción."
+    },
+    {
+     "kind": "kv",
+     "label": "Forma de pago",
+     "value": "Transferencia bancaria"
+    },
+    {
+     "kind": "kv",
+     "label": "IBAN",
+     "value": "ES41 0075 8820 4416 3097 5518"
+    },
+    {
+     "kind": "kv",
+     "label": "Concepto de la transferencia",
+     "value": "Factura 2026-C-0091"
+    },
+    {
+     "kind": "paragraph",
+     "text": "Conforme al reglamento de protección de datos, los datos de contacto facilitados se conservarán mientras dure la relación contractual y durante los plazos exigidos por la normativa fiscal. Puede solicitar su supresión por escrito en la dirección indicada en el encabezado."
+    }
+   ]
+  },
+  {
+   "id": "invoice-03",
+   "language": "es",
+   "density": "dense",
+   "blocks": [
+    {
+     "kind": "heading",
+     "text": "RECIBO INDIVIDUAL JUSTIFICATIVO DEL PAGO DE SALARIOS"
+    },
+    {
+     "kind": "kv",
+     "label": "Empresa",
+     "value": "Cerámicas del Guadalpín, S.A."
+    },
+    {
+     "kind": "kv",
+     "label": "Domicilio",
+     "value": "Polígono Industrial Los Alcornoques, nave 17 - 29604 Marbella (Málaga)"
+    },
+    {
+     "kind": "kv",
+     "label": "CIF",
+     "value": "A-29876543"
+    },
+    {
+     "kind": "kv",
+     "label": "Código cuenta de cotización",
+     "value": "29/1148772/55"
+    },
+    {
+     "kind": "rule"
+    },
+    {
+     "kind": "kv",
+     "label": "Trabajadora",
+     "value": "Rosalía Piñeiro Bastos"
+    },
+    {
+     "kind": "kv",
+     "label": "NIF",
+     "value": "44.902.118-T"
+    },
+    {
+     "kind": "kv",
+     "label": "Nº afiliación Seguridad Social",
+     "value": "29/10457733/21"
+    },
+    {
+     "kind": "kv",
+     "label": "Categoría profesional",
+     "value": "Oficial de 1ª - Grupo de cotización 08"
+    },
+    {
+     "kind": "kv",
+     "label": "Antigüedad en la empresa",
+     "value": "03/04/2019"
+    },
+    {
+     "kind": "kv",
+     "label": "Tipo de contrato",
+     "value": "Indefinido a jornada completa (clave 100)"
+    },
+    {
+     "kind": "kv",
+     "label": "Periodo de liquidación",
+     "value": "Del 01/09/2026 al 30/09/2026 - 30 días"
+    },
+    {
+     "kind": "rule"
+    },
+    {
+     "kind": "heading",
+     "text": "I. DEVENGOS"
+    },
+    {
+     "kind": "table",
+     "rows": [
+      [
+       "Concepto",
+       "Importe"
+      ],
+      [
+       "Salario base según convenio",
+       "1.486,20 €"
+      ],
+      [
+       "Plus de antigüedad (10 %)",
+       "148,62 €"
+      ],
+      [
+       "Plus de puesto de trabajo - sección de horno",
+       "175,00 €"
+      ],
+      [
+       "Plus de transporte (percepción no salarial)",
+       "92,40 €"
+      ],
+      [
+       "Horas extraordinarias, 7 horas a 18,75 €",
+       "131,25 €"
+      ],
+      [
+       "Prorrata de pagas extraordinarias",
+       "247,70 €"
+      ],
+      [
+       "TOTAL DEVENGADO",
+       "2.281,17 €"
+      ]
+     ]
+    },
+    {
+     "kind": "spacer"
+    },
+    {
+     "kind": "heading",
+     "text": "II. DEDUCCIONES"
+    },
+    {
+     "kind": "table",
+     "rows": [
+      [
+       "Concepto",
+       "Base",
+       "Tipo",
+       "Importe"
+      ],
+      [
+       "Contingencias comunes",
+       "2.188,77 €",
+       "4,70 %",
+       "102,87 €"
+      ],
+      [
+       "Desempleo",
+       "2.188,77 €",
+       "1,55 %",
+       "33,93 €"
+      ],
+      [
+       "Formación profesional",
+       "2.188,77 €",
+       "0,10 %",
+       "2,19 €"
+      ],
+      [
+       "Mecanismo de equidad intergeneracional",
+       "2.188,77 €",
+       "0,13 %",
+       "2,85 €"
+      ],
+      [
+       "Aportación del trabajador a la Seguridad Social",
+       "",
+       "",
+       "141,84 €"
+      ],
+      [
+       "Retención por IRPF",
+       "2.281,17 €",
+       "12,00 %",
+       "273,74 €"
+      ],
+      [
+       "TOTAL A DEDUCIR",
+       "",
+       "",
+       "415,58 €"
+      ]
+     ]
+    },
+    {
+     "kind": "rule"
+    },
+    {
+     "kind": "kv",
+     "label": "LÍQUIDO TOTAL A PERCIBIR",
+     "value": "1.865,59 €"
+    },
+    {
+     "kind": "kv",
+     "label": "Abonado mediante",
+     "value": "Transferencia el último día hábil del mes"
+    },
+    {
+     "kind": "kv",
+     "label": "IBAN de la trabajadora",
+     "value": "ES73 0049 6112 3798 5104 2277"
+    },
+    {
+     "kind": "rule"
+    },
+    {
+     "kind": "heading",
+     "text": "III. DETERMINACIÓN DE LAS BASES DE COTIZACIÓN"
+    },
+    {
+     "kind": "table",
+     "rows": [
+      [
+       "Base",
+       "Importe"
+      ],
+      [
+       "Base de contingencias comunes",
+       "2.188,77 €"
+      ],
+      [
+       "Base de contingencias profesionales y desempleo",
+       "2.320,02 €"
+      ],
+      [
+       "Base sujeta a retención del IRPF",
+       "2.281,17 €"
+      ],
+      [
+       "Aportación empresarial a la Seguridad Social",
+       "723,42 €"
+      ]
+     ]
+    },
+    {
+     "kind": "paragraph",
+     "text": "La trabajadora recibe copia de este recibo y da su conformidad a las cantidades reseñadas, sin perjuicio de las acciones que le correspondan si se detectase algún error de cálculo. Las horas extraordinarias abonadas han sido compensadas económicamente por decisión expresa de la interesada y no serán objeto de descanso adicional."
+    }
+   ]
+  },
+  {
+   "id": "invoice-04",
+   "language": "es",
+   "density": "dense",
+   "blocks": [
+    {
+     "kind": "heading",
+     "text": "PATRIMONIAL VILLA MONDOÑEDO, S.L."
+    },
+    {
+     "kind": "paragraph",
+     "text": "Calle Arenal Quebrado 9, entresuelo - 15703 Santiago de Compostela (A Coruña) - Teléfono +34 981 55 74 10 - arrendamientos@villamondonedo.example"
+    },
+    {
+     "kind": "kv",
+     "label": "CIF",
+     "value": "B-15448023"
+    },
+    {
+     "kind": "rule"
+    },
+    {
+     "kind": "heading",
+     "text": "FACTURA DE ARRENDAMIENTO Nº ARR-2026-09-014"
+    },
+    {
+     "kind": "kv",
+     "label": "Fecha de emisión",
+     "value": "01/09/2026"
+    },
+    {
+     "kind": "kv",
+     "label": "Periodo devengado",
+     "value": "Septiembre de 2026"
+    },
+    {
+     "kind": "kv",
+     "label": "Contrato",
+     "value": "Arrendamiento de local de negocio de 18/10/2021"
+    },
+    {
+     "kind": "spacer"
+    },
+    {
+     "kind": "heading",
+     "text": "ARRENDATARIO"
+    },
+    {
+     "kind": "kv",
+     "label": "Razón social",
+     "value": "Librería El Higo Chumbo, S.L."
+    },
+    {
+     "kind": "kv",
+     "label": "CIF",
+     "value": "B-15990234"
+    },
+    {
+     "kind": "kv",
+     "label": "Domicilio",
+     "value": "Rúa das Ameixeiras 23, bajo - 15704 Santiago de Compostela"
+    },
+    {
+     "kind": "kv",
+     "label": "Local arrendado",
+     "value": "Bajo comercial de 86 metros cuadrados con dos escaparates a vía pública"
+    },
+    {
+     "kind": "kv",
+     "label": "Referencia catastral",
+     "value": "3374902NH3437S0001XK"
+    },
+    {
+     "kind": "rule"
+    },
+    {
+     "kind": "table",
+     "rows": [
+      [
+       "Concepto",
+       "Cant.",
+       "Precio unit.",
+       "Importe"
+      ],
+      [
+       "Renta mensual del local sito en Rúa das Ameixeiras 23, bajo",
+       "1",
+       "1.250,00 €",
+       "1.250,00 €"
+      ],
+      [
+       "Repercusión de gastos de comunidad del tercer trimestre",
+       "1",
+       "138,60 €",
+       "138,60 €"
+      ],
+      [
+       "Repercusión del IBI, prorrata mensual del ejercicio",
+       "1",
+       "74,25 €",
+       "74,25 €"
+      ],
+      [
+       "Consumo de agua, lectura de 2.171 a 2.184 metros cúbicos",
+       "13",
+       "2,35 €",
+       "30,55 €"
+      ]
+     ]
+    },
+    {
+     "kind": "rule"
+    },
+    {
+     "kind": "kv",
+     "label": "Base imponible",
+     "value": "1.493,40 €"
+    },
+    {
+     "kind": "kv",
+     "label": "IVA (21 %)",
+     "value": "313,61 €"
+    },
+    {
+     "kind": "kv",
+     "label": "Retención IRPF sobre arrendamientos (19 %)",
+     "value": "-283,75 €"
+    },
+    {
+     "kind": "kv",
+     "label": "TOTAL A PAGAR",
+     "value": "1.523,26 €"
+    },
+    {
+     "kind": "rule"
+    },
+    {
+     "kind": "heading",
+     "text": "DOMICILIACIÓN"
+    },
+    {
+     "kind": "kv",
+     "label": "Fecha de cargo",
+     "value": "05/09/2026"
+    },
+    {
+     "kind": "kv",
+     "label": "IBAN de cargo",
+     "value": "ES52 2080 5417 6630 0918 4472"
+    },
+    {
+     "kind": "kv",
+     "label": "Referencia del mandato SEPA",
+     "value": "MND-00871"
+    },
+    {
+     "kind": "kv",
+     "label": "Fianza depositada",
+     "value": "2.500,00 €, equivalente a dos mensualidades"
+    },
+    {
+     "kind": "paragraph",
+     "text": "La renta se actualizará el próximo 18 de octubre conforme a la variación anual del índice de referencia pactado en la cláusula quinta del contrato, sin que la actualización pueda ser negativa. Los gastos de comunidad se repercuten según el coeficiente de participación del local, que es del 7,40 por ciento."
+    },
+    {
+     "kind": "paragraph",
+     "text": "Las obras de conservación del inmueble corresponden a la propiedad, salvo las derivadas del uso del arrendatario o de la instalación de rótulos, toldos y climatización, que serán por su cuenta. Cualquier discrepancia sobre las lecturas de agua deberá comunicarse antes del día quince del mes siguiente al de la emisión de esta factura."
+    }
+   ]
+  },
+  {
+   "id": "invoice-05",
+   "language": "de",
+   "density": "dense",
+   "blocks": [
+    {
+     "kind": "heading",
+     "text": "ENTGELTABRECHNUNG AUGUST 2026"
+    },
+    {
+     "kind": "kv",
+     "label": "Arbeitgeber",
+     "value": "Grünwinkel Präzisionsteile GmbH"
+    },
+    {
+     "kind": "kv",
+     "label": "Anschrift",
+     "value": "Hafenstraße 118, 28217 Bremen"
+    },
+    {
+     "kind": "kv",
+     "label": "Steuernummer",
+     "value": "60/142/08877"
+    },
+    {
+     "kind": "kv",
+     "label": "Betriebsnummer",
+     "value": "48812207"
+    },
+    {
+     "kind": "rule"
+    },
+    {
+     "kind": "kv",
+     "label": "Arbeitnehmerin",
+     "value": "Almut Voßkühler"
+    },
+    {
+     "kind": "kv",
+     "label": "Personalnummer",
+     "value": "20488"
+    },
+    {
+     "kind": "kv",
+     "label": "Geburtsdatum",
+     "value": "11.03.1987"
+    },
+    {
+     "kind": "kv",
+     "label": "Eintrittsdatum",
+     "value": "01.08.2018"
+    },
+    {
+     "kind": "kv",
+     "label": "Tätigkeit",
+     "value": "Leiterin der Qualitätsprüfung"
+    },
+    {
+     "kind": "kv",
+     "label": "Steuerklasse",
+     "value": "III, Kinderfreibeträge 1,0"
+    },
+    {
+     "kind": "kv",
+     "label": "Konfession",
+     "value": "römisch-katholisch, Kirchensteuer 9 Prozent"
+    },
+    {
+     "kind": "kv",
+     "label": "Krankenkasse",
+     "value": "Bergquell BKK, Zusatzbeitrag 1,70 Prozent"
+    },
+    {
+     "kind": "kv",
+     "label": "Abrechnungszeitraum",
+     "value": "01.08.2026 bis 31.08.2026"
+    },
+    {
+     "kind": "rule"
+    },
+    {
+     "kind": "heading",
+     "text": "BEZÜGE"
+    },
+    {
+     "kind": "table",
+     "rows": [
+      [
+       "Lohnart",
+       "Bezeichnung",
+       "Betrag"
+      ],
+      [
+       "100",
+       "Grundgehalt laut Arbeitsvertrag",
+       "4.150,00 €"
+      ],
+      [
+       "140",
+       "Leistungszulage nach Zielvereinbarung",
+       "320,00 €"
+      ],
+      [
+       "165",
+       "Schichtzulage für Nachtarbeit, 22 Stunden",
+       "176,00 €"
+      ],
+      [
+       "310",
+       "Vermögenswirksame Leistungen, Arbeitgeberanteil",
+       "26,59 €"
+      ],
+      [
+       "420",
+       "Geldwerter Vorteil Firmenwagen, Ein-Prozent-Regelung",
+       "285,00 €"
+      ],
+      [
+       "",
+       "Gesamtbrutto",
+       "4.957,59 €"
+      ]
+     ]
+    },
+    {
+     "kind": "spacer"
+    },
+    {
+     "kind": "heading",
+     "text": "GESETZLICHE ABZÜGE"
+    },
+    {
+     "kind": "table",
+     "rows": [
+      [
+       "Abzug",
+       "Bemessung",
+       "Satz",
+       "Betrag"
+      ],
+      [
+       "Lohnsteuer",
+       "4.957,59 €",
+       "",
+       "612,33 €"
+      ],
+      [
+       "Solidaritätszuschlag",
+       "612,33 €",
+       "0,00 %",
+       "0,00 €"
+      ],
+      [
+       "Kirchensteuer",
+       "612,33 €",
+       "9,00 %",
+       "55,11 €"
+      ],
+      [
+       "Krankenversicherung",
+       "4.957,59 €",
+       "8,15 %",
+       "404,04 €"
+      ],
+      [
+       "Rentenversicherung",
+       "4.957,59 €",
+       "9,30 %",
+       "461,06 €"
+      ],
+      [
+       "Arbeitslosenversicherung",
+       "4.957,59 €",
+       "1,30 %",
+       "64,45 €"
+      ],
+      [
+       "Pflegeversicherung",
+       "4.957,59 €",
+       "1,80 %",
+       "89,24 €"
+      ],
+      [
+       "Summe der Abzüge",
+       "",
+       "",
+       "1.686,23 €"
+      ]
+     ]
+    },
+    {
+     "kind": "rule"
+    },
+    {
+     "kind": "kv",
+     "label": "Nettoverdienst",
+     "value": "3.271,36 €"
+    },
+    {
+     "kind": "kv",
+     "label": "Verrechnung des geldwerten Vorteils Firmenwagen",
+     "value": "-285,00 €"
+    },
+    {
+     "kind": "kv",
+     "label": "Überweisung der vermögenswirksamen Leistungen an die Bausparkasse",
+     "value": "-40,00 €"
+    },
+    {
+     "kind": "kv",
+     "label": "AUSZAHLUNGSBETRAG",
+     "value": "2.946,36 €"
+    },
+    {
+     "kind": "kv",
+     "label": "IBAN",
+     "value": "DE28 2905 0101 0847 2296 33"
+    },
+    {
+     "kind": "kv",
+     "label": "Wertstellung",
+     "value": "28.08.2026"
+    },
+    {
+     "kind": "rule"
+    },
+    {
+     "kind": "heading",
+     "text": "JAHRESWERTE BIS EINSCHLIESSLICH AUGUST"
+    },
+    {
+     "kind": "table",
+     "rows": [
+      [
+       "Kennzahl",
+       "Betrag"
+      ],
+      [
+       "Steuerbrutto kumuliert",
+       "39.660,72 €"
+      ],
+      [
+       "Sozialversicherungsbrutto kumuliert",
+       "39.660,72 €"
+      ],
+      [
+       "Einbehaltene Lohnsteuer",
+       "4.898,64 €"
+      ],
+      [
+       "Einbehaltene Kirchensteuer",
+       "440,88 €"
+      ],
+      [
+       "Verbleibender Urlaubsanspruch",
+       "11,5 Tage"
+      ]
+     ]
+    },
+    {
+     "kind": "paragraph",
+     "text": "Diese Abrechnung gilt zugleich als Bescheinigung über den Lohnsteuerabzug für den genannten Zeitraum. Bitte prüfen Sie alle Angaben sorgfältig und teilen Sie Änderungen Ihrer persönlichen Verhältnisse, etwa Heirat, Geburt eines Kindes oder Wechsel der Krankenkasse, unverzüglich der Personalabteilung mit. Rückfragen richten Sie bitte an die Lohnbuchhaltung, Durchwahl 241."
+    }
+   ]
+  },
+  {
+   "id": "invoice-06",
+   "language": "fr",
+   "density": "dense",
+   "blocks": [
+    {
+     "kind": "heading",
+     "text": "ATELIER BEAUREGARD MENUISERIE SARL"
+    },
+    {
+     "kind": "paragraph",
+     "text": "14 rue des Glycines Fanées - 44300 Nantes - Téléphone +33 2 40 71 33 05 - contact@beauregard-menuiserie.example - Capital social de 25 000 EUR - APE 1623Z"
+    },
+    {
+     "kind": "kv",
+     "label": "SIRET",
+     "value": "812 447 093 00027"
+    },
+    {
+     "kind": "kv",
+     "label": "TVA intracommunautaire",
+     "value": "FR47 812447093"
+    },
+    {
+     "kind": "kv",
+     "label": "Assurance décennale",
+     "value": "Mutuelle du Bocage, contrat n° 44-118-9027"
+    },
+    {
+     "kind": "rule"
+    },
+    {
+     "kind": "heading",
+     "text": "FACTURE N° 2026-0914-FR"
+    },
+    {
+     "kind": "kv",
+     "label": "Date d'émission",
+     "value": "14/09/2026"
+    },
+    {
+     "kind": "kv",
+     "label": "Date d'échéance",
+     "value": "14/10/2026"
+    },
+    {
+     "kind": "kv",
+     "label": "Bon de commande",
+     "value": "BC-2211 du 03/07/2026"
+    },
+    {
+     "kind": "kv",
+     "label": "Chantier",
+     "value": "Réfection des menuiseries de l'aile est"
+    },
+    {
+     "kind": "spacer"
+    },
+    {
+     "kind": "heading",
+     "text": "CLIENT"
+    },
+    {
+     "kind": "kv",
+     "label": "Raison sociale",
+     "value": "Hôtel du Coquelicot Bleu SAS"
+    },
+    {
+     "kind": "kv",
+     "label": "Adresse de facturation",
+     "value": "8 place Anatole Fournière - 35000 Rennes"
+    },
+    {
+     "kind": "kv",
+     "label": "SIRET",
+     "value": "903 118 264 00015"
+    },
+    {
+     "kind": "kv",
+     "label": "TVA intracommunautaire",
+     "value": "FR62 903118264"
+    },
+    {
+     "kind": "rule"
+    },
+    {
+     "kind": "table",
+     "rows": [
+      [
+       "Désignation",
+       "Qté",
+       "P.U. HT",
+       "Montant HT"
+      ],
+      [
+       "Fenêtre à deux vantaux en chêne massif, double vitrage 4/16/4",
+       "6",
+       "742,00 EUR",
+       "4 452,00 EUR"
+      ],
+      [
+       "Pose, calfeutrement et réglage des ouvrants sur site",
+       "6",
+       "128,50 EUR",
+       "771,00 EUR"
+      ],
+      [
+       "Habillage intérieur en tasseaux vernis, au mètre linéaire",
+       "18",
+       "37,90 EUR",
+       "682,20 EUR"
+      ],
+      [
+       "Dépose et évacuation en déchetterie des anciens châssis",
+       "1",
+       "460,00 EUR",
+       "460,00 EUR"
+      ],
+      [
+       "Déplacement et hébergement de l'équipe, forfait journalier",
+       "3",
+       "210,00 EUR",
+       "630,00 EUR"
+      ]
+     ]
+    },
+    {
+     "kind": "rule"
+    },
+    {
+     "kind": "kv",
+     "label": "Total HT",
+     "value": "6 995,20 EUR"
+    },
+    {
+     "kind": "kv",
+     "label": "Remise exceptionnelle (3 %)",
+     "value": "-209,86 EUR"
+    },
+    {
+     "kind": "kv",
+     "label": "Net commercial HT",
+     "value": "6 785,34 EUR"
+    },
+    {
+     "kind": "kv",
+     "label": "TVA au taux normal (20 %)",
+     "value": "1 357,07 EUR"
+    },
+    {
+     "kind": "kv",
+     "label": "Total TTC",
+     "value": "8 142,41 EUR"
+    },
+    {
+     "kind": "kv",
+     "label": "Acompte versé le 12/08/2026",
+     "value": "-2 000,00 EUR"
+    },
+    {
+     "kind": "kv",
+     "label": "NET À PAYER",
+     "value": "6 142,41 EUR"
+    },
+    {
+     "kind": "rule"
+    },
+    {
+     "kind": "heading",
+     "text": "RÈGLEMENT"
+    },
+    {
+     "kind": "kv",
+     "label": "Mode de règlement",
+     "value": "Virement bancaire à trente jours"
+    },
+    {
+     "kind": "kv",
+     "label": "Titulaire du compte",
+     "value": "Atelier Beauregard Menuiserie SARL"
+    },
+    {
+     "kind": "kv",
+     "label": "IBAN",
+     "value": "FR76 3000 4008 2894 5517 6203 981"
+    },
+    {
+     "kind": "kv",
+     "label": "BIC",
+     "value": "NTMLFRP1XXX"
+    },
+    {
+     "kind": "paragraph",
+     "text": "En cas de retard de paiement, une pénalité égale à trois fois le taux d'intérêt légal sera exigible de plein droit, à laquelle s'ajoutera une indemnité forfaitaire de 40 EUR pour frais de recouvrement. Aucun escompte n'est accordé pour un règlement anticipé. La TVA est acquittée sur les débits."
+    },
+    {
+     "kind": "paragraph",
+     "text": "Les ouvrages restent la propriété de l'atelier jusqu'au paiement intégral du prix. La garantie décennale court à compter de la réception des travaux, prononcée sans réserve le 28 août 2026. Les teintes de finition ont été validées par le maître d'ouvrage d'après l'échantillonnage présenté en atelier, et aucune réclamation ne sera reçue à ce titre."
+    }
+   ]
+  },
+  {
+   "id": "invoice-07",
+   "language": "it",
+   "density": "dense",
+   "blocks": [
+    {
+     "kind": "heading",
+     "text": "OFFICINA GRAFICA LUNAVERA S.R.L."
+    },
+    {
+     "kind": "paragraph",
+     "text": "Via dei Melograni Storti 29 - 40138 Bologna (BO) - Telefono +39 051 44 39 12 - amministrazione@lunavera.example - Capitale sociale 20.000,00 € interamente versato"
+    },
+    {
+     "kind": "kv",
+     "label": "Partita IVA",
+     "value": "03998741205"
+    },
+    {
+     "kind": "kv",
+     "label": "Codice fiscale",
+     "value": "03998741205"
+    },
+    {
+     "kind": "kv",
+     "label": "Numero REA",
+     "value": "BO-528117"
+    },
+    {
+     "kind": "rule"
+    },
+    {
+     "kind": "heading",
+     "text": "FATTURA N. 214/2026 DEL 14/09/2026"
+    },
+    {
+     "kind": "kv",
+     "label": "Tipo documento",
+     "value": "TD01 - Fattura immediata"
+    },
+    {
+     "kind": "kv",
+     "label": "Scadenza",
+     "value": "13/11/2026, 60 giorni data fattura"
+    },
+    {
+     "kind": "kv",
+     "label": "Riferimento ordine",
+     "value": "ORD-2026/0338 del 21/07/2026"
+    },
+    {
+     "kind": "spacer"
+    },
+    {
+     "kind": "heading",
+     "text": "CESSIONARIO COMMITTENTE"
+    },
+    {
+     "kind": "kv",
+     "label": "Ragione sociale",
+     "value": "Enoteca Il Passo del Ghiro S.a.s."
+    },
+    {
+     "kind": "kv",
+     "label": "Sede legale",
+     "value": "Via Cavaliere Ombroso 5 - 37121 Verona (VR)"
+    },
+    {
+     "kind": "kv",
+     "label": "Partita IVA",
+     "value": "04471120238"
+    },
+    {
+     "kind": "kv",
+     "label": "Codice destinatario",
+     "value": "SUBM70N"
+    },
+    {
+     "kind": "kv",
+     "label": "Posta elettronica certificata",
+     "value": "amministrazione@passodelghiro.example"
+    },
+    {
+     "kind": "rule"
+    },
+    {
+     "kind": "table",
+     "rows": [
+      [
+       "Descrizione",
+       "Q.tà",
+       "Prezzo unit.",
+       "Importo"
+      ],
+      [
+       "Stampa di etichette adesive a cinque colori, confezioni da mille pezzi",
+       "12",
+       "148,00 €",
+       "1.776,00 €"
+      ],
+      [
+       "Impianto di stampa e prove colore su carta definitiva",
+       "1",
+       "390,00 €",
+       "390,00 €"
+      ],
+      [
+       "Progettazione grafica dell'etichetta, ore di studio",
+       "14",
+       "55,00 €",
+       "770,00 €"
+      ],
+      [
+       "Cartoni da sei bottiglie personalizzati con marchio a un colore",
+       "250",
+       "2,40 €",
+       "600,00 €"
+      ],
+      [
+       "Spese di trasporto e imballo con corriere espresso",
+       "1",
+       "85,50 €",
+       "85,50 €"
+      ]
+     ]
+    },
+    {
+     "kind": "rule"
+    },
+    {
+     "kind": "kv",
+     "label": "Totale imponibile",
+     "value": "3.621,50 €"
+    },
+    {
+     "kind": "kv",
+     "label": "IVA (22%)",
+     "value": "796,73 €"
+    },
+    {
+     "kind": "kv",
+     "label": "TOTALE DOCUMENTO",
+     "value": "4.418,23 €"
+    },
+    {
+     "kind": "rule"
+    },
+    {
+     "kind": "heading",
+     "text": "MODALITÀ DI PAGAMENTO"
+    },
+    {
+     "kind": "kv",
+     "label": "Modalità",
+     "value": "MP05 - Bonifico bancario"
+    },
+    {
+     "kind": "kv",
+     "label": "Istituto",
+     "value": "Banca del Reno di Credito Cooperativo"
+    },
+    {
+     "kind": "kv",
+     "label": "IBAN",
+     "value": "IT84 K031 2711 2010 0000 0448 219"
+    },
+    {
+     "kind": "kv",
+     "label": "Causale",
+     "value": "Fattura 214/2026 Lunavera"
+    },
+    {
+     "kind": "paragraph",
+     "text": "Il contributo ambientale CONAI è assolto dal produttore. La merce viaggia a rischio e pericolo del committente, anche se spedita in porto franco. Eventuali contestazioni sulla qualità di stampa dovranno pervenire per iscritto entro otto giorni dal ricevimento, trascorsi i quali la fornitura si intenderà accettata senza riserve."
+    },
+    {
+     "kind": "paragraph",
+     "text": "In caso di ritardato pagamento verranno applicati gli interessi di mora previsti dalla normativa sui ritardi di pagamento nelle transazioni commerciali, oltre al rimborso forfettario delle spese di recupero. I file esecutivi restano di proprietà dell'officina fino al saldo integrale della presente fattura e non potranno essere ceduti a terzi senza autorizzazione scritta."
+    }
+   ]
+  },
+  {
+   "id": "invoice-08",
+   "language": "en",
+   "density": "dense",
+   "blocks": [
+    {
+     "kind": "heading",
+     "text": "NORTHWIND KILN AND CLAY LTD."
+    },
+    {
+     "kind": "paragraph",
+     "text": "Unit 12, Barrelhouse Yard, Gallowgate Lane, Leeds LS9 8QR, United Kingdom - Telephone 0113 496 2288 - accounts@northwindkiln.example"
+    },
+    {
+     "kind": "kv",
+     "label": "Company registration number",
+     "value": "09447213"
+    },
+    {
+     "kind": "kv",
+     "label": "VAT registration number",
+     "value": "GB 384 9920 17"
+    },
+    {
+     "kind": "rule"
+    },
+    {
+     "kind": "heading",
+     "text": "INVOICE NKC-2026-1187"
+    },
+    {
+     "kind": "kv",
+     "label": "Invoice date",
+     "value": "14/09/2026"
+    },
+    {
+     "kind": "kv",
+     "label": "Tax point",
+     "value": "11/09/2026"
+    },
+    {
+     "kind": "kv",
+     "label": "Payment due",
+     "value": "14/10/2026, net thirty days"
+    },
+    {
+     "kind": "kv",
+     "label": "Purchase order",
+     "value": "4471-B"
+    },
+    {
+     "kind": "kv",
+     "label": "Account reference",
+     "value": "HAR014"
+    },
+    {
+     "kind": "spacer"
+    },
+    {
+     "kind": "heading",
+     "text": "INVOICE TO"
+    },
+    {
+     "kind": "kv",
+     "label": "Company",
+     "value": "Harrowgate Tile Studio Ltd."
+    },
+    {
+     "kind": "kv",
+     "label": "Registered address",
+     "value": "47 Pentworth Road, Sheffield S11 4DG"
+    },
+    {
+     "kind": "kv",
+     "label": "Delivery address",
+     "value": "Loading bay 3, Cutlers Wharf, Sheffield S3 8NP"
+    },
+    {
+     "kind": "kv",
+     "label": "VAT registration number",
+     "value": "GB 271 8845 03"
+    },
+    {
+     "kind": "rule"
+    },
+    {
+     "kind": "table",
+     "rows": [
+      [
+       "Description",
+       "Qty",
+       "Unit price (£)",
+       "Amount (£)"
+      ],
+      [
+       "Stoneware clay, grogged, 12.5 kg bag",
+       "80",
+       "9.40",
+       "752.00"
+      ],
+      [
+       "Kiln shelf, silicon carbide, 440 by 440 mm",
+       "6",
+       "118.00",
+       "708.00"
+      ],
+      [
+       "Cone 6 glaze, matt oatmeal, 5 litre tub",
+       "14",
+       "27.50",
+       "385.00"
+      ],
+      [
+       "Kiln element replacement and controller recalibration",
+       "1",
+       "240.00",
+       "240.00"
+      ],
+      [
+       "Pallet delivery to Sheffield, tail lift required",
+       "1",
+       "68.00",
+       "68.00"
+      ]
+     ]
+    },
+    {
+     "kind": "rule"
+    },
+    {
+     "kind": "kv",
+     "label": "Subtotal",
+     "value": "£2,153.00"
+    },
+    {
+     "kind": "kv",
+     "label": "Settlement discount at 2.5 per cent",
+     "value": "-£53.83"
+    },
+    {
+     "kind": "kv",
+     "label": "Net total",
+     "value": "£2,099.17"
+    },
+    {
+     "kind": "kv",
+     "label": "VAT at 20 per cent",
+     "value": "£419.83"
+    },
+    {
+     "kind": "kv",
+     "label": "TOTAL DUE",
+     "value": "£2,519.00"
+    },
+    {
+     "kind": "rule"
+    },
+    {
+     "kind": "heading",
+     "text": "REMITTANCE DETAILS"
+    },
+    {
+     "kind": "kv",
+     "label": "Bank",
+     "value": "Harrowdale Commercial Bank, Leeds branch"
+    },
+    {
+     "kind": "kv",
+     "label": "Sort code",
+     "value": "20-41-77"
+    },
+    {
+     "kind": "kv",
+     "label": "Account number",
+     "value": "30118422"
+    },
+    {
+     "kind": "kv",
+     "label": "IBAN",
+     "value": "GB18 HRTB 2041 7730 1184 22"
+    },
+    {
+     "kind": "kv",
+     "label": "Payment reference",
+     "value": "NKC-2026-1187"
+    },
+    {
+     "kind": "paragraph",
+     "text": "Please quote the invoice number with your remittance so that the payment can be allocated to the correct account. Bank charges levied by your own institution are payable by you and may not be deducted from the total shown above."
+    },
+    {
+     "kind": "paragraph",
+     "text": "Goods remain the property of Northwind Kiln and Clay Ltd. until payment has been received in full. Shortages or damage in transit must be notified in writing within three working days of delivery, with the carrier consignment note attached. We reserve the right to charge statutory interest and a fixed recovery sum on overdue commercial debts."
+    }
+   ]
+  },
+  {
+   "id": "receipt-01",
+   "language": "es",
+   "density": "sparse",
+   "blocks": [
+    {
+     "kind": "heading",
+     "text": "Panadería La Espiga Torcida"
+    },
+    {
+     "kind": "paragraph",
+     "text": "Calle del Almirez, 14 - 28019 Madrid"
+    },
+    {
+     "kind": "kv",
+     "label": "NIF",
+     "value": "B-86472913"
+    },
+    {
+     "kind": "kv",
+     "label": "Teléfono",
+     "value": "915 44 27 08"
+    },
+    {
+     "kind": "rule"
+    },
+    {
+     "kind": "kv",
+     "label": "Fecha",
+     "value": "14/09/2026"
+    },
+    {
+     "kind": "kv",
+     "label": "Hora",
+     "value": "08:37"
+    },
+    {
+     "kind": "kv",
+     "label": "Ticket",
+     "value": "004312"
+    },
+    {
+     "kind": "rule"
+    },
+    {
+     "kind": "table",
+     "rows": [
+      [
+       "Artículo",
+       "Cant.",
+       "Importe"
+      ],
+      [
+       "Barra de pan candeal",
+       "2",
+       "2,40 €"
+      ],
+      [
+       "Napolitana de chocolate",
+       "3",
+       "4,35 €"
+      ],
+      [
+       "Empanada de atún, ración",
+       "1",
+       "3,90 €"
+      ],
+      [
+       "Magdalenas artesanas, 6 ud.",
+       "1",
+       "2,95 €"
+      ]
+     ]
+    },
+    {
+     "kind": "rule"
+    },
+    {
+     "kind": "kv",
+     "label": "Base imponible",
+     "value": "12,36 €"
+    },
+    {
+     "kind": "kv",
+     "label": "IVA (10%)",
+     "value": "1,24 €"
+    },
+    {
+     "kind": "kv",
+     "label": "TOTAL",
+     "value": "13,60 €"
+    },
+    {
+     "kind": "rule"
+    },
+    {
+     "kind": "kv",
+     "label": "Forma de pago",
+     "value": "Tarjeta ****4417"
+    },
+    {
+     "kind": "spacer"
+    },
+    {
+     "kind": "paragraph",
+     "text": "¡Gracias por su visita! ¿Necesita factura? Solicítela en caja el mismo día de la compra. Conserve el ticket para cualquier cambio o devolución. Amasamos cada mañana desde las cinco."
+    }
+   ]
+  },
+  {
+   "id": "receipt-02",
+   "language": "es",
+   "density": "normal",
+   "blocks": [
+    {
+     "kind": "heading",
+     "text": "Ferretería El Yunque Azul"
+    },
+    {
+     "kind": "paragraph",
+     "text": "Avenida de los Olmares, 73 - 46022 Valencia"
+    },
+    {
+     "kind": "kv",
+     "label": "CIF",
+     "value": "B-97318260"
+    },
+    {
+     "kind": "kv",
+     "label": "Teléfono",
+     "value": "963 21 84 55"
+    },
+    {
+     "kind": "rule"
+    },
+    {
+     "kind": "kv",
+     "label": "Fecha",
+     "value": "14/09/2026"
+    },
+    {
+     "kind": "kv",
+     "label": "Hora",
+     "value": "11:52"
+    },
+    {
+     "kind": "kv",
+     "label": "Ticket n.º",
+     "value": "2026/08841"
+    },
+    {
+     "kind": "rule"
+    },
+    {
+     "kind": "table",
+     "rows": [
+      [
+       "Descripción",
+       "Uds.",
+       "Importe"
+      ],
+      [
+       "Tornillos inoxidables 4x40",
+       "20",
+       "3,80 €"
+      ],
+      [
+       "Taladro percutor 750 W",
+       "1",
+       "64,90 €"
+      ],
+      [
+       "Cinta aislante negra 19 mm",
+       "2",
+       "2,70 €"
+      ],
+      [
+       "Llave inglesa 250 mm",
+       "1",
+       "12,45 €"
+      ],
+      [
+       "Brocas para hormigón, juego de 5",
+       "1",
+       "9,25 €"
+      ]
+     ]
+    },
+    {
+     "kind": "rule"
+    },
+    {
+     "kind": "kv",
+     "label": "Base imponible",
+     "value": "76,94 €"
+    },
+    {
+     "kind": "kv",
+     "label": "IVA (21%)",
+     "value": "16,16 €"
+    },
+    {
+     "kind": "kv",
+     "label": "TOTAL",
+     "value": "93,10 €"
+    },
+    {
+     "kind": "rule"
+    },
+    {
+     "kind": "kv",
+     "label": "Forma de pago",
+     "value": "Efectivo"
+    },
+    {
+     "kind": "kv",
+     "label": "Entregado",
+     "value": "100,00 €"
+    },
+    {
+     "kind": "kv",
+     "label": "Cambio",
+     "value": "6,90 €"
+    },
+    {
+     "kind": "spacer"
+    },
+    {
+     "kind": "paragraph",
+     "text": "Garantía de tres años en herramienta eléctrica presentando este ticket. ¿Necesita un repuesto que no tenemos? Los pedidos especiales se sirven en 48 horas. No se admiten devoluciones de material cortado a medida ni de llaves duplicadas."
+    }
+   ]
+  },
+  {
+   "id": "receipt-03",
+   "language": "es",
+   "density": "normal",
+   "blocks": [
+    {
+     "kind": "heading",
+     "text": "Farmacia Núñez de Barbastro"
+    },
+    {
+     "kind": "paragraph",
+     "text": "Plaza del Sauce Viejo, 3 - 41004 Sevilla"
+    },
+    {
+     "kind": "kv",
+     "label": "Farmacéutica",
+     "value": "Lda. Inés Quiroga Mardones"
+    },
+    {
+     "kind": "kv",
+     "label": "NIF",
+     "value": "29847156-T"
+    },
+    {
+     "kind": "rule"
+    },
+    {
+     "kind": "kv",
+     "label": "Fecha",
+     "value": "14/09/2026"
+    },
+    {
+     "kind": "kv",
+     "label": "Hora",
+     "value": "19:04"
+    },
+    {
+     "kind": "kv",
+     "label": "Ticket",
+     "value": "F-0093271"
+    },
+    {
+     "kind": "rule"
+    },
+    {
+     "kind": "table",
+     "rows": [
+      [
+       "Producto",
+       "Cant.",
+       "Importe"
+      ],
+      [
+       "Ibuprofeno 600 mg, 40 comp.",
+       "1",
+       "4,10 €"
+      ],
+      [
+       "Suero fisiológico 5 ml, 20 ud.",
+       "1",
+       "3,25 €"
+      ],
+      [
+       "Crema piel atópica 200 ml",
+       "1",
+       "11,80 €"
+      ],
+      [
+       "Termómetro digital",
+       "1",
+       "8,95 €"
+      ]
+     ]
+    },
+    {
+     "kind": "rule"
+    },
+    {
+     "kind": "kv",
+     "label": "Base imponible (4%)",
+     "value": "7,07 €"
+    },
+    {
+     "kind": "kv",
+     "label": "IVA (4%)",
+     "value": "0,28 €"
+    },
+    {
+     "kind": "kv",
+     "label": "Base imponible (21%)",
+     "value": "17,15 €"
+    },
+    {
+     "kind": "kv",
+     "label": "IVA (21%)",
+     "value": "3,60 €"
+    },
+    {
+     "kind": "kv",
+     "label": "TOTAL",
+     "value": "28,10 €"
+    },
+    {
+     "kind": "rule"
+    },
+    {
+     "kind": "kv",
+     "label": "Forma de pago",
+     "value": "Efectivo"
+    },
+    {
+     "kind": "spacer"
+    },
+    {
+     "kind": "paragraph",
+     "text": "Consulte a su farmacéutico ante cualquier duda sobre la posología. Los medicamentos deben mantenerse fuera del alcance de los niños. ¿Necesita el prospecto ampliado? Pídalo en el mostrador."
+    }
+   ]
+  },
+  {
+   "id": "receipt-04",
+   "language": "es",
+   "density": "normal",
+   "blocks": [
+    {
+     "kind": "heading",
+     "text": "Estación de Servicio Peña Redonda"
+    },
+    {
+     "kind": "paragraph",
+     "text": "Carretera N-623, km 48,2 - 09145 Burgos"
+    },
+    {
+     "kind": "kv",
+     "label": "CIF",
+     "value": "A-08726314"
+    },
+    {
+     "kind": "rule"
+    },
+    {
+     "kind": "kv",
+     "label": "Fecha",
+     "value": "14/09/2026"
+    },
+    {
+     "kind": "kv",
+     "label": "Hora",
+     "value": "07:19"
+    },
+    {
+     "kind": "kv",
+     "label": "Surtidor",
+     "value": "4"
+    },
+    {
+     "kind": "kv",
+     "label": "Matrícula",
+     "value": "4728 KLM"
+    },
+    {
+     "kind": "rule"
+    },
+    {
+     "kind": "table",
+     "rows": [
+      [
+       "Concepto",
+       "Cantidad",
+       "Importe"
+      ],
+      [
+       "Gasóleo A",
+       "42,36 L",
+       "62,69 €"
+      ],
+      [
+       "Café solo de máquina",
+       "1",
+       "1,30 €"
+      ],
+      [
+       "Bolsa de almendras saladas",
+       "1",
+       "2,45 €"
+      ]
+     ]
+    },
+    {
+     "kind": "kv",
+     "label": "Precio por litro",
+     "value": "1,480 €/L"
+    },
+    {
+     "kind": "rule"
+    },
+    {
+     "kind": "kv",
+     "label": "Base imponible",
+     "value": "54,91 €"
+    },
+    {
+     "kind": "kv",
+     "label": "IVA (21%)",
+     "value": "11,53 €"
+    },
+    {
+     "kind": "kv",
+     "label": "TOTAL",
+     "value": "66,44 €"
+    },
+    {
+     "kind": "rule"
+    },
+    {
+     "kind": "kv",
+     "label": "Forma de pago",
+     "value": "Tarjeta de crédito ****9052"
+    },
+    {
+     "kind": "spacer"
+    },
+    {
+     "kind": "paragraph",
+     "text": "Conserve el justificante para su declaración de gastos. Los aseos están en el lateral del edificio; solicite la llave en el mostrador."
+    }
+   ]
+  },
+  {
+   "id": "receipt-05",
+   "language": "en",
+   "density": "normal",
+   "blocks": [
+    {
+     "kind": "heading",
+     "text": "The Crooked Lantern"
+    },
+    {
+     "kind": "paragraph",
+     "text": "12 Ballyhane Quay, Dublin 8"
+    },
+    {
+     "kind": "kv",
+     "label": "VAT Reg. No.",
+     "value": "IE7284916L"
+    },
+    {
+     "kind": "kv",
+     "label": "Telephone",
+     "value": "01 558 2074"
+    },
+    {
+     "kind": "rule"
+    },
+    {
+     "kind": "kv",
+     "label": "Date",
+     "value": "14/09/2026"
+    },
+    {
+     "kind": "kv",
+     "label": "Time",
+     "value": "21:46"
+    },
+    {
+     "kind": "kv",
+     "label": "Table",
+     "value": "7"
+    },
+    {
+     "kind": "kv",
+     "label": "Served by",
+     "value": "Norah"
+    },
+    {
+     "kind": "kv",
+     "label": "Bill No.",
+     "value": "001884"
+    },
+    {
+     "kind": "rule"
+    },
+    {
+     "kind": "table",
+     "rows": [
+      [
+       "Item",
+       "Qty",
+       "Amount"
+      ],
+      [
+       "Pint of Hollowfield Stout",
+       "3",
+       "€18.60"
+      ],
+      [
+       "Glass of house red",
+       "2",
+       "€13.00"
+      ],
+      [
+       "Toasted cheese sandwich",
+       "1",
+       "€7.95"
+      ],
+      [
+       "Bowl of salted crisps",
+       "2",
+       "€4.40"
+      ]
+     ]
+    },
+    {
+     "kind": "rule"
+    },
+    {
+     "kind": "kv",
+     "label": "Subtotal (excl. VAT)",
+     "value": "€35.73"
+    },
+    {
+     "kind": "kv",
+     "label": "VAT (23%)",
+     "value": "€8.22"
+    },
+    {
+     "kind": "kv",
+     "label": "TOTAL",
+     "value": "€43.95"
+    },
+    {
+     "kind": "rule"
+    },
+    {
+     "kind": "kv",
+     "label": "Payment",
+     "value": "Card - VISA ****3106"
+    },
+    {
+     "kind": "spacer"
+    },
+    {
+     "kind": "paragraph",
+     "text": "Service is not included. Last orders are called at half eleven. Thank you for visiting, and mind the step on your way out."
+    }
+   ]
+  },
+  {
+   "id": "receipt-06",
+   "language": "fr",
+   "density": "normal",
+   "blocks": [
+    {
+     "kind": "heading",
+     "text": "Supermarché Le Grenier d'Arvieux"
+    },
+    {
+     "kind": "paragraph",
+     "text": "14, rue des Trois Meuniers - 69007 Lyon"
+    },
+    {
+     "kind": "kv",
+     "label": "N° TVA intracommunautaire",
+     "value": "FR 62 418 209 735"
+    },
+    {
+     "kind": "kv",
+     "label": "Téléphone",
+     "value": "04 72 31 96 08"
+    },
+    {
+     "kind": "rule"
+    },
+    {
+     "kind": "kv",
+     "label": "Date",
+     "value": "14/09/2026"
+    },
+    {
+     "kind": "kv",
+     "label": "Heure",
+     "value": "17:28"
+    },
+    {
+     "kind": "kv",
+     "label": "Caisse",
+     "value": "3 - hôtesse Maëlle"
+    },
+    {
+     "kind": "kv",
+     "label": "Ticket n°",
+     "value": "0047215"
+    },
+    {
+     "kind": "rule"
+    },
+    {
+     "kind": "table",
+     "rows": [
+      [
+       "Article",
+       "Qté",
+       "Montant"
+      ],
+      [
+       "Baguette de tradition",
+       "2",
+       "2,40 EUR"
+      ],
+      [
+       "Camembert fermier au lait cru",
+       "1",
+       "4,85 EUR"
+      ],
+      [
+       "Côtes de porc, 0,640 kg",
+       "1",
+       "7,68 EUR"
+      ],
+      [
+       "Épinards frais en sachet",
+       "2",
+       "3,90 EUR"
+      ],
+      [
+       "Jus d'orange pressé, 1 L",
+       "1",
+       "3,15 EUR"
+      ],
+      [
+       "Crème fraîche épaisse, 20 cl",
+       "1",
+       "1,45 EUR"
+      ]
+     ]
+    },
+    {
+     "kind": "rule"
+    },
+    {
+     "kind": "kv",
+     "label": "Total HT",
+     "value": "22,21 EUR"
+    },
+    {
+     "kind": "kv",
+     "label": "TVA (5,5 %)",
+     "value": "1,22 EUR"
+    },
+    {
+     "kind": "kv",
+     "label": "TOTAL TTC",
+     "value": "23,43 EUR"
+    },
+    {
+     "kind": "rule"
+    },
+    {
+     "kind": "kv",
+     "label": "Règlement",
+     "value": "Carte bancaire ****7391"
+    },
+    {
+     "kind": "spacer"
+    },
+    {
+     "kind": "paragraph",
+     "text": "Merci de votre visite. Les produits frais ne sont ni repris ni échangés. Votre magasin vous accueille du lundi au samedi, de 8 h 30 à 20 h."
+    }
+   ]
+  },
+  {
+   "id": "receipt-07",
+   "language": "it",
+   "density": "normal",
+   "blocks": [
+    {
+     "kind": "heading",
+     "text": "Libreria Il Gufo Distratto"
+    },
+    {
+     "kind": "paragraph",
+     "text": "Via delle Pergole Antiche, 22 - 50122 Firenze"
+    },
+    {
+     "kind": "kv",
+     "label": "Partita IVA",
+     "value": "04928176103"
+    },
+    {
+     "kind": "kv",
+     "label": "Telefono",
+     "value": "055 27 40 913"
+    },
+    {
+     "kind": "rule"
+    },
+    {
+     "kind": "kv",
+     "label": "Data",
+     "value": "14/09/2026"
+    },
+    {
+     "kind": "kv",
+     "label": "Ora",
+     "value": "16:11"
+    },
+    {
+     "kind": "kv",
+     "label": "Scontrino n.",
+     "value": "0921"
+    },
+    {
+     "kind": "kv",
+     "label": "Cassa",
+     "value": "1 - addetta Cecilia"
+    },
+    {
+     "kind": "rule"
+    },
+    {
+     "kind": "table",
+     "rows": [
+      [
+       "Articolo",
+       "Qtà",
+       "Importo"
+      ],
+      [
+       "Le mappe del vento, romanzo",
+       "1",
+       "18,50 €"
+      ],
+      [
+       "Grammatica pratica del catalano",
+       "1",
+       "24,90 €"
+      ],
+      [
+       "Quaderno rilegato a righe",
+       "2",
+       "9,00 €"
+      ],
+      [
+       "Segnalibro in cuoio",
+       "1",
+       "4,50 €"
+      ]
+     ]
+    },
+    {
+     "kind": "rule"
+    },
+    {
+     "kind": "kv",
+     "label": "Imponibile (4%)",
+     "value": "41,73 €"
+    },
+    {
+     "kind": "kv",
+     "label": "IVA (4%)",
+     "value": "1,67 €"
+    },
+    {
+     "kind": "kv",
+     "label": "Imponibile (22%)",
+     "value": "11,07 €"
+    },
+    {
+     "kind": "kv",
+     "label": "IVA (22%)",
+     "value": "2,43 €"
+    },
+    {
+     "kind": "kv",
+     "label": "TOTALE",
+     "value": "56,90 €"
+    },
+    {
+     "kind": "rule"
+    },
+    {
+     "kind": "kv",
+     "label": "Pagamento",
+     "value": "Bancomat ****2264"
+    },
+    {
+     "kind": "spacer"
+    },
+    {
+     "kind": "paragraph",
+     "text": "Grazie per averci scelto. I libri su prenotazione arrivano di solito entro tre giorni lavorativi e La avviseremo per telefono. Perché non dare un'occhiata al banco dell'usato?"
+    }
+   ]
+  },
+  {
+   "id": "receipt-08",
+   "language": "pt",
+   "density": "normal",
+   "blocks": [
+    {
+     "kind": "heading",
+     "text": "Táxis Corvo Branco"
+    },
+    {
+     "kind": "paragraph",
+     "text": "Rua do Poço das Amoreiras, 9 - 1250-092 Lisboa"
+    },
+    {
+     "kind": "kv",
+     "label": "NIF",
+     "value": "507 934 618"
+    },
+    {
+     "kind": "kv",
+     "label": "Motorista",
+     "value": "Joaquim Vilanova"
+    },
+    {
+     "kind": "kv",
+     "label": "Licença n.º",
+     "value": "4471"
+    },
+    {
+     "kind": "kv",
+     "label": "Matrícula",
+     "value": "27-BQ-84"
+    },
+    {
+     "kind": "rule"
+    },
+    {
+     "kind": "kv",
+     "label": "Data",
+     "value": "14/09/2026"
+    },
+    {
+     "kind": "kv",
+     "label": "Hora",
+     "value": "23:07"
+    },
+    {
+     "kind": "kv",
+     "label": "Origem",
+     "value": "Praça dos Ferreiros"
+    },
+    {
+     "kind": "kv",
+     "label": "Destino",
+     "value": "Aeroporto - Terminal 1"
+    },
+    {
+     "kind": "rule"
+    },
+    {
+     "kind": "table",
+     "rows": [
+      [
+       "Descrição",
+       "Quantidade",
+       "Valor"
+      ],
+      [
+       "Percurso",
+       "12,4 km",
+       "14,60 €"
+      ],
+      [
+       "Tempo de espera",
+       "6 min",
+       "2,10 €"
+      ],
+      [
+       "Suplemento de bagagem",
+       "2",
+       "3,20 €"
+      ],
+      [
+       "Suplemento noturno",
+       "1",
+       "1,80 €"
+      ]
+     ]
+    },
+    {
+     "kind": "rule"
+    },
+    {
+     "kind": "kv",
+     "label": "Valor sem IVA",
+     "value": "20,47 €"
+    },
+    {
+     "kind": "kv",
+     "label": "IVA (6%)",
+     "value": "1,23 €"
+    },
+    {
+     "kind": "kv",
+     "label": "TOTAL A PAGAR",
+     "value": "21,70 €"
+    },
+    {
+     "kind": "rule"
+    },
+    {
+     "kind": "kv",
+     "label": "Pagamento",
+     "value": "Multibanco ****5580"
+    },
+    {
+     "kind": "spacer"
+    },
+    {
+     "kind": "paragraph",
+     "text": "Obrigado pela preferência. As reclamações podem ser apresentadas no livro de reclamações disponível na central. Este recibo não serve de fatura sem a indicação do número de contribuinte."
+    }
+   ]
+  },
+  {
+   "id": "whiteboard-01",
+   "language": "es",
+   "density": "sparse",
+   "blocks": [
+    {
+     "kind": "heading",
+     "text": "Sprint 24 - Planificación"
+    },
+    {
+     "kind": "kv",
+     "label": "Equipo",
+     "value": "Núcleo Ávila"
+    },
+    {
+     "kind": "kv",
+     "label": "Fechas",
+     "value": "14/09/2026 - 25/09/2026"
+    },
+    {
+     "kind": "kv",
+     "label": "Objetivo",
+     "value": "Reducir la cola de sincronización"
+    },
+    {
+     "kind": "rule"
+    },
+    {
+     "kind": "heading",
+     "text": "Comprometido"
+    },
+    {
+     "kind": "paragraph",
+     "text": "- Migrar el índice de búsqueda"
+    },
+    {
+     "kind": "paragraph",
+     "text": "- Añadir caché de miniaturas"
+    },
+    {
+     "kind": "paragraph",
+     "text": "- Corregir el desfase horario en informes"
+    },
+    {
+     "kind": "spacer"
+    },
+    {
+     "kind": "heading",
+     "text": "Reparto"
+    },
+    {
+     "kind": "table",
+     "rows": [
+      [
+       "Tarea",
+       "Responsable",
+       "Días"
+      ],
+      [
+       "Índice",
+       "Núria Alcañiz",
+       "3"
+      ],
+      [
+       "Caché",
+       "Iñaki Verdún",
+       "2"
+      ],
+      [
+       "Informes",
+       "Álvaro Pérez",
+       "1"
+      ]
+     ]
+    },
+    {
+     "kind": "spacer"
+    },
+    {
+     "kind": "heading",
+     "text": "Bloqueos"
+    },
+    {
+     "kind": "paragraph",
+     "text": "- Falta la clave del entorno de pruebas"
+    },
+    {
+     "kind": "paragraph",
+     "text": "- Sin respuesta de diseño sobre el icono"
+    },
+    {
+     "kind": "rule"
+    },
+    {
+     "kind": "kv",
+     "label": "Demo",
+     "value": "viernes 25, 12:30"
+    },
+    {
+     "kind": "kv",
+     "label": "Retrospectiva",
+     "value": "lunes 28, 10:00"
+    },
+    {
+     "kind": "paragraph",
+     "text": "¿Algo más? Escríbelo aquí antes del jueves."
+    }
+   ]
+  },
+  {
+   "id": "whiteboard-02",
+   "language": "es",
+   "density": "sparse",
+   "blocks": [
+    {
+     "kind": "heading",
+     "text": "El ciclo del agua"
+    },
+    {
+     "kind": "paragraph",
+     "text": "Pizarra - Clase de 3.º B"
+    },
+    {
+     "kind": "rule"
+    },
+    {
+     "kind": "heading",
+     "text": "Etapas del esquema"
+    },
+    {
+     "kind": "table",
+     "rows": [
+      [
+       "1",
+       "Evaporación",
+       "Sol y océano"
+      ],
+      [
+       "2",
+       "Condensación",
+       "Nubes frías"
+      ],
+      [
+       "3",
+       "Precipitación",
+       "Lluvia o nieve"
+      ],
+      [
+       "4",
+       "Infiltración",
+       "Suelo y acuífero"
+      ]
+     ]
+    },
+    {
+     "kind": "spacer"
+    },
+    {
+     "kind": "heading",
+     "text": "Ideas clave"
+    },
+    {
+     "kind": "paragraph",
+     "text": "- El agua no se crea ni se destruye"
+    },
+    {
+     "kind": "paragraph",
+     "text": "- La energía viene del Sol"
+    },
+    {
+     "kind": "paragraph",
+     "text": "- El vapor sube, se enfría y cae"
+    },
+    {
+     "kind": "paragraph",
+     "text": "- El río devuelve el agua al mar"
+    },
+    {
+     "kind": "rule"
+    },
+    {
+     "kind": "kv",
+     "label": "Pregunta",
+     "value": "¿Qué ocurre si sube la temperatura?"
+    },
+    {
+     "kind": "kv",
+     "label": "Tarea",
+     "value": "Copiar el esquema en el cuaderno"
+    },
+    {
+     "kind": "kv",
+     "label": "Próximo día",
+     "value": "Acuíferos y sequía"
+    }
+   ]
+  },
+  {
+   "id": "whiteboard-03",
+   "language": "es",
+   "density": "sparse",
+   "blocks": [
+    {
+     "kind": "heading",
+     "text": "¡Fiesta del barrio!"
+    },
+    {
+     "kind": "heading",
+     "text": "Asociación Vecinal Las Tres Fuentes"
+    },
+    {
+     "kind": "kv",
+     "label": "Cuándo",
+     "value": "Sábado 3 de octubre"
+    },
+    {
+     "kind": "kv",
+     "label": "Dónde",
+     "value": "Plaza del Olmo Torcido"
+    },
+    {
+     "kind": "kv",
+     "label": "Horario",
+     "value": "de 11:00 a 22:00"
+    },
+    {
+     "kind": "rule"
+    },
+    {
+     "kind": "heading",
+     "text": "Programa"
+    },
+    {
+     "kind": "table",
+     "rows": [
+      [
+       "11:00",
+       "Taller de cerámica"
+      ],
+      [
+       "13:30",
+       "Paella popular"
+      ],
+      [
+       "17:00",
+       "Concurso de disfraces"
+      ],
+      [
+       "20:00",
+       "Concierto: Los Tejados Húmedos"
+      ]
+     ]
+    },
+    {
+     "kind": "spacer"
+    },
+    {
+     "kind": "paragraph",
+     "text": "- Entrada libre hasta completar aforo"
+    },
+    {
+     "kind": "paragraph",
+     "text": "- Trae tu plato y tu vaso"
+    },
+    {
+     "kind": "paragraph",
+     "text": "- ¡Ojo! La calle estará cortada"
+    },
+    {
+     "kind": "paragraph",
+     "text": "- ¿Quieres echar una mano? Apúntate en el local"
+    },
+    {
+     "kind": "rule"
+    },
+    {
+     "kind": "kv",
+     "label": "Información",
+     "value": "654 21 87 03"
+    },
+    {
+     "kind": "kv",
+     "label": "Correo",
+     "value": "vecinos@lastresfuentes.example"
+    }
+   ]
+  },
+  {
+   "id": "whiteboard-04",
+   "language": "en",
+   "density": "sparse",
+   "blocks": [
+    {
+     "kind": "heading",
+     "text": "The Crooked Kettle"
+    },
+    {
+     "kind": "heading",
+     "text": "Today's Board"
+    },
+    {
+     "kind": "kv",
+     "label": "Date",
+     "value": "Monday 14/09/2026"
+    },
+    {
+     "kind": "rule"
+    },
+    {
+     "kind": "heading",
+     "text": "Starters"
+    },
+    {
+     "kind": "table",
+     "rows": [
+      [
+       "Leek and potato soup",
+       "€6.50"
+      ],
+      [
+       "Warm goat's cheese salad",
+       "€8.90"
+      ],
+      [
+       "Smoked mackerel pâté, toast",
+       "€9.20"
+      ]
+     ]
+    },
+    {
+     "kind": "spacer"
+    },
+    {
+     "kind": "heading",
+     "text": "Mains"
+    },
+    {
+     "kind": "table",
+     "rows": [
+      [
+       "Beef and stout pie",
+       "€16.50"
+      ],
+      [
+       "Pan-fried hake, brown butter",
+       "€18.00"
+      ],
+      [
+       "Wild mushroom risotto",
+       "€15.00"
+      ]
+     ]
+    },
+    {
+     "kind": "spacer"
+    },
+    {
+     "kind": "heading",
+     "text": "Puddings"
+    },
+    {
+     "kind": "table",
+     "rows": [
+      [
+       "Rhubarb crumble",
+       "€6.00"
+      ],
+      [
+       "Chocolate pot, sea salt",
+       "€6.50"
+      ]
+     ]
+    },
+    {
+     "kind": "rule"
+    },
+    {
+     "kind": "kv",
+     "label": "Two courses",
+     "value": "€21.00"
+    },
+    {
+     "kind": "kv",
+     "label": "Three courses",
+     "value": "€26.00"
+    },
+    {
+     "kind": "paragraph",
+     "text": "- All prices include VAT at 13.5%"
+    },
+    {
+     "kind": "paragraph",
+     "text": "- Please tell us about any allergies"
+    },
+    {
+     "kind": "paragraph",
+     "text": "- Kitchen closes at 21:30"
+    }
+   ]
+  },
+  {
+   "id": "whiteboard-05",
+   "language": "pt",
+   "density": "sparse",
+   "blocks": [
+    {
+     "kind": "heading",
+     "text": "Oficina de Encadernação"
+    },
+    {
+     "kind": "heading",
+     "text": "Programa do dia"
+    },
+    {
+     "kind": "kv",
+     "label": "Data",
+     "value": "19/09/2026"
+    },
+    {
+     "kind": "kv",
+     "label": "Local",
+     "value": "Armazém das Três Âncoras, Sala 2"
+    },
+    {
+     "kind": "kv",
+     "label": "Formadora",
+     "value": "Matilde Corvelo"
+    },
+    {
+     "kind": "rule"
+    },
+    {
+     "kind": "table",
+     "rows": [
+      [
+       "09:30",
+       "Receção e café"
+      ],
+      [
+       "10:00",
+       "História do livro cosido"
+      ],
+      [
+       "11:15",
+       "Preparação dos cadernos"
+      ],
+      [
+       "13:00",
+       "Almoço livre"
+      ],
+      [
+       "14:30",
+       "Costura à belga"
+      ],
+      [
+       "16:30",
+       "Capa dura e acabamentos"
+      ],
+      [
+       "17:45",
+       "Conversa final e dúvidas"
+      ]
+     ]
+    },
+    {
+     "kind": "spacer"
+    },
+    {
+     "kind": "heading",
+     "text": "Trazer"
+    },
+    {
+     "kind": "paragraph",
+     "text": "- Tesoura e régua de 30 cm"
+    },
+    {
+     "kind": "paragraph",
+     "text": "- Avental ou bata velha"
+    },
+    {
+     "kind": "paragraph",
+     "text": "- Papel que queira reaproveitar"
+    },
+    {
+     "kind": "rule"
+    },
+    {
+     "kind": "kv",
+     "label": "Inscrição",
+     "value": "45,00 € (materiais incluídos)"
+    },
+    {
+     "kind": "kv",
+     "label": "Vagas",
+     "value": "12"
+    },
+    {
+     "kind": "kv",
+     "label": "Contacto",
+     "value": "oficina@tresancoras.example"
+    }
+   ]
+  }
+ ]
+}

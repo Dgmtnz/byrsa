@@ -1,0 +1,15 @@
+Vorlesung 4 - Statik, 14.09.
+Dozent Prof. Dr. Rühlemann
+Raum HS 2, Südflügel
+Gleichgewicht: Summe aller Kräfte = 0
+und Summe der Momente = 0 (wichtig!)
+Auflager: Festlager, Loslager, Einspannung
+Freikörperbild IMMER zuerst zeichnen
+Bsp.: Träger 6 m, Last 12 kN in der Mitte
+-> A = B = 6 kN, hat er zweimal erklärt
+Streckenlast q mal l als Ersatzkraft, greift mittig an
+beim Zeichnen den Maßstab beachten
+Übungsblatt 3 bis Freitag abgeben, zu zweit
+Klausur: nur Formelsammlung, kein Grafikrechner
+nächste Woche Fachwerke - Kap. 5 vorher lesen!
+Nächste Übung Di 16:00, R. 114

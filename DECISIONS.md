@@ -1151,3 +1151,57 @@ que descansa en la inferencia del repositorio, igual que DocShadow.
 **Regla que se lleva el método:** medir el artefacto antes de investigarlo. Costó minutos
 y encontró lo que ninguna cantidad de leer model cards habría encontrado, porque se habrían
 leído los del modelo equivocado.
+
+---
+
+## D-045 · Un corpus sintético con texto de verdad, y por qué no sustituye a las fotos
+**Fecha:** 2026-09-14 · **Estado:** ratificar
+
+El corpus sintético que había (D-041) escribía ficheros de verdad-terreno **vacíos a
+propósito**: dibujaba barras grises simulando renglones, no letras, así que permitía medir
+PSNR pero no CER. El CER es la métrica principal del proyecto y nunca ha tenido un valor.
+
+Ahora hay 50 documentos con **78.578 caracteres de texto exacto**, en ocho categorías y
+seis idiomas, 25 dañados y 25 limpios.
+
+**El renderizador es Python, no Dart, y la razón es medible.** Las fuentes bitmap que trae
+`package:image` son sólo ASCII: pedirle `Ñandú, cigüeña, äöü — ¿cuánto? ¡Sí!` dibuja
+` and , cig e a, cu nto? S !`. Una verdad-terreno con caracteres que el renderizador no
+sabe dibujar produce un CER que culpa al OCR de un agujero del propio corpus. Pillow con
+las tipografías Liberation cubre Latin-1 y Latin Extended-A, que es todo lo que necesitan
+los seis idiomas. `tool/gen_font_metrics.py` ya había sentado el precedente de que una
+herramienta de assets puede ser Python. El renderizador además **comprueba cada carácter
+contra la fuente antes de escribir** y avisa de lo que no puede dibujar.
+
+**Los 25 limpios no son relleno.** Son el guardia de regresión que no existía: hoy un
+cambio que estropee una foto buena pasaría todos los tests del repositorio. Pasan igual por
+desenfoque, ruido y JPEG, porque una foto limpia no es un escaneo.
+
+**Las degradaciones modelan física, no ruido decorativo.** La sombra de mano lleva
+atenuación *más* luz ambiente *más* tinte azul, deliberadamente no multiplicativa pura:
+dividir por un fondo estimado invierte exactamente una sombra multiplicativa, que es el
+sesgo que D-039 documentó. El dedo se dibuja en **seis tonos de piel muy distintos a
+propósito**, porque D-042 quita intrusiones buscando un objeto fuera de sitio y
+explícitamente no por color de piel — un detector que hubiera aprendido un tono debe fallar
+aquí.
+
+**Lo que este corpus NO hace, y está escrito en su README en grande.** No sustituye a las
+50 fotografías. No tiene grano de papel, ni óptica, ni sensor, ni la luz de una habitación
+real. **D-039 y D-042 siguen bloqueadas** esperando páginas reales medidas por CER, y la
+solicitud no puede citar un CER de aquí como si viniera de capturas reales.
+
+**Lo que sí desbloquea:** la verdad-terreno exacta es justo lo que las 50 fotos nunca
+tendrán sin que alguien las transcriba a mano. Con esto el CER es medible automáticamente
+en cada commit, en cuanto haya un móvil que ejecute el OCR (U-40).
+
+**Y al puntuarlo salió un fallo de informe que había que arreglar.** La primera puntuación
+dio **100,00% de CER en las ocho categorías**. No es un resultado: `harness run` no tiene
+motor de OCR, así que toda hipótesis está vacía por diseño y una hipótesis vacía contra una
+referencia real da exactamente 100% por aritmética. Publicado tal cual se habría leído como
+una catástrofe medida en vez de como una medición que no ocurrió. Se aplica la misma regla
+que `psnr` ya seguía —null en vez de infinito, porque «un infinito en un informe es un
+error que parece un triunfo»—: un resultado que existe pero sin texto queda **sin medir**.
+Un documento que la ejecución nunca produjo sigue contando como fallo completo, que es otra
+cosa, y ambos casos tienen ahora su test.
+
+Es reproducible: `content.json` más `tool/make_corpus.py` regeneran los mismos bytes.

@@ -1,0 +1,48 @@
+Clínica Vallehondo - Ficha de admisión del paciente
+Número de historia clínica HC-2026-08831
+Fecha de la consulta 14/09/2026
+Hora de llegada 11:45
+Servicio Medicina interna, consulta 4
+Datos del paciente
+Apellidos y nombre Ruzafa Ibarrondo, María Ángeles
+Fecha de nacimiento 03/02/1978
+Edad 48 años
+DNI 33.671.205-B
+Tarjeta sanitaria VLHD 4472 9810 06
+Domicilio Camino de la Fuente Rota, 9, 2.º izquierda, 47008 Peñarrubia del Duero
+Teléfono +34 983 47 22 18
+Correo electrónico mruzafa@correoinventado.es
+Persona de contacto Sabino Ibarrondo Etxegaray (hermano), +34 618 90 44 27
+Compañía aseguradora Mutua Sierra Clara, póliza 77-441209
+Motivo de consulta
+La paciente acude por episodios de mareo y sensación de palpitaciones de tres semanas de evolución, más frecuentes al levantarse por la
+mañana. Refiere cansancio al subir escaleras y dos despertares nocturnos con sensación de falta de aire. Niega dolor torácico, fiebre y pérdida
+de peso.
+Antecedentes
+Apartado Detalle
+Alergias medicamentosas Penicilina (exantema en 2011)
+Otras alergias Ácaros del polvo, polen de gramíneas
+Enfermedades crónicas Hipotiroidismo diagnosticado en 2019
+Intervenciones Apendicectomía en 2003; cesárea en 2012
+Medicación habitual Levotiroxina 75 microgramos, un comprimido en ayunas
+Hábitos No fumadora; consumo de alcohol ocasional
+Antecedentes familiares Padre con hipertensión arterial; madre con anemia ferropénica
+Constantes en la admisión
+Parámetro Valor Observación
+Tensión arterial 128/82 mmHg Brazo izquierdo, sentada
+Frecuencia cardíaca 76 lpm Rítmica
+Temperatura 36,8 °C Timpánica
+Saturación de oxígeno 98 % Aire ambiente
+Peso 64,3 kg
+Talla 1,63 m
+Facultativo responsable Dra. Purificación Ochoa Zubeldía
+Número de colegiada 47/4471902
+Pruebas solicitadas Analítica completa, electrocardiograma y radiografía de tórax
+Próxima revisión 06/10/2026 a las 10:15
+La paciente declara que la información facilitada es veraz y autoriza al personal sanitario del centro a acceder a su historia clínica con la única
+finalidad de prestarle asistencia. Los datos se tratarán conforme a la normativa vigente de protección de datos y se conservarán durante los
+plazos legalmente establecidos. Puede ejercer sus derechos de acceso, rectificación, supresión y oposición dirigiéndose por escrito a la
+dirección del centro.
+Peñarrubia del Duero, a 14 de septiembre de 2026
+Firma de la paciente Firma y sello del facultativo
+Fdo.: María Ángeles Ruzafa Ibarrondo Fdo.: Purificación Ochoa Zubeldía

@@ -1,0 +1,30 @@
+IGNACIO VALLEJO URBIETA
+Consultoría informática y desarrollo a medida - Calle Ribera del Sauce 7, bajo - 41013 Sevilla - Teléfono +34 954 30 18 22 -
+ignacio@cuadernoazul.example
+NIF 51.204.887-J
+Epígrafe IAE 763 - Programadores y analistas de informática
+FACTURA Nº 2026-C-0091
+Fecha de expedición 02/09/2026
+Vencimiento 02/10/2026
+Periodo facturado Del 01/07/2026 al 31/08/2026
+CLIENTE
+Razón social Hostelería La Cigüeña Dormida, S.L.
+CIF B-90874512
+Dirección Plaza de los Tres Cántaros 4 - 18010 Granada
+Nº de pedido PC-4471
+Concepto Cant. Precio unit. Importe
+Auditoría de infraestructura y migración a servidor propio 1 2.450,00 € 2.450,00 €
+Desarrollo del módulo de reservas (horas de análisis y programación) 38 62,00 € 2.356,00 €
+Formación al personal de sala, sesiones de tres horas 4 180,00 € 720,00 €
+Licencia anual de mantenimiento correctivo y copias de seguridad 1 540,00 € 540,00 €
+Base imponible 6.066,00 €
+IVA (21 %) 1.273,86 €
+Retención IRPF (15 %) -909,90 €
+TOTAL FACTURA 6.429,96 €
+El importe de la retención practicada será ingresado por el cliente en la Agencia Tributaria conforme al modelo trimestral correspondiente. La migración
+incluye el traslado de la base de datos histórica de reservas y treinta días de soporte telefónico posteriores a la puesta en producción.
+Forma de pago Transferencia bancaria
+IBAN ES41 0075 8820 4416 3097 5518
+Concepto de la transferencia Factura 2026-C-0091
+Conforme al reglamento de protección de datos, los datos de contacto facilitados se conservarán mientras dure la relación contractual y durante los
+plazos exigidos por la normativa fiscal. Puede solicitar su supresión por escrito en la dirección indicada en el encabezado.

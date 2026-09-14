@@ -1,0 +1,26 @@
+Ciencia para curiosos 31
+El compás que llevamos dentro
+¿Cómo sabe un pájaro de doce gramos, que nunca ha salido de un bosque del norte, hacia dónde queda África? La pregunta parece
+infantil y lleva doscientos años resistiéndose. Un petirrojo que emigra por primera vez lo hace solo, de noche y sin guía, y aun así
+llega a una región que jamás ha visto. No aprende la ruta: la trae puesta.
+Las primeras pistas serias llegaron a mediados del siglo pasado, cuando se encerró a varias aves migratorias en jaulas cónicas con el
+fondo entintado. Las aves, inquietas por la estación, saltaban una y otra vez hacia el mismo punto del cielo y dejaban sus huellas
+marcadas en el papel. Bastaba rodear la jaula con una bobina que alterase el campo magnético para que las huellas cambiaran de
+lugar. El animal no veía nada distinto; sencillamente, su norte se había movido.
+Lo más desconcertante vino después. El compás de las aves no distingue el norte del sur como lo hace una brújula de aguja, sino que
+reconoce la inclinación de las líneas del campo respecto a la superficie terrestre: no busca un polo, busca un ángulo. Por eso, si se
+invierte la polaridad del campo en el laboratorio, el ave sigue volando igual, y en cambio se desorienta por completo cuando se altera
+la inclinación en unos pocos grados.
+La hipótesis que hoy reúne más apoyo sitúa el sensor en el ojo. Ciertas proteínas de la retina, los criptocromos, absorben luz azul y
+generan durante unas millonésimas de segundo una pareja de moléculas con electrones desapareados. El campo magnético terrestre,
+aunque es débil, basta para inclinar la balanza entre los dos estados posibles de esa pareja y para modificar así la señal que llega al
+cerebro. Si la idea es correcta, el ave no siente el campo: lo ve, superpuesto al paisaje como una sombra tenue que cambia al girar la
+cabeza.
+Quedan cabos sueltos, y son gordos. El efecto debería desvanecerse en un instante por el ruido térmico de la propia retina, y sin
+embargo se mantiene el tiempo suficiente para ser útil; nadie ha conseguido todavía reproducirlo con esa sensibilidad en un tubo de
+ensayo. Tampoco está claro cómo se combina esa brújula con el mapa, porque orientarse exige saber también dónde se está, y para
+eso el animal parece usar el olfato, las estrellas y la posición del sol al atardecer.
+La conclusión provisional es incómoda y magnífica a la vez: un organismo diminuto resuelve cada otoño, con unos gramos de tejido
+nervioso, un problema de navegación que a nosotros nos costó siglos y un satélite. ¡Y lo hace mientras duerme la mitad del cerebro!
+Convendría recordarlo la próxima vez que llamemos primitivo a un cerebro pequeño.
+Número 42 - otoño 31

@@ -1,0 +1,37 @@
+NORTHWIND KILN AND CLAY LTD.
+Unit 12, Barrelhouse Yard, Gallowgate Lane, Leeds LS9 8QR, United Kingdom - Telephone 0113 496 2288 - accounts@northwindkiln.example
+Company registration number 09447213
+VAT registration number GB 384 9920 17
+INVOICE NKC-2026-1187
+Invoice date 14/09/2026
+Tax point 11/09/2026
+Payment due 14/10/2026, net thirty days
+Purchase order 4471-B
+Account reference HAR014
+INVOICE TO
+Company Harrowgate Tile Studio Ltd.
+Registered address 47 Pentworth Road, Sheffield S11 4DG
+Delivery address Loading bay 3, Cutlers Wharf, Sheffield S3 8NP
+VAT registration number GB 271 8845 03
+Description Qty Unit price (£) Amount (£)
+Stoneware clay, grogged, 12.5 kg bag 80 9.40 752.00
+Kiln shelf, silicon carbide, 440 by 440 mm 6 118.00 708.00
+Cone 6 glaze, matt oatmeal, 5 litre tub 14 27.50 385.00
+Kiln element replacement and controller recalibration 1 240.00 240.00
+Pallet delivery to Sheffield, tail lift required 1 68.00 68.00
+Subtotal £2,153.00
+Settlement discount at 2.5 per cent -£53.83
+Net total £2,099.17
+VAT at 20 per cent £419.83
+TOTAL DUE £2,519.00
+REMITTANCE DETAILS
+Bank Harrowdale Commercial Bank, Leeds branch
+Sort code 20-41-77
+Account number 30118422
+IBAN GB18 HRTB 2041 7730 1184 22
+Payment reference NKC-2026-1187
+Please quote the invoice number with your remittance so that the payment can be allocated to the correct account. Bank charges levied by your own
+institution are payable by you and may not be deducted from the total shown above.
+Goods remain the property of Northwind Kiln and Clay Ltd. until payment has been received in full. Shortages or damage in transit must be notified in
+writing within three working days of delivery, with the carrier consignment note attached. We reserve the right to charge statutory interest and a fixed
+recovery sum on overdue commercial debts.

@@ -1,0 +1,36 @@
+TALLERES MARVERDE, S.L.
+Calle Olmo Torcido 42, nave 7 - Polígono Industrial La Bellota - 28934 Móstoles (Madrid) - Teléfono +34 916 47 22 08 -
+administracion@talleresmarverde.example
+CIF B-87654321
+Registro Mercantil Madrid, tomo 4.812, folio 133, hoja M-982.341
+FACTURA Nº FA-2026/00417
+Fecha de emisión 14/09/2026
+Fecha de vencimiento 14/10/2026
+Nº de pedido del cliente PD-7741
+Nº de albarán ALB-2026/3318
+DATOS DEL CLIENTE
+Razón social Distribuciones Peñalba e Hijos, S.A.
+NIF A-12398745
+Domicilio fiscal Avenida del Aguacero 118, 3º B - 46023 Valencia
+Persona de contacto Doña Maite Arrázola Quiñones
+Descripción Cant. Precio unit. Importe
+Mantenimiento preventivo de compresor Ruixá RX-220 4 185,00 € 740,00 €
+Sustitución de juntas tóricas de alta presión 12 14,75 € 177,00 €
+Válvula de retención en acero inoxidable AISI 316 3 96,40 € 289,20 €
+Desplazamiento del técnico a planta (Valencia) 2 68,00 € 136,00 €
+Horas de taller fuera del horario habitual 6 52,50 € 315,00 €
+Suma de conceptos 1.657,20 €
+Descuento comercial (5 %) -82,86 €
+Base imponible 1.574,34 €
+IVA (21 %) 330,61 €
+TOTAL A PAGAR 1.904,95 €
+CONDICIONES DE PAGO
+Forma de pago Transferencia bancaria a 30 días fecha factura
+Entidad Banco Ribera del Duero
+IBAN ES68 3117 0492 7783 0561 9204
+BIC/SWIFT RIDUESMMXXX
+Operación sujeta al régimen general del Impuesto sobre el Valor Añadido. La garantía de las piezas sustituidas es de doce meses desde la fecha de
+instalación y no cubre daños por uso indebido ni por falta de lubricación. El retraso en el pago devengará el interés de demora previsto en la normativa de
+lucha contra la morosidad en las operaciones comerciales, además de una compensación de 40,00 € por costes de recobro.
+Cualquier reclamación sobre esta factura deberá comunicarse por escrito en el plazo de diez días naturales desde su recepción. Las mercancías viajan
+por cuenta y riesgo del comprador.

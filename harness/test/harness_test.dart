@@ -97,9 +97,31 @@ void main() {
       );
 
       expect(card.missingCount, 1);
-      expect(card.scores.firstWhere((s) => s.document.id == 'b').cer.rate, 1);
+      expect(card.scores.firstWhere((s) => s.document.id == 'b').cer!.rate, 1);
       // 0 errors out of 10, plus 5 out of 5.
-      expect(card.overallCer.rate, closeTo(5 / 15, 1e-9));
+      expect(card.overallCer!.rate, closeTo(5 / 15, 1e-9));
+    });
+
+    test('a run with no OCR engine is not measured, rather than scored 100%',
+        () {
+      // `harness run` on a desktop produces a result per document with an empty
+      // text field, because the recogniser is a platform plugin. Scoring that
+      // against a real reference gives exactly 100% for every document, and a
+      // page of 100% figures reads as a measured catastrophe instead of as a
+      // measurement that never happened. Same rule as `psnr` returning null
+      // instead of infinity.
+      final dir = _dataset(<String, String>{'a': 'hola mundo', 'b': 'adios'});
+      addTearDown(() => dir.deleteSync(recursive: true));
+
+      final card = score(
+        Dataset.load(dir),
+        RunResults.load(_run(dir, <String, String>{'a': '', 'b': ''})),
+      );
+
+      expect(card.missingCount, 0, reason: 'both documents were produced');
+      expect(card.measuredCount, 0, reason: 'but neither was read');
+      expect(card.scores.every((s) => s.cer == null), isTrue);
+      expect(card.overallCer, isNull);
     });
 
     test('reports the platform it was measured on, prominently', () {

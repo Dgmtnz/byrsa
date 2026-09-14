@@ -19,8 +19,17 @@ class DocumentScore {
   });
 
   final DatasetDocument document;
-  final ErrorRate cer;
-  final ErrorRate wer;
+
+  /// Null when no OCR ran at all, which is not the same as reading nothing.
+  ///
+  /// `harness run` has no OCR engine — the recogniser is a platform plugin, so
+  /// a desktop run leaves `text` empty on purpose. Scoring an empty hypothesis
+  /// against a real reference yields exactly 100%, and a table of 100% figures
+  /// reads as a measured catastrophe rather than as "not measured". That is the
+  /// same failure `psnr` avoids by returning null instead of infinity: a number
+  /// nobody computed must not look like a number somebody computed.
+  final ErrorRate? cer;
+  final ErrorRate? wer;
   final double milliseconds;
   final int? outputBytes;
 
@@ -38,11 +47,19 @@ class Scorecard {
   final List<DocumentScore> scores;
   final bool strict;
 
-  ErrorRate get overallCer =>
-      scores.fold(ErrorRate.zero, (sum, s) => sum + s.cer);
-  ErrorRate get overallWer =>
-      scores.fold(ErrorRate.zero, (sum, s) => sum + s.wer);
+  /// Null when nothing was measured, rather than a confident zero or 100%.
+  ErrorRate? get overallCer => _fold(scores.map((s) => s.cer));
+  ErrorRate? get overallWer => _fold(scores.map((s) => s.wer));
   int get missingCount => scores.where((s) => s.missing).length;
+
+  /// How many documents actually had an OCR hypothesis to score.
+  int get measuredCount => scores.where((s) => s.cer != null).length;
+
+  static ErrorRate? _fold(Iterable<ErrorRate?> rates) {
+    final present = rates.whereType<ErrorRate>();
+    if (present.isEmpty) return null;
+    return present.fold<ErrorRate>(ErrorRate.zero, (sum, r) => sum + r);
+  }
 
   List<double> get _sortedTimes =>
       scores.map((s) => s.milliseconds).toList()..sort();
@@ -66,8 +83,10 @@ class Scorecard {
   Map<String, ErrorRate> get cerByCategory {
     final out = <String, ErrorRate>{};
     for (final score in scores) {
+      final cer = score.cer;
+      if (cer == null) continue;
       out[score.document.category] =
-          (out[score.document.category] ?? ErrorRate.zero) + score.cer;
+          (out[score.document.category] ?? ErrorRate.zero) + cer;
     }
     return out;
   }
@@ -97,10 +116,21 @@ Scorecard score(Dataset dataset, RunResults run, {bool strict = false}) {
     final reference = dataset.groundTruthOf(document);
     final result = results[document.id];
     final hypothesis = result?.text ?? '';
+    // A result that exists but carries no text means no OCR ran, not that the
+    // OCR read nothing — left unmeasured rather than scored 100%. A document
+    // the run never produced at all is a different thing and stays a complete
+    // failure, because that is a real miss and dropping it would flatter the
+    // average.
+    final unmeasured =
+        result != null && hypothesis.isEmpty && reference.trim().isNotEmpty;
     scores.add(DocumentScore(
       document: document,
-      cer: characterErrorRate(reference, hypothesis, strict: strict),
-      wer: wordErrorRate(reference, hypothesis, strict: strict),
+      cer: unmeasured
+          ? null
+          : characterErrorRate(reference, hypothesis, strict: strict),
+      wer: unmeasured
+          ? null
+          : wordErrorRate(reference, hypothesis, strict: strict),
       milliseconds: result?.totalMilliseconds ?? 0,
       outputBytes: result?.outputBytes,
       missing: result == null,
@@ -109,7 +139,8 @@ Scorecard score(Dataset dataset, RunResults run, {bool strict = false}) {
   return Scorecard(run: run, scores: scores, strict: strict);
 }
 
-String _pct(ErrorRate rate) => '${(rate.rate * 100).toStringAsFixed(2)}%';
+String _pct(ErrorRate? rate) =>
+    rate == null ? 'not measured' : '${(rate.rate * 100).toStringAsFixed(2)}%';
 String _ms(double value) => '${value.toStringAsFixed(0)} ms';
 
 /// Renders the Markdown report that goes into the repository.
@@ -188,8 +219,8 @@ String renderMarkdown(Scorecard card) {
     ..writeln()
     ..writeln('| Document | Category | Conditions | CER | Time |')
     ..writeln('|---|---|---|---|---|');
-  final worst = card.scores.toList()
-    ..sort((a, b) => b.cer.rate.compareTo(a.cer.rate));
+  final worst = card.scores.where((s) => s.cer != null).toList()
+    ..sort((a, b) => b.cer!.rate.compareTo(a.cer!.rate));
   for (final s in worst.take(10)) {
     buffer.writeln('| `${s.document.id}`${s.missing ? " (no output)" : ""} | '
         '${s.document.category} | ${s.document.conditions.join(", ")} | '
@@ -208,8 +239,8 @@ String renderCsv(Scorecard card) {
       s.document.category,
       s.document.language,
       '"${s.document.conditions.join(" ")}"',
-      s.cer.rate.toStringAsFixed(6),
-      s.wer.rate.toStringAsFixed(6),
+      s.cer?.rate.toStringAsFixed(6) ?? '',
+      s.wer?.rate.toStringAsFixed(6) ?? '',
       s.milliseconds.toStringAsFixed(1),
       '${s.outputBytes ?? ""}',
       '${s.missing}',
@@ -230,8 +261,9 @@ String renderJson(Scorecard card) =>
       },
       'strict': card.strict,
       'overall': {
-        'cer': card.overallCer.rate,
-        'wer': card.overallWer.rate,
+        'cer': card.overallCer?.rate,
+        'wer': card.overallWer?.rate,
+        'measured': card.measuredCount,
         'medianMilliseconds': card.medianMilliseconds,
         'p90Milliseconds': card.p90Milliseconds,
         'documents': card.scores.length,
@@ -242,8 +274,8 @@ String renderJson(Scorecard card) =>
           {
             'id': s.document.id,
             'category': s.document.category,
-            'cer': s.cer.rate,
-            'wer': s.wer.rate,
+            'cer': s.cer?.rate,
+            'wer': s.wer?.rate,
             'milliseconds': s.milliseconds,
             'missing': s.missing,
           }

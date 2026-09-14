@@ -1,0 +1,23 @@
+Táxis Corvo Branco
+Rua do Poço das Amoreiras, 9 - 1250-092 Lisboa
+NIF 507 934 618
+Motorista Joaquim Vilanova
+Licença n.º 4471
+Matrícula 27-BQ-84
+Data 14/09/2026
+Hora 23:07
+Origem Praça dos Ferreiros
+Destino Aeroporto - Terminal 1
+Descrição Quantidade Valor
+Percurso 12,4 km 14,60 €
+Tempo de espera 6 min 2,10 €
+Suplemento de bagagem 2 3,20 €
+Suplemento noturno 1 1,80 €
+Valor sem IVA 20,47 €
+IVA (6%) 1,23 €
+TOTAL A PAGAR 21,70 €
+Pagamento Multibanco ****5580
+Obrigado pela preferência. As reclamações podem ser
+apresentadas no livro de reclamações disponível na
+central. Este recibo não serve de fatura sem a
+indicação do número de contribuinte.
