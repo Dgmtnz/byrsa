@@ -475,6 +475,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Scan {timestamp}'**
   String scanTitle(String timestamp);
+
+  /// No description provided for @importedTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Imported {timestamp}'**
+  String importedTitle(String timestamp);
 }
 
 class _AppLocalizationsDelegate

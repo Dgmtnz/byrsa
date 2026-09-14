@@ -646,8 +646,8 @@ to edge.
 `contain` and not `cover`, deliberately: cropping to fill would move the corners
 off the page they outline.
 
-**What this says about the test suite.** 194 tests, and none of them could have
-caught either bug: one is a layout property of a platform texture, the other is
+**What this says about the test suite.** 194 tests at the time, and none of them
+could have caught either bug: one is a layout property of a platform texture, the other is
 an agreement between two coordinate systems that only exists at runtime. The six
 new assertions cover the arithmetic; the agreement itself still needs eyes on a
 phone.
@@ -703,7 +703,7 @@ all three filters:
 `tool/check_web_parity.sh` is that comparison with an exit code. The VM test
 suite is unchanged by the fix, which is the other half of the claim.
 
-**Nothing in 194 tests could have found this.** They all run on the VM, where
+**Nothing in the 200 tests could have found this.** They all run on the VM, where
 the code was always correct. The bug needed a second platform to exist at all.
 
 ### The demo, measured in a headless Chrome
@@ -748,7 +748,7 @@ through `rootBundle`, the document screen asks the catalogue whether the dewarp
 model is installed before restoring, and that throw aborted the loop — which
 carried OCR with it, because recognition runs *after* enhancement in the same
 loop. One line in a manifest, and the whole restore-and-recognise path was dead
-on hardware while 194 tests passed. What the user saw was
+on hardware while 200 tests passed. What the user saw was
 `The asset does not exist or has empty data.`
 
 Fixed with a symlink at `app/assets/models.json`, so there is still exactly one
@@ -820,3 +820,24 @@ It does settle three things that were open: the ONNX session opens on a device
 The library names imported documents `Importado …`, a Spanish literal, on the
 same footing as the capture hints fixed earlier in the day. Different screen,
 same defect, not yet done.
+
+### A correction: the test count in three commit messages was stale
+
+Three commits today closed with "194 tests, analyze clean". The suite was 194
+only until the camera fix added six geometry assertions; from that commit on it
+was **200**, and the number was carried forward without being re-measured.
+Measured now:
+
+```
+dart test    → 116
+flutter test →  85   (84 before the hard-coded-Spanish guard)
+```
+
+**201.** Corrected in `docs/measurements.md`, `DECISIONS.md`, `demo/README.md`
+and `CONTINUAR.md`. The commit messages themselves cannot be corrected, so this
+row is the correction.
+
+It is a small number and it changes nothing anyone concluded. It is recorded
+because the difference between this project and a project that says "about two
+hundred tests" is that this one goes and counts, including when the answer is
+that it got its own number wrong.

@@ -85,12 +85,15 @@ class LibraryScreen extends ConsumerWidget {
 /// a capture: the corners can be set by hand and restoration runs over it.
 Future<void> _importImage(
     BuildContext context, WidgetRef ref, int? folderId) async {
+  // Read the localisation before the first await: the picker is a whole other
+  // screen, and the widget that opened it may be gone when it returns.
+  final l10n = AppLocalizations.of(context)!;
   final images = await ImagePicker().pickMultiImage();
   if (images.isEmpty) return;
 
   final library = await ref.read(libraryProvider.future);
   final title =
-      'Importado ${DateTime.now().toIso8601String().substring(0, 16)}';
+      l10n.importedTitle(DateTime.now().toIso8601String().substring(0, 16));
   final documentId = library.createDocument(title, folderId: folderId);
   for (final image in images) {
     library.addPage(documentId, originalPath: image.path);

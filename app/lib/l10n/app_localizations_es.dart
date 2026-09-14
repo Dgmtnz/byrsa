@@ -222,4 +222,9 @@ class AppLocalizationsEs extends AppLocalizations {
   String scanTitle(String timestamp) {
     return 'Escaneo $timestamp';
   }
+
+  @override
+  String importedTitle(String timestamp) {
+    return 'Importado $timestamp';
+  }
 }

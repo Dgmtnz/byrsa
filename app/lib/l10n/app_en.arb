@@ -110,5 +110,13 @@
         "type": "String"
       }
     }
+  },
+  "importedTitle": "Imported {timestamp}",
+  "@importedTitle": {
+    "placeholders": {
+      "timestamp": {
+        "type": "String"
+      }
+    }
   }
 }

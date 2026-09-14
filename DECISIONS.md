@@ -1249,7 +1249,7 @@ los tres filtros: antes reventaba en los nueve casos, ahora salen idénticos byt
 en los nueve. `tool/check_web_parity.sh` es esa comparación con código de salida, y entra
 en CI. Los tests de la VM no cambian, que es la otra mitad de la afirmación.
 
-**Ninguno de los 194 tests podía encontrarlo.** Todos corren en la VM, donde el código
+**Ninguno de los 200 tests podía encontrarlo.** Todos corren en la VM, donde el código
 siempre estuvo bien. El fallo necesitaba una segunda plataforma para existir.
 
 **La demo se construye sin CDN.** `--no-web-resources-cdn` sirve CanvasKit desde el mismo
@@ -1281,7 +1281,7 @@ consecuencia no era una fila de ajustes vacía: el catálogo se lee por `rootBun
 pantalla del documento pregunta al catálogo si el modelo de dewarp está instalado *antes*
 de restaurar, y esa excepción abortaba el bucle — llevándose el OCR por delante, porque el
 reconocimiento va después del realce **en el mismo bucle**. Una línea de un manifiesto, y
-todo el camino restaurar-y-reconocer estaba muerto en hardware mientras 194 tests pasaban.
+todo el camino restaurar-y-reconocer estaba muerto en hardware mientras 200 tests pasaban.
 
 Arreglado con un enlace simbólico en `app/assets/models.json`, para que siga habiendo **un
 solo manifiesto** y ninguna copia que se desvíe — que es lo que pedía el comentario
@@ -1322,6 +1322,6 @@ métrica principal tiene por fin un valor (U-40).
 
 **La lección que se lleva el proyecto.** Cuatro fallos han aparecido hoy en cuanto hubo
 hardware o un segundo compilador: dos de geometría de cámara, uno de aritmética en web, y
-estos dos. Ninguno era alcanzable desde los 194 tests, porque ninguno vive en la lógica que
+estos dos. Ninguno era alcanzable desde los 200 tests, porque ninguno vive en la lógica que
 los tests ejecutan. Eso no es un argumento contra los tests; es el argumento a favor de las
 cincuenta fotografías y del hardware, hecho concreto y por cuadruplicado.

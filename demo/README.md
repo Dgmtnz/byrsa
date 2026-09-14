@@ -32,7 +32,7 @@ on Android and iOS, so a browser has nothing to run.
 
 ## Why this directory earned its place
 
-It found a bug that 194 tests could not. `byrsa_restore` was silently wrong on
+It found a bug that 200 tests could not. `byrsa_restore` was silently wrong on
 the web, because `>>` on a negative int is an arithmetic shift on the Dart VM
 and an unsigned 32-bit one under dart2js. See `DECISIONS.md` D-046, and
 `tool/check_web_parity.sh`, which is now the guard.

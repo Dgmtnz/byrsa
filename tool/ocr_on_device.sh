@@ -65,24 +65,42 @@ PY
 
 for id in "${DOCS[@]}"; do
   echo "--- $id"
-  adb shell rm -f /sdcard/Pictures/byrsa-probe.jpg
-  adb push -q "$CORPUS/images/$id.jpg" /sdcard/Pictures/byrsa-probe.jpg >/dev/null
+  # A NEW FILE NAME EVERY TIME, and this is not tidiness. Pushing each page to
+  # one reused path gave MediaStore a single row to update, and the picker kept
+  # handing back the bytes of the first page imported — five documents went
+  # through the pipeline and produced five copies of one result, all exactly 236
+  # characters. A harness that silently measures the same thing N times is worse
+  # than one that fails, because it produces a number.
+  target="/sdcard/Pictures/byrsa-$id.jpg"
+  adb shell rm -f "$target"
+  adb push -q "$CORPUS/images/$id.jpg" "$target" >/dev/null
   # `adb push` keeps the source file's timestamp, which would file the page
   # somewhere in the middle of whoever's gallery this is. Dated now, it is
   # always the first tile in the picker — so the script taps our page and never
   # goes looking through anybody's photographs.
-  adb shell touch /sdcard/Pictures/byrsa-probe.jpg
+  adb shell touch "$target"
   adb shell am broadcast -a android.intent.action.MEDIA_SCANNER_SCAN_FILE \
-      -d file:///sdcard/Pictures/byrsa-probe.jpg >/dev/null 2>&1
-  sleep 2
+      -d "file://$target" >/dev/null 2>&1
+  sleep 3
   adb shell am start -n "$PKG/.MainActivity" >/dev/null 2>&1
   sleep 4
-  # Import: the photo button, then the newest item in the picker.
+  # Import: the photo button, the newest tile, then Add. One page per pass and
+  # never a multi-select: the picker shows whoever's gallery this is, and the
+  # only tile this script is entitled to touch is the one it just put there.
   adb shell input tap $((SCREEN_W * 91 / 100)) $((SCREEN_W * 192 / 100))
-  sleep 4
-  adb shell input tap $((SCREEN_W * 16 / 100)) $((SCREEN_W * 30 / 100))
+  sleep 5
+  adb shell input tap $((SCREEN_W * 12 / 100)) $((SCREEN_W * 64 / 100))
+  sleep 2
+  adb shell input tap $((SCREEN_W * 82 / 100)) $((SCREEN_W * 206 / 100))
+  sleep 6
+
+  # Restoration and recognition run when the document is opened, not when it is
+  # imported, so the newest row in the library has to be tapped as well.
+  adb shell input tap $((SCREEN_W * 46 / 100)) $((SCREEN_W * 42 / 100))
   echo "    waiting for restoration and recognition…"
-  sleep 25
+  sleep 40
+  adb shell input keyevent KEYCODE_BACK
+  sleep 2
 done
 
 echo "Pulling the library…"
