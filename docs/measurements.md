@@ -841,3 +841,42 @@ It is a small number and it changes nothing anyone concluded. It is recorded
 because the difference between this project and a project that says "about two
 hundred tests" is that this one goes and counts, including when the answer is
 that it got its own number wrong.
+
+### Five pages through the device, and the harness bug that nearly faked it
+
+The first attempt at a batch produced five recognised texts of **exactly 236
+characters each**. Not an OCR result: `tool/ocr_on_device.sh` pushed every page
+to one reused path, `/sdcard/Pictures/byrsa-probe.jpg`, so MediaStore had a
+single row to update and the picker kept handing back the bytes of the first
+page imported. Five documents went through the pipeline and produced one result
+measured five times.
+
+Nothing in the output looked wrong. It was caught by hashing the five texts and
+finding one hash. **A harness that silently measures the same thing N times is
+worse than one that fails, because it produces a number** — and that number
+would have been a five-page character error rate in a funding application.
+
+Fixed by giving each page its own file name. With that, five distinct pages,
+Mi 9T Pro, restoration and recognition both on device:
+
+| Document | CER | WER | chars |
+|---|---|---|---|
+| `whiteboard-04` (English) | 0.53% | 3.33% | 188 |
+| `handwriting-03` | 0.58% | 3.57% | 516 |
+| `handwriting-01` | 0.73% | 3.90% | 410 |
+| `handwriting-04` | 1.09% | 6.48% | 545 |
+| `whiteboard-01` | 2.48% | 8.11% | 236 |
+
+**Overall CER 1.00%** — 19 errors over 1,905 characters.
+
+**Read this as the easy end of the corpus, because it is.** `ocr_on_device.sh`
+orders by fewest damage conditions, so all five are undamaged pages; the shadow,
+crease, glare and low-light half has not been through the device at all. They
+are also synthetic: text rendered from a font, not ink photographed through a
+lens. The number says the pipeline works end to end on a phone and recovers
+Spanish diacritics reliably. It does not say what the product scores on a real
+photograph, and the fifty photographs remain the thing that would.
+
+Scored with `harness/bin/score_device.dart`, which matches each page to the
+ground truth it fits best — the application copies a picked file into its cache,
+so the original name is gone by the time text exists.
