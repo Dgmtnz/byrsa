@@ -42,7 +42,7 @@ here, not run yet) · `CLOSED` (verified; keep the row with the result).
 |---|---|---|---|
 | U-19 | The Android build contains no Google Play Services | `tool/check_no_play_services.sh` on the capture example's debug APK, 2026-09-08 | **0** `com.google.android.gms` / `com.google.mlkit` classes; 1717 `androidx.camera` references. Runs in CI on every push. |
 | U-20 | Searchable PDFs are readable by Poppler, including accented Spanish | `dart test packages/dart_searchable_pdf`, 2026-09-08 | Words, accents and line grouping all round-trip through `pdftotext -layout`. |
-| U-21 | Every model in `models.json` has a real, computed SHA-256 | `dart run tool/pin_models.dart --verify`, 2026-09-08 | 5 of 5 pinned. |
+| U-21 | Every model in `models.json` has a real, computed SHA-256 | `dart run tool/pin_models.dart --verify`, re-run 2026-09-14 | **8 of 8 files across 7 models, 0 changed.** The 2026-09-08 result read "5 of 5" and had since gone stale in a way nobody would have noticed: `uvdoc-grid` arrived in `b9586a5` with a `files` array, the tool had only ever been taught the single-`url` shape, and it crashed on a null check before reaching any model after the first. CI never ran it. Fixed, and the three PP-OCR digests were additionally hashed by hand and against the values `mobile_ocr` pins in `ModelManager.kt`. |
 | U-27 | `doclens` is MIT | read its `LICENSE`, 2026-09-09 | MIT, © 2026 Govind Maheshwari. |
 | U-37 | The SD7K dataset's licence, and whether the DocShadow weights inherit a restriction | read the publisher's own listing, 2026-09-13 | **MIT.** Declared by the University of Macau on the OpenXLab record the README designates as the download. No restriction inherited. The first pass reported "not found" because the API path 404s unless the slug's slash is percent-encoded — the 404 was the query, not the resource. |
 | U-28 | `doclens`'s iOS side does not use ML Kit | grepped `ios/doclens/Sources`, 2026-09-09 | **No ML Kit at all.** It imports Vision and VisionKit — Apple's own. The Play Services problem is Android-only. |
@@ -77,13 +77,14 @@ here, not run yet) · `CLOSED` (verified; keep the row with the result).
 |---|---|---|---|---|
 | U-17 | Searchable PDFs select and search correctly in **Chrome / pdf.js** | any Linux desktop | open `harness/out/*.pdf` in Chrome, Ctrl+F a known word | OPEN |
 | U-18 | Poppler round-trip on the real 50-document set (CI only covers synthetic pages so far) | this machine | `dart test packages/dart_searchable_pdf` then the harness | OPEN |
+| U-38 | Which upstream checkpoint `cls.onnx` actually is. Measured 2026-09-14: opset 11 / IR 6 / `p2o.` dim prefix / 35 unfolded BatchNorm / 2-class output — a different export generation from `det` and `rec`, and not the PP-OCRv5-era artefact `models.json` used to describe. That it is the legacy `ch_ppocr_mobile_v2.0_cls` is inference. The licence conclusion is Apache-2.0 either way; what is unverified is the identity | this machine | fetch `ch_ppocr_mobile_v2.0_cls_infer.tar` from paddleocr.bj.bcebos.com, export it with `paddle2onnx`, and compare the graph fingerprint with `docs/measurements.md` 2026-09-14 | OPEN |
 
 ## Needs an answer from a third party
 
 | # | Question | Who | Status |
 |---|---|---|---|
 | U-13 | Does F-Droid accept runtime model downloads, or does it flag them? (§4.8) | F-Droid forum / RFP | OPEN |
-| U-14 | Exact licence of every PP-OCR model actually distributed | PaddleOCR model cards, one by one | OPEN |
+| U-14 | Exact licence of every PP-OCR model actually distributed. **Mostly closed 2026-09-14** (`docs/model-licence-audit.md`): all four artefacts are Apache-2.0, and for det and rec that is a grant quoted off PaddlePaddle's own model card rather than an inference. Two things a third party still has to answer: PP-OCRv5's **training data is undisclosed**, so an inherited restriction cannot be ruled out by anyone outside Baidu; and `cls.onnx` is measurably a different-generation export than the other two, so *which* upstream model it is rests on inference (U-38) | Baidu/PaddleOCR for the corpus; Ente for the classifier's provenance | ask on the PaddleOCR issue tracker what PP-OCRv5 was trained on, and ask Ente which checkpoint `cls.onnx` was exported from | NARROWED 2026-09-14 |
 | U-15 | Acceptable hourly rate for an individual applicant in Spain | NLnet office hour, 30 Sep 2026 | OPEN |
 | U-16 | Is the absence of iOS hardware a problem for the reviewers? | NLnet office hour, 30 Sep 2026 | OPEN |
 | U-25 | Will `doclens` accept making the ML Kit dependency optional? (`docs/upstream/doclens-play-services.md`) | doclens maintainers | DRAFTED, not yet filed |

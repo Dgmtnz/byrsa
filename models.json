@@ -52,30 +52,48 @@
       "url": "https://models.ente.io/PP-OCRv5/det.onnx",
       "sizeBytes": 4748769,
       "sha256": "d7fe3ea74652890722c0f4d02458b7261d9f5ae6c92904d05707c9eb155c7924",
-      "license": "UNAUDITED",
+      "license": "Apache-2.0",
       "source": "https://github.com/ente-io/mobile_ocr",
-      "description": "PP-OCRv5 text detector. Downloaded and verified by mobile_ocr itself; listed here so the licence audit has one table to work from.",
-      "pinnedOn": "2026-09-08"
+      "description": "PP-OCRv5 text detector. Downloaded and verified by mobile_ocr itself; listed here so the licence audit has one table to work from. Measured 2026-09-14: opset 14, IR 7, 664 nodes, input [N,3,H,W], output [N,1,H,W].",
+      "pinnedOn": "2026-09-08",
+      "licenseNote": "Audited 2026-09-14 by the method in docs/model-licence-audit.md. Upstream PaddlePaddle/PaddleOCR is Apache-2.0 — 'Copyright (c) 2016 PaddlePaddle Authors. All Rights Reserved.' — added in the initial commit bc93c549f on 2020-05-08, before any PP-OCR weights existed, and touched twice since (2608df32a, b9da97bea) without either diff changing a term. Unlike DocShadow, this does not rest on inference: PaddlePaddle's own Hugging Face model card for PP-OCRv5_mobile_det declares 'license: apache-2.0' in its front matter, so the grant is attached to the weights themselves. The card discloses no restriction on commercial use or redistribution. ente-io/mobile_ocr, which serves the file, is MIT (c) 2025 Laurens Priem and contains no .onnx anywhere in its git tree — the binaries live on models.ente.io, outside the tree that licence governs, so it adds nothing either way. ONE THING DOES NOT CLOSE, and it is step 4: PP-OCRv5's training data is undisclosed. The paper names a 44M-sample bootstrap set and a 22.6M-sample final set but identifies no corpus and no source. An undisclosed corpus is an unanswerable question, not a clean bill.",
+      "auditedOn": "2026-09-14"
     },
     {
       "id": "ppocr-v5-cls",
       "url": "https://models.ente.io/PP-OCRv5/cls.onnx",
       "sizeBytes": 582663,
       "sha256": "f4bb53707100c5f3d59ba834eb05bb400369f20aed35d4b26807b1bfadd2a70e",
-      "license": "UNAUDITED",
+      "license": "Apache-2.0",
       "source": "https://github.com/ente-io/mobile_ocr",
-      "description": "PP-OCRv5 orientation classifier.",
-      "pinnedOn": "2026-09-08"
+      "description": "Orientation classifier, two classes. Measured 2026-09-14: opset 11, IR 6, 511 nodes, output [N,2] — a legacy-generation export, NOT the PP-OCRv5-era artefact this entry previously claimed. See licenseNote.",
+      "pinnedOn": "2026-09-08",
+      "licenseNote": "Audited 2026-09-14, and the audit contradicted this entry's own description, which used to read 'PP-OCRv5 orientation classifier'. Fingerprinting the artefact shows it is not from the same generation as det and rec: IR version 6 against 7, opset 11 against 14, graph named 'Model from PaddlePaddle.' against 'PaddlePaddle Graph in PIR mode', dimensions prefixed 'p2o.' (paddle2onnx's own namespace), 35 unfolded BatchNormalization layers where the other two have none, and a fluid-era output name 'softmax_0.tmp_0'. It emits 2 classes; PP-OCRv5's own orientation model is PP-LCNet-based and emits four. MEASURED: a Paddle export of an older generation with a two-class head. INFERRED, and left as inference: that it is the legacy ch_ppocr_mobile_v2.0_cls, which PaddleOCR still carries and reuses across versions. The licence answer is Apache-2.0 either way, since PaddleOCR's licence predates every model it has ever released — but unlike det and rec there is NO model card attaching a grant to these particular weights, so this one rests on the repo-wide inference, exactly the weaker footing DocShadow sits on. Closing it needs ch_ppocr_mobile_v2.0_cls_infer.tar exported through paddle2onnx and fingerprinted the same way, or an answer from Ente (U-14).",
+      "auditedOn": "2026-09-14"
     },
     {
       "id": "ppocr-v5-rec",
       "url": "https://models.ente.io/PP-OCRv5/rec.onnx",
       "sizeBytes": 16517247,
       "sha256": "bf66820f48fa99f779974c4df78e5274a9d8e0458c4137e8c5357e40e2c3faf2",
-      "license": "UNAUDITED",
+      "license": "Apache-2.0",
       "source": "https://github.com/ente-io/mobile_ocr",
-      "description": "PP-OCRv5 recogniser. The licence of the weights has to be read from the PaddleOCR model card one model at a time; UNAUDITED until that is done and written down.",
-      "pinnedOn": "2026-09-08"
+      "description": "PP-OCRv5 recogniser. Measured 2026-09-14: opset 14, IR 7, 746 nodes, input [N,3,48,W], output [N,T,18385] — which is 18,383 dictionary entries plus the CTC blank plus the appended space token, so this model and ppocrv5-dict are a matched pair and neither works without the other.",
+      "pinnedOn": "2026-09-08",
+      "licenseNote": "Audited 2026-09-14 by the method in docs/model-licence-audit.md. Upstream PaddlePaddle/PaddleOCR is Apache-2.0 — 'Copyright (c) 2016 PaddlePaddle Authors. All Rights Reserved.' — added in the initial commit bc93c549f on 2020-05-08, before any PP-OCR weights existed, and touched twice since (2608df32a, b9da97bea) without either diff changing a term. Unlike DocShadow, this does not rest on inference: PaddlePaddle's own Hugging Face model card for PP-OCRv5_mobile_rec declares 'license: apache-2.0' in its front matter, so the grant is attached to the weights themselves. The card discloses no restriction on commercial use or redistribution. ente-io/mobile_ocr, which serves the file, is MIT (c) 2025 Laurens Priem and contains no .onnx anywhere in its git tree — the binaries live on models.ente.io, outside the tree that licence governs, so it adds nothing either way. ONE THING DOES NOT CLOSE, and it is step 4: PP-OCRv5's training data is undisclosed. The paper names a 44M-sample bootstrap set and a 22.6M-sample final set but identifies no corpus and no source. An undisclosed corpus is an unanswerable question, not a clean bill.",
+      "auditedOn": "2026-09-14"
+    },
+    {
+      "id": "ppocrv5-dict",
+      "url": "https://models.ente.io/PP-OCRv5/ppocrv5_dict.txt",
+      "sizeBytes": 74012,
+      "sha256": "d1979e9f794c464c0d2e0b70a7fe14dd978e9dc644c0e71f14158cdf8342af1b",
+      "license": "Apache-2.0",
+      "source": "https://github.com/ente-io/mobile_ocr",
+      "description": "PP-OCRv5 recognition dictionary, 18,383 entries. Not a model, but distributed from the same place under the same question, and rec.onnx is unusable without it: its 18,385 output classes are these entries plus the CTC blank plus the appended space. mobile_ocr's ModelManager.kt fetches it as a fourth required asset; this manifest did not list it until the 2026-09-14 audit noticed.",
+      "licenseNote": "Same chain and same conclusion as ppocr-v5-rec, which it is paired with. Digest computed here on 2026-09-14 and matches the value mobile_ocr pins.",
+      "pinnedOn": "2026-09-14",
+      "auditedOn": "2026-09-14"
     }
   ]
 }

@@ -31,29 +31,34 @@ Future<void> main(List<String> arguments) async {
   for (final model in models) {
     final id = model['id']! as String;
     if (wanted.isNotEmpty && !wanted.contains(id)) continue;
-    final pinned = model['sha256'] as String?;
-    if (pinned != null && !verify) {
-      stdout
-          .writeln('$id: already pinned, skipping (use --verify to re-check)');
-      continue;
-    }
 
-    stdout.write('$id: downloading… ');
-    final (:digest, :size) = await _hash(Uri.parse(model['url']! as String));
-    if (pinned == null) {
-      model['sha256'] = digest;
-      model['sizeBytes'] = size;
-      changed = true;
-      stdout.writeln('pinned $digest ($size bytes)');
-    } else if (pinned == digest) {
-      stdout.writeln('unchanged');
-    } else {
-      failed = true;
-      stdout.writeln('CHANGED\n'
-          '  was $pinned\n'
-          '  now $digest\n'
-          '  The file behind this URL is not the file we pinned. Do not update '
-          'the manifest until you know why.');
+    for (final file in _filesOf(model)) {
+      final label =
+          file['fileName'] == null ? id : '$id/${file['fileName']}';
+      final pinned = file['sha256'] as String?;
+      if (pinned != null && !verify) {
+        stdout.writeln(
+            '$label: already pinned, skipping (use --verify to re-check)');
+        continue;
+      }
+
+      stdout.write('$label: downloading… ');
+      final (:digest, :size) = await _hash(Uri.parse(file['url']! as String));
+      if (pinned == null) {
+        file['sha256'] = digest;
+        file['sizeBytes'] = size;
+        changed = true;
+        stdout.writeln('pinned $digest ($size bytes)');
+      } else if (pinned == digest) {
+        stdout.writeln('unchanged');
+      } else {
+        failed = true;
+        stdout.writeln('CHANGED\n'
+            '  was $pinned\n'
+            '  now $digest\n'
+            '  The file behind this URL is not the file we pinned. Do not '
+            'update the manifest until you know why.');
+      }
     }
   }
 
@@ -64,6 +69,19 @@ Future<void> main(List<String> arguments) async {
   }
   if (failed) exit(1);
 }
+
+/// Every file of a model, whichever of the two shapes the manifest used.
+///
+/// A model is not always one file: UVDoc's grid export arrived with a `.data`
+/// sidecar, and with it the `files` array. `ModelCatalog` was taught that shape
+/// at the time and this tool was not, so it read a null `url` off the first
+/// multi-file model and crashed — taking `--verify` with it, which is the
+/// command `UNVERIFIED.md` names as the way to re-check every pin. Normalising
+/// here the same way `ModelDescriptor.fromJson` does is what stops the two
+/// readers of this manifest drifting apart again.
+List<Map<String, Object?>> _filesOf(Map<String, Object?> model) =>
+    (model['files'] as List?)?.cast<Map<String, Object?>>() ??
+    <Map<String, Object?>>[model];
 
 /// Streams a URL through SHA-256 without holding it in memory.
 Future<({String digest, int size})> _hash(Uri url) async {

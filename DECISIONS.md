@@ -1094,3 +1094,60 @@ Queda anotado porque saber que algo no funciona vale lo mismo que saber que sí,
 si las 50 fotos enseñan moteado en márgenes en blanco, esto es lo primero que hay que
 volver a probar. Es también el primer cambio que el harness ha rechazado, que era
 justamente para lo que se construyó.
+
+---
+
+## D-044 · Los modelos de PaddleOCR son Apache-2.0, y el clasificador no es el que decíamos
+**Fecha:** 2026-09-14 · **Estado:** ratificar
+
+Los tres modelos PP-OCR llevaban `UNAUDITED` en `models.json` desde el 8 de septiembre.
+Auditados con el método de `docs/model-licence-audit.md`, que se escribió precisamente
+para esto y terminaba diciendo que esta auditoría seguía pendiente.
+
+**Conclusión: Apache-2.0, los cuatro artefactos.** Y para `det` y `rec` no es una
+inferencia: los model cards oficiales de PaddlePaddle en Hugging Face declaran
+`license: apache-2.0` en su propio *front matter*, de modo que la concesión está atada a
+los pesos. Es una posición mejor que la de DocShadow, donde MIT llegando a los pesos se
+dedujo de la licencia del repositorio. La distinción se anota porque importa: una es una
+cita y la otra es un razonamiento.
+
+El `LICENSE` de PaddleOCR entró en el commit inicial `bc93c549f` (2020-05-08), anterior a
+cualquier peso que hayan publicado. Se tocó dos veces desde entonces y **los dos diffs se
+leyeron** en vez de suponerlos: ninguno cambió un término.
+
+**Lo que no cierra, y se dice en vez de redondearlo.** Los datos de entrenamiento de
+PP-OCRv5 no están publicados. El paper habla de 44M de muestras iniciales y 22,6M finales
+sin nombrar un solo corpus. Nadie fuera de Baidu puede descartar una restricción heredada,
+así que el paso 4 del método queda abierto y U-14 queda NARROWED, no cerrada.
+
+**Y la auditoría contradijo al propio manifiesto.** Antes de leer nada en la web se midió
+el artefacto, y `cls.onnx` resultó no ser de la misma generación que los otros dos: opset
+11 contra 14, IR 6 contra 7, prefijo `p2o.` de paddle2onnx, 35 BatchNorm sin plegar donde
+los otros tienen cero, y salida de **2 clases** cuando el clasificador propio de v5 es
+PP-LCNet y da cuatro. `models.json` lo describía como "PP-OCRv5 orientation classifier" y
+el fichero no sostiene esa frase. Que sea el heredado `ch_ppocr_mobile_v2.0_cls` es
+inferencia, y se etiqueta como inferencia (U-38).
+
+La licencia no cambia por ello —PaddleOCR es Apache-2.0 desde antes que cualquiera de sus
+modelos— pero sí cambia el apoyo: `cls` no tiene model card que le ate una concesión, así
+que descansa en la inferencia del repositorio, igual que DocShadow.
+
+**Tres cosas más que salieron de medir antes de buscar:**
+
+1. `mobile_ocr` descarga un cuarto artefacto obligatorio, `ppocrv5_dict.txt`, que este
+   manifiesto no listaba. Se añade: `rec.onnx` no funciona sin él, y sus 18.385 clases de
+   salida son exactamente las 18.383 entradas del diccionario más el blanco CTC más el
+   espacio. La aritmética confirma que son pareja.
+2. `ente-io/mobile_ocr` es MIT © 2025 Laurens Priem y **no contiene ni un `.onnx`** en su
+   árbol: los binarios viven en `models.ente.io`, fuera de lo que esa licencia gobierna.
+   Idéntico en estructura a `fabio-sim/DocShadow-ONNX-TensorRT`, y con la misma
+   consecuencia: no aporta nada a los pesos.
+3. PaddleOCR no tiene `NOTICE` en la raíz, y los artefactos no llevan dentro ningún aviso
+   —ni `producer_name`, ni `metadata_props`, ni cadena de copyright—. Así que la
+   obligación de Apache-2.0 se reduce a acompañar el texto de la licencia y atribuir a
+   PaddleOCR. §4(b), §4(c) y §4(d) no se activan. Si algún día se cuantiza un modelo,
+   §4(b) sí.
+
+**Regla que se lleva el método:** medir el artefacto antes de investigarlo. Costó minutos
+y encontró lo que ninguna cantidad de leer model cards habría encontrado, porque se habrían
+leído los del modelo equivocado.

@@ -417,3 +417,97 @@ plan predicted:
 No frame rate. No inference time. No CER. No memory. No iOS anything. Those
 need hardware and the fifty-document set, and they are listed with their
 commands in [`UNVERIFIED.md`](../UNVERIFIED.md).
+
+---
+
+## 2026-09-14 — the PaddleOCR licence audit, and what the artefacts say about themselves
+
+Machine: this desktop (Linux 7.2.3-arch1-3), Flutter 3.47.2 / Dart 3.13.2.
+Closes the audit [`docs/model-licence-audit.md`](model-licence-audit.md) ended by
+saying still had to happen.
+
+Two halves. The licence chain was traced on the web, one link at a time. But the
+first useful thing came from measuring the artefacts themselves, and it
+contradicted the manifest.
+
+### Every pin re-verified — and the command that could no longer do it
+
+`tool/pin_models.dart --verify` is the command [`UNVERIFIED.md`](../UNVERIFIED.md)
+names as the way to re-check every digest. It had not run since 2026-09-08. It
+crashed on the second model:
+
+```
+uvdoc: downloading… unchanged
+uvdoc-grid: downloading… Unhandled exception:
+Null check operator used on a null value
+#0      main (file:///…/tool/pin_models.dart:42:64)
+```
+
+UVDoc's grid export arrived in `b9586a5` with a `.data` sidecar, and with it the
+`files` array. `ModelCatalog` was taught that shape at the time; this tool was
+not, so it read a null `url` off `uvdoc-grid` and died — taking with it every
+model after the first. Nothing caught this, because CI does not run it.
+
+Fixed by normalising both manifest shapes the same way `ModelDescriptor.fromJson`
+already does. The command now completes:
+
+| | |
+|---|---|
+| Files verified | **7, across 6 models** — not the "5 of 5" U-21 recorded |
+| Digests changed | **0** |
+| Exit code | 0 |
+
+The three PP-OCR digests were also hashed independently with `sha256sum`, and
+match both `models.json` and the values `mobile_ocr` pins in its own
+`ModelManager.kt`. Byrsa and its upstream are pinning the same bytes.
+
+### The artefacts, fingerprinted without the `onnx` library
+
+ONNX is protobuf, so a `ModelProto`'s identity fields can be read by walking the
+top level and skipping the graph body. No dependency was added to do this.
+
+| | `det.onnx` | `cls.onnx` | `rec.onnx` |
+|---|---|---|---|
+| IR version | 7 | **6** | 7 |
+| Opset | 14 | **11** | 14 |
+| Graph name | `PaddlePaddle Graph in PIR mode` | **`Model from PaddlePaddle.`** | `PaddlePaddle Graph in PIR mode` |
+| Dim naming | `DynamicDimension.N` | **`p2o.DynamicDimension.N`** | `DynamicDimension.N` |
+| Output name | `fetch_name_0` | **`softmax_0.tmp_0`** | `fetch_name_0` |
+| BatchNormalization | 0 (folded) | **35 (unfolded)** | 0 (folded) |
+| Nodes | 664 | 511 | 746 |
+| Input shape | `[N,3,H,W]` | `[N,3,H,W]` | `[N,3,48,W]` |
+| Output shape | `[N,1,H,W]` | **`[N,2]`** | `[N,T,18385]` |
+
+`producer_name`, `producer_version`, `doc_string` and `metadata_props` are absent
+from all three. The only self-identification any of them carries is the graph
+name, and a `strings` sweep for `licen|copyright|apache|MIT` returns nothing but
+those same two strings. **There are no attribution notices embedded in the
+artefacts to retain** — which is what decides the shape of the Apache-2.0
+obligation below.
+
+### `rec.onnx` is confirmed as the PP-OCRv5 recogniser, arithmetically
+
+`ModelManager.kt` fetches a fourth asset Byrsa's manifest does not list:
+`ppocrv5_dict.txt`, 74,012 bytes, `d1979e9f…8342af1b`. Downloaded, its digest
+matches, and it has **18,383 entries** against `rec.onnx`'s **18,385** output
+classes. The difference of exactly 2 is the CTC blank plus the appended space
+token — PaddleOCR's standard `len(dict) + 2`. The recogniser and that dictionary
+are a matched pair, and neither is usable without the other.
+
+### `cls.onnx` is not from the same generation as the other two
+
+Every column above marked in bold separates `cls.onnx` from `det`/`rec`. The
+`p2o.` prefix is paddle2onnx's own namespace; unfolded BatchNorm, opset 11 and
+fluid-era variable naming (`softmax_0.tmp_0`) are the legacy export path.
+`det` and `rec` are PaddlePaddle 3.x PIR-mode exports with BatchNorm folded.
+
+`models.json` calls this model the "PP-OCRv5 orientation classifier". **The
+artefact does not support that description.** PP-OCRv5's own orientation model is
+PP-LCNet-based and classifies four angles; this one emits two classes, which is
+what the legacy `ch_ppocr_mobile_v2.0_cls` does — a model PaddleOCR still carries
+(31 occurrences in the tree) and reuses across versions.
+
+Measured: it is a Paddle export, of a different generation, with a 2-class head.
+Inferred, and labelled as inference: that it is `ch_ppocr_mobile_v2.0_cls`.
+Closing it needs the upstream `ch_ppocr_mobile_v2.0_cls_infer.tar` exported
+through paddle2onnx and fingerprinted the same way, or an answer from Ente.
