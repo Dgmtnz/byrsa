@@ -6,8 +6,23 @@ SPDX-License-Identifier: CC-BY-4.0
 # doclens: two pull requests to get Play Services out of the default build
 
 **Repository:** `github.com/govindmaheshwari2/doclens`
-**Version examined:** 0.0.9 (from pub.dev)
+**Version examined:** 0.0.12 (pub.dev, published 2026-09-12), at `e1fe7d7`
 **Status:** draft, ready to file
+
+> **Re-verified 2026-09-14.** First written against 0.0.9; the project shipped
+> three releases in the three days after. Every claim below was re-checked
+> against `HEAD` rather than assumed to have survived, because filing a stale
+> claim under your own name is worse than filing nothing. What changed: 0.0.10
+> added a live auto-capture toggle (from an outside contributor), 0.0.11 and
+> 0.0.12 declared web/macOS/Windows/Linux support and fixed WASM compilation.
+> **None of it touches this argument**, and the new platform declarations make
+> it slightly stronger — a plugin now advertising six platforms has more reason
+> not to hard-pin one platform's proprietary layer.
+>
+> Still true at `e1fe7d7`: both `implementation` lines, at the same versions;
+> exactly three of the eleven production Kotlin files referencing ML Kit; zero
+> references in the six core files; zero in the entire iOS tree; and the
+> `QuadDetector.kt:26` comment quoted below, verbatim.
 
 ---
 
@@ -29,9 +44,12 @@ easier to accept:
   own frameworks, and contains no ML Kit at all. This is an Android-only
   problem, and the fix brings Android in line with what the plugin already does
   on the other platform.
-- **`QuadDetector.kt` says, in its own header comment, that v0.1 "deliberately
-  avoids OpenCV and ML Kit".** The core of the plugin already made this
-  decision. The Gradle file quietly undoes it for every consumer.
+- **The core of the plugin already made this decision.** `QuadDetector.kt:26`
+  says, in its own header comment: "v0.1 deliberately avoids OpenCV and ML Kit
+  (see docs/decisions.md)." And `doc/architecture.md` carries a section headed
+  "Why no OpenCV / ML Kit on the live-preview Android path". The Gradle file
+  quietly undoes that decision for every consumer, whether or not they ever call
+  the three paths that need it.
 
 ---
 
@@ -87,10 +105,40 @@ assertion in CI: [`tool/check_no_play_services.sh`](../../tool/check_no_play_ser
 
 ## PR 1 — replace the orientation detector, drop a dependency for free
 
-`TextOrientationDetector` runs ML Kit text recognition on a captured page and
-uses the recognised text's direction to decide which way is up. That is a large
-hammer: it pulls in a Play-Services-delivered model to answer a question that
-does not need to read anything.
+**This PR is proposed in support of a goal you already wrote down, not against
+it.** `doc/decisions.md` says:
+
+> We deliberately avoid bundling an orientation model. Instead we reuse the
+> text recognizer each platform already ships.
+
+That principle is right, and the iOS half of it is airtight: `VNRecognizeTextRequest`
+is part of the operating system. The Android half is where it leaks. What Android
+"already ships" is Play Services, which is not part of the operating system — it
+is a proprietary layer that a growing set of devices and distributions do not
+have. So the rule "reuse what the platform ships, bundle nothing" ends up
+bundling a dependency on something the platform may not have.
+
+A classical detector satisfies your stated goal **strictly better**: it bundles
+no model *and* asks the platform for nothing. It is the same principle, applied
+one step further.
+
+**Scope: Android only.** iOS keeps Vision, untouched. The diff is confined to
+`TextOrientationDetector.kt`.
+
+### The contract it has to meet
+
+Read out of your own implementation, so this is a drop-in rather than a
+behaviour change:
+
+- Return a **clockwise quarter-turn count**, 0–3, matching
+  `InputImage.fromBitmap(bitmap, rotationDegrees)` and the convention
+  `rotateImage(path, quarterTurns)` already uses on both platforms.
+- Score **all four rotations** and keep the best, rather than testing one.
+- Keep a **confidence floor**: a near-blank page currently scores below it and
+  is left untouched. A classical score needs the same floor, and it is easier to
+  calibrate — profile variance on a blank page is near zero by construction.
+
+### How
 
 The same answer comes out of classical image statistics. Two approaches, either
 adequate, both a few dozen lines over a downscaled grayscale image:
@@ -105,10 +153,25 @@ adequate, both a few dozen lines over a downscaled grayscale image:
 
 Both work on any Android device, with no model, no download and no Play
 Services, and both are testable on a laptop — which the current implementation
-is not.
+is not, since it needs a device with Play Services to run at all.
+
+One more thing in its favour, which removes a limitation you have already
+documented. `doc/decisions.md` describes the Android orientation path as
+"Play-services ML Kit **Latin** text recognition", and the README spells out the
+consequence: for non-Latin scripts on Android you have to run a dedicated script
+model yourself. Applied to orientation, that means a Cyrillic or Devanagari page
+scores below the confidence floor at all four rotations and is silently left
+un-straightened — not wrong, but not helped either.
+
+Projection profiles do not read anything: they find the axis along
+which text lines are horizontal, which works the same for Latin, Cyrillic, Greek,
+Devanagari or CJK. **The classical path removes the script caveat rather than
+inheriting it.** Right-to-left scripts are unaffected too, since line orientation
+is what is being measured, not reading direction.
 
 I am happy to write this, with unit tests against synthetic pages at the four
-rotations.
+rotations, including a blank-page case for the floor and at least one non-Latin
+script to demonstrate the point above.
 
 ## PR 2 — the two remaining paths become opt-in
 

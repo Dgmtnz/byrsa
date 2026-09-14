@@ -6,8 +6,28 @@ SPDX-License-Identifier: CC-BY-4.0
 # onnxruntime_flutter: the Android module cannot be built in release any more
 
 **Repository:** `github.com/gtbluesky/onnxruntime_flutter`
-**Version examined:** 1.4.1 (from pub.dev)
-**Status:** draft, ready to file
+**Version examined:** `onnxruntime` 1.4.1 on pub.dev — note the **package** is
+`onnxruntime`, the repository is `onnxruntime_flutter`
+**Status:** draft, ready to file — **expect no reply, and file it anyway**
+
+> **Re-verified 2026-09-14.** `compileSdkVersion 33` is still there at `HEAD`,
+> alongside `minSdkVersion 21`, so the claim stands exactly as written.
+>
+> What the re-check changed is the expectation, not the content. The project's
+> **last commit was 2024-12-23** — twenty-one months ago — the last pub.dev
+> release was **1.4.1 on 2024-03-27**, and there are **37 open issues**, several
+> from 2026 with no maintainer reply. It is not archived, so filing is still the
+> correct move, but it should be filed knowing it is **documentary rather than
+> relational**: it puts an evidenced diagnosis and a one-line fix in the place
+> the next person will look, and 37 open issues suggests there are a lot of next
+> people.
+>
+> Searched before writing: **no existing issue mentions `compileSdk`**, so this
+> is not a duplicate. Issue #28 concerns a `dlopen` failure, which is a different
+> problem from the merge collision described in the second half below.
+>
+> Because a reply is unlikely, put the workaround consumers need in the issue
+> body itself rather than leaving it for a follow-up comment — it is done below.
 
 ---
 
