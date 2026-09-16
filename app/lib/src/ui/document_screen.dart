@@ -342,11 +342,16 @@ class _DocumentScreenState extends ConsumerState<DocumentScreen> {
         final bytes = await File(page.displayPath).readAsBytes();
         pdf.addPage(SearchablePage(
           image: PdfImage.decode(bytes),
-          // TODO: word boxes are not persisted yet, so this exports the
-          // image layer only when the page was recognised in an earlier
-          // session. Storing boxes alongside the text is the next step and it
-          // is a schema migration, not a redesign.
-          words: const <PdfWord>[],
+          // The boxes are in the coordinate space of the image being embedded:
+          // recognition runs on the restored page, and `displayPath` returns
+          // that same file once restoration has written it.
+          words: <PdfWord>[
+            for (final word in page.words)
+              PdfWord(
+                word.text,
+                PdfRect(word.left, word.top, word.right, word.bottom),
+              ),
+          ],
         ));
       }
       final path = p.join(root.path, '${_safeName(document.title)}.pdf');

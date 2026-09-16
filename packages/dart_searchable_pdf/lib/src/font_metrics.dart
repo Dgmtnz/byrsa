@@ -280,7 +280,7 @@ const int helveticaDescender = -207;
 const int helveticaSpan = helveticaAscender - helveticaDescender;
 
 const Map<int, int> _winAnsiFromRune = <int, int>{
-  0x0020: 160,
+  0x0020: 32,
   0x0021: 33,
   0x0022: 34,
   0x0023: 35,
@@ -293,7 +293,7 @@ const Map<int, int> _winAnsiFromRune = <int, int>{
   0x002A: 42,
   0x002B: 43,
   0x002C: 44,
-  0x002D: 173,
+  0x002D: 45,
   0x002E: 46,
   0x002F: 47,
   0x0030: 48,
@@ -375,6 +375,13 @@ const Map<int, int> _winAnsiFromRune = <int, int>{
   0x007C: 124,
   0x007D: 125,
   0x007E: 126,
+  // The non-breaking space and the soft hyphen, which WinAnsi encodes
+  // at 160 and 173. These two used to be reachable only by mistake:
+  // U+0020 and U+002D were mapped here instead of to themselves, so
+  // every space and hyphen in an invisible text layer was the wrong
+  // character, and the real ones had no encoding at all.
+  0x00A0: 160,
+  0x00AD: 173,
   0x00A1: 161,
   0x00A2: 162,
   0x00A3: 163,

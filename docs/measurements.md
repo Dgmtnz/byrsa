@@ -923,3 +923,75 @@ front of a reviewer than an average.
 Eleven pages have now been through the device: five undamaged at **CER 1.00%**
 overall, six damaged at **41.45%**. Both figures are synthetic, and the fifty
 photographs remain what would make either of them a claim about the product.
+
+---
+
+## 2026-09-16 — the searchable PDF, end to end on a phone, and two bugs it exposed
+
+The product's actual output, produced by the device and verified here. Import,
+restore, recognise, export: the whole chain had never run.
+
+### It works
+
+A PDF exported from the Mi 9T Pro, pulled off it, and read with Poppler:
+
+```
+$ pdftotext -layout device.pdf -
+Recado - llamada de las 11:20
+Para                                  Marisol
+De parte de                  Joaquín Peñalver
+Empresa                  Talleres Valdeliebre
+```
+
+Accents, layout and reading order all survive the invisible text layer. **The
+searchable PDF is searchable**, from a phone, with no cloud anywhere in it.
+
+### Bug one: every export was image-only
+
+`_exportPdf` passed `words: const <PdfWord>[]` under a `TODO:` comment
+explaining that word boxes were not persisted yet. That had stopped being true:
+the `pages` table has a `words` column, six pages had boxes in it, and
+`ScanPage.hasWordBoxes` was already written and unused. The deferral outlived
+its blocker, and what it left behind silently disabled the feature the project
+is named for.
+
+One map from `PageWord` to `PdfWord` — the two shapes are identical — and the
+coordinate spaces already agreed, because recognition runs on the restored image
+and `displayPath` returns that same file.
+
+### Bug two: spaces and hyphens were the wrong characters
+
+The exported title came back as `Importado€2026<?>09<?>14T17:43`. In the file:
+
+```
+/Title (Importado\2402026\25509\25514T17:43)
+```
+
+Octal 240 and 255 are 0xA0 and 0xAD — the non-breaking space and the soft
+hyphen. `_winAnsiFromRune` mapped `U+0020` to 160 and `U+002D` to 173 instead of
+to themselves. Two entries wrong out of 216, and they are the two most common
+characters in any document.
+
+Both real characters had no entry at all, so they were reachable only through
+the mistake. Fixed both ways: the plain forms map to themselves, and `U+00A0`
+and `U+00AD` are now present at 160 and 173.
+
+**Why no test caught it.** The round-trip tests read the file back with
+`pdftotext`, and Poppler normalises both characters to their plain forms on
+extraction — measured here: 0 non-breaking spaces and 0 soft hyphens in text
+pulled from a file that contained them. A test that reads the text back passes
+with the bug in place. The four new tests assert the encoded bytes instead.
+
+Metadata is not normalised, which is why a document title was where this became
+visible, on a PDF that had to be exported from a phone to exist at all.
+
+### Verified after the fix
+
+Re-exported from the device:
+
+| | |
+|---|---|
+| Title | `Importado 2026-09-14T17:43` |
+| `0xA0` bytes in the file | **0** |
+| `0xAD` bytes in the file | **0** |
+| Text still extracts | yes, accents intact |

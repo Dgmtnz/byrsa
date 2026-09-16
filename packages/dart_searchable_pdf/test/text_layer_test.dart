@@ -15,6 +15,50 @@ double renderedWidth(PlacedWord word) {
 }
 
 void main() {
+  group('WinAnsi codes', () {
+    test('printable ASCII encodes to itself, space and hyphen included', () {
+      // Every code point from 0x20 to 0x7E is its own WinAnsi byte. Two were
+      // not: the space came out as 0xA0 and the hyphen as 0xAD — the
+      // non-breaking and soft variants, which render identically and so are
+      // invisible on the page.
+      //
+      // Nothing caught it, because the round-trip tests read the file back with
+      // `pdftotext`, and Poppler normalises both to their plain forms on
+      // extraction. It surfaced in a document title, which gets no such
+      // normalisation, on a PDF exported from a phone: "Importado 2026-09-14"
+      // came back as "Importado€2026<?>09<?>14".
+      //
+      // So this asserts the bytes rather than the text. A test that reads the
+      // text back would still pass with the bug in place.
+      for (var code = 0x20; code <= 0x7E; code++) {
+        final character = String.fromCharCode(code);
+        expect(
+          encodeWinAnsi(character),
+          <int>[code],
+          reason: 'U+${code.toRadixString(16).padLeft(4, '0')} "$character"',
+        );
+      }
+    });
+
+    test('a space is a space and not the non-breaking one', () {
+      expect(encodeWinAnsi(' '), <int>[0x20]);
+      expect(encodeWinAnsi('\u00A0'), <int>[0xA0]);
+    });
+
+    test('a hyphen is a hyphen and not the soft one', () {
+      expect(encodeWinAnsi('-'), <int>[0x2D]);
+      expect(encodeWinAnsi('\u00AD'), <int>[0xAD]);
+    });
+
+    test('a phrase encodes with real spaces between its words', () {
+      expect(
+        encodeWinAnsi('a b'),
+        <int>[0x61, 0x20, 0x62],
+        reason: 'a searcher looking for "a b" has to find the space it typed',
+      );
+    });
+  });
+
   group('font metrics', () {
     test('match Adobe Helvetica', () {
       expect(helveticaWidths[0x20], 278, reason: 'space');
