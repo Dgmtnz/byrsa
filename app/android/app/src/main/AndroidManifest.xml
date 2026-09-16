@@ -1,8 +1,37 @@
-<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <!-- Declared, and the project says so in as many words rather than
+         claiming it asks for no network at all (plan §4.8, README).
+         Downloading the recognition models is the one request Byrsa makes, and
+         only when the user presses the button.
+
+         It was missing until 2026-09-16, and nothing noticed because Flutter
+         injects INTERNET into DEBUG builds for its own VM service. Every test
+         had been on a debug build, so the model downloads worked on this
+         machine and would have failed silently on any release APK a user ever
+         installed. D-050. -->
+    <uses-permission android:name="android.permission.INTERNET" />
+
     <application
         android:label="byrsa"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
+
+        <!-- `image_picker_android` declares a service whose only purpose is to
+             ask Google Play services to install its backported photo picker
+             module; its own manifest comment says exactly that. It ships
+             disabled, but it is a declared hook into Play services inside an
+             application whose entire distribution story is that it has none,
+             and it is precisely what an F-Droid scanner looks for.
+
+             Removed at merge time. Importing photographs still works: Android
+             13 and later carry the photo picker in the platform, and older
+             devices fall back to the document picker — which is what a device
+             without Play services would have reached for anyway. D-049. -->
+        <service
+            android:name="com.google.android.gms.metadata.ModuleDependencies"
+            tools:node="remove" />
         <activity
             android:name=".MainActivity"
             android:exported="true"

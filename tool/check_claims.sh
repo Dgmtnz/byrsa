@@ -26,14 +26,32 @@ if grep -rniE 'no (network|internet) permission|asks for no network|zero network
 fi
 
 # 2. No iOS performance or parity claims, since no iOS hardware exists here.
-if grep -rniE '(on iOS|iPhone)[^.]{0,80}(ms|milliseconds|fps|benchmark|parity|as fast)' \
-      --include='*.md' . 2>/dev/null | grep -v UNVERIFIED.md; then
+# Both word orders. It used to require the platform before the metric, so
+# "600 ms on iOS" — the commoner way to write it in English — went straight
+# through the guard that exists to catch exactly that sentence.
+if { grep -rniE '(on iOS|on iPhone|iOS build|iPhone)[^.]{0,80}(ms|milliseconds|fps|benchmark|parity|as fast)' \
+       --include='*.md' . 2>/dev/null
+     grep -rniE '[0-9][^.]{0,40}(ms|milliseconds|fps|seconds)[^.]{0,40}(on iOS|on iPhone|on an iPhone)' \
+       --include='*.md' . 2>/dev/null
+   } | grep -v UNVERIFIED.md | grep -v check_claims; then
   note "found an iOS performance claim. Measure it on hardware first, or put
       it in UNVERIFIED.md."
 fi
 
 # 3. Every unverified row has to name the command that would settle it.
-missing=$(awk -F'|' '/^\| U-[0-9]/ { if (NF < 5) print $0 }' UNVERIFIED.md || true)
+#
+# This counted columns, which every row passed by construction. A row can have
+# five columns and still say nothing about how to close it, and several did. So
+# it now looks for something command-shaped in the row: a backticked fragment,
+# a path, or a verb that tells someone what to go and do.
+missing=$(awk -F'|' '
+  /^\| U-[0-9]/ {
+    if (NF < 5) { print $0; next }
+    if ($0 !~ /`/ && $0 !~ /\.(sh|dart|md)/ &&
+        $0 !~ /[Rr]un |[Oo]pen |[Aa]sk |[Bb]uild |[Ii]mport |[Ff]etch |[Mm]easure |[Rr]ead /) {
+      print $0
+    }
+  }' UNVERIFIED.md || true)
 if [ -n "$missing" ]; then
   note "an UNVERIFIED.md row has no command that would close it:
 $missing"

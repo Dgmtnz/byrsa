@@ -44,8 +44,9 @@ are usable in F-Droid and other independent distributions.
 Development happens on Linux. There is currently no macOS machine in the project,
 therefore:
 
-- Every iOS implementation is **written and kept compiling in CI**, with symmetric
-  Dart APIs.
+- Every iOS implementation is **written**, with symmetric Dart APIs, and **none
+  of it has ever been compiled**. There is a macOS job in the CI workflow, it is
+  marked `continue-on-error`, and CI has never run — see below.
 - **No iOS measurement exists, and none is claimed.** Anything not measured on real
   hardware lives in [`UNVERIFIED.md`](UNVERIFIED.md) together with the exact command
   that would verify it.
@@ -69,21 +70,26 @@ docs/       plan, decisions, evaluation protocol
 
 ## What is already verified
 
-Not a roadmap — these run in CI on every push, and each one is a command you
-can run yourself.
+Each row is a command you can run yourself, and the result was produced on the
+machine named in [`docs/measurements.md`](docs/measurements.md).
+
+**They do not run in CI.** A workflow exists at `.github/workflows/ci.yml` and
+has never executed once: this repository has no git remote and has never been
+pushed. Until it is, every one of these is a local result, and the row that used
+to say "in CI" said something untrue.
 
 | Claim | How it is checked |
 |---|---|
-| The Android build contains **no** Google Play Services | `tool/check_no_play_services.sh` on the built APK: 0 `com.google.android.gms` classes, 1717 `androidx.camera` references |
+| The Android build contains **no** Google Play Services, in the code **or the manifest** | `tool/check_no_play_services.sh` on the application's arm64 **release** APK. The manifest half of that check was added on 2026-09-16, after it found a Play Services service that `image_picker_android` had injected and the previous code-only check could not see |
 | Searchable PDFs are readable by Poppler, accents included | `pdftotext -layout` round-trip in the test suite |
 | The invisible text layer lines up with the image | rendered word width asserted equal to the OCR box, for narrow, wide and accented words |
 | PDF output is byte-for-byte reproducible | same input, same bytes |
 | Every downloadable model has a real, computed digest | `dart run tool/pin_models.dart --verify` |
 | The documentation makes no unmeasured iOS claim | `tool/check_claims.sh` |
-| The release application is **48 MB** on arm64, before any model download | `flutter build apk --release --split-per-abi` |
+| The release application is **48.8 MB** on arm64, before any model download | `flutter build apk --release --split-per-abi` |
 | Restoring a 12 MP page takes **0.6 s**, down from 55.9 s | `dart run tool/bench_restore.dart` |
-| 163 tests pass with no device, no models and no network | `flutter test` + `dart test` |
-| `dart_searchable_pdf` and `byrsa_ocr` are publishable to pub.dev | `dart pub publish --dry-run`, in CI |
+| **205 tests** pass with no device, no models and no network | `flutter test` + `dart test` |
+| `dart_searchable_pdf` and `byrsa_ocr` are publishable to pub.dev | `dart pub publish --dry-run` |
 
 What is **not** verified is listed just as plainly in
 [`UNVERIFIED.md`](UNVERIFIED.md), with the machine and the command that would

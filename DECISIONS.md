@@ -1367,3 +1367,61 @@ Para las cincuenta fotografías esto cambia la instrucción: **no basta con hace
 difíciles, hacen falta fotos con dos dificultades a la vez.** Una sombra sobre una página
 torcida, poca luz con la mano encima. Es donde el producto se rompe, y hasta hoy nadie
 sabía que ahí estaba el borde.
+
+---
+
+## D-049 · Play Services entraba por el manifiesto, y el guardia miraba el sitio equivocado
+**Fecha:** 2026-09-16 · **Estado:** ratificar
+
+El APK de **release** declaraba un servicio de Google Play Services:
+`com.google.android.gms.metadata.ModuleDependencies`, con su `intent-filter`. Lo inyecta
+`image_picker_android`, y su propio manifiesto dice para qué: *«Trigger Google Play services
+to install the backported photo picker module.»*
+
+Va con `enabled="false"`, así que no hace nada. Pero es **un gancho declarado a Play Services
+dentro de una aplicación cuyo argumento de distribución entero es que no tiene ninguno**, y es
+exactamente lo que escanea F-Droid.
+
+**Lo grave no es el servicio, es que `tool/check_no_play_services.sh` daba `PASS` sobre ese
+mismo fichero.** Leía `classes*.dex` y nada más. La integración era **declarativa**: no hay
+una sola clase de gms en el código, así que buscarla en el código no encontraba nada. El
+requisito del que depende toda la distribución (§0.1) llevaba un guardia con ese agujero
+desde el principio.
+
+**Arreglado por los dos lados.** El servicio se elimina en el merge con `tools:node="remove"`
+—la importación de fotos sigue funcionando: Android 13+ trae el selector en la plataforma y
+los anteriores caen al selector de documentos, que es lo que un móvil sin Play Services habría
+usado igualmente—. Y el guardia mira ahora el manifiesto además del código, con los nombres en
+notación de puntos, y añade `com.google.android.play` (Play Core) a la lista.
+
+Verificado sobre un release reconstruido: pasa mirando las dos cosas.
+
+**La lección, que vale para la solicitud:** un guardia sólo comprueba lo que se le enseñó a
+mirar. Éste estaba bien escrito, corría en CI y era verde — sobre un APK que contenía justo lo
+que existía para impedir.
+
+---
+
+## D-050 · El permiso de INTERNET no estaba declarado, y sólo fallaba en release
+**Fecha:** 2026-09-16 · **Estado:** ratificar
+
+`app/android/app/src/main/AndroidManifest.xml` **no declaraba `android.permission.INTERNET`**.
+El README, este fichero y el plan afirmaban los tres que sí.
+
+Consecuencia: en cualquier APK de release, `ModelStore.install` y la descarga nativa de
+`mobile_ocr` habrían fallado. **Los dos botones de descarga de modelos estaban muertos para
+cualquier usuario que instalara la aplicación.**
+
+**Por qué nadie lo vio:** Flutter inyecta `INTERNET` en las builds de **debug** para su propio
+servicio de depuración. Todas las pruebas de este proyecto se han hecho en debug — incluida la
+descarga de los cuatro modelos de OCR del 14 de septiembre, que funcionó perfectamente. La
+diferencia entre debug y release borraba el fallo justo donde se probaba.
+
+Declarado, con el comentario explicando que ésta es la única petición que la aplicación hace y
+sólo cuando el usuario la pide, que es la frase que el §4.8 del plan exige decir en vez de la
+falsa y más atractiva de «no pide red».
+
+**Y un tercer fallo del mismo guardia:** `tool/check_claims.sh` tenía una regla para impedir
+que alguien escribiera «no pide permiso de red» — la afirmación que era **verdadera** mientras
+el permiso faltaba — y ninguna que comprobara que el permiso existiera. Enforzaba la regla al
+revés.
