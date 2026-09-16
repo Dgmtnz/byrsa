@@ -995,3 +995,34 @@ Re-exported from the device:
 | `0xA0` bytes in the file | **0** |
 | `0xAD` bytes in the file | **0** |
 | Text still extracts | yes, accents intact |
+
+### The curved page, and a stage nobody can see run
+
+`book-page-02` — the corpus's curved page, dense Spanish — imported and taken
+through the device with the dewarp model installed and "Flatten curved pages"
+switched on.
+
+| | |
+|---|---|
+| CER | **29.09%** — 970 errors over 3,335 characters |
+| WER | 48.46% |
+
+That sits between the undamaged pages (1.00%) and the double-damaged ones
+(41.45%), and it is much worse than any other single condition measured: blur,
+skew, glare and mixed light all scored between 0.39% and 2.56%. **Curvature is
+the single condition that actually hurts.**
+
+**Whether the neural dewarp ran is not observable, and that is the finding.**
+`RestorePipeline.run` returns a `StageOutcome` per stage with its duration and
+whether it was skipped — and the application throws all of it away, persisting
+only `restored` as a boolean. So the database cannot answer whether `UvdocStage`
+executed, was skipped for a missing model, or failed.
+
+What can be said: the APK ships `libonnxruntime.so` for three ABIs, and only
+`libonnxruntime4j_jni.so` — the Java binding, which is the OCR path — appears in
+the loader log. Absence of the FFI library from that log is not proof it did not
+load, because a Dart `DynamicLibrary.open` does not go through the same logging.
+
+So U-34's dewarp half stays open, and closing it now needs the application to
+record its stage outcomes rather than a better test. That is a small change and
+it is the precondition for ever measuring this stage in the field.
