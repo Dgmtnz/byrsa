@@ -16,7 +16,11 @@ import 'package:path/path.dart' as p;
 /// silently, weeks later, with no error anywhere.
 ///
 /// So the rule is: the plugin produces temporary files, and anything the
-/// application decides to keep is copied here first.
+/// application decides to keep is copied here first. `LibraryDatabase.keepPage`
+/// is where that happens, for capture and gallery import alike, and the
+/// database stores the paths relative to [root]. Until schema 3 the rule was
+/// written here and nothing called [keep]; the schema 3 migration copies in
+/// what those versions left in the cache (D-056).
 class ScanStorage {
   const ScanStorage(this.root);
 

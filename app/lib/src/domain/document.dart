@@ -78,8 +78,10 @@ class ScanPage {
 
   /// The frame as the camera produced it.
   ///
-  /// Kept forever, and every reprocessing starts from it. Re-warping or
-  /// re-restoring an already processed page compounds the artefacts of both.
+  /// Copied out of the cache into the application's storage when the page is
+  /// saved, and kept there until its document is deleted (D-056). Every
+  /// reprocessing starts from it. Re-warping or re-restoring an already
+  /// processed page compounds the artefacts of both.
   final String originalPath;
 
   /// The rectified page.

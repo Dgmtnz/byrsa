@@ -4,9 +4,11 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:path/path.dart' as p;
 import 'package:sqlite3/common.dart';
 
 import '../domain/document.dart';
+import 'scan_storage.dart';
 
 /// The document library: folders, documents, pages, and full-text search.
 ///
@@ -16,18 +18,28 @@ import '../domain/document.dart';
 /// repository is exactly what a reproducible F-Droid build does not want
 /// (DECISIONS.md D-022).
 ///
-/// Paths are stored **relative** to a root directory the caller supplies. An
-/// application whose database hard-codes absolute paths breaks the first time
-/// the platform moves its sandbox, and it cannot be moved into an encrypted
-/// store later without a migration (D-015).
+/// Paths are stored **relative** to the root of the [storage] the caller
+/// supplies, and every method hands them back absolute. An application whose
+/// database hard-codes absolute paths breaks the first time the platform moves
+/// its sandbox, and it cannot be moved into an encrypted store later without a
+/// migration (D-015). This docstring said so from the start while capture and
+/// import stored absolute paths into the cache; schema 3 makes it true
+/// (D-056). A path outside the root is stored as given and works for as long
+/// as its file exists; the migration leaves one only on a page whose copy
+/// failed, and tries that page again on the next launch.
 class LibraryDatabase {
-  LibraryDatabase(this._db) {
+  LibraryDatabase(this._db, {this.storage}) {
     _migrate();
   }
 
   final CommonDatabase _db;
 
-  static const int schemaVersion = 2;
+  /// Where the scans live and what stored paths are relative to. Without one,
+  /// paths are stored as given and nothing is copied, which only suits a
+  /// database whose paths name no real file.
+  final ScanStorage? storage;
+
+  static const int schemaVersion = 3;
 
   void _migrate() {
     _db.execute('PRAGMA foreign_keys = ON');
@@ -130,8 +142,9 @@ class LibraryDatabase {
       //    purge has taken the original and its warp, it is the only picture
       //    of the page there is, and dropping it would strand it.
       //
-      // The paths are checked as stored: capture and import both store
-      // absolute ones.
+      // The paths are checked as stored, which at schema 1 meant absolute:
+      // capture and import stored what the plugin and image_picker returned.
+      // Schema 3 makes them relative, after this step (D-056).
       final rows = _db.select(
         'SELECT id, original_path, processed_path FROM pages '
         "WHERE processed_path LIKE '%.restored.jpg'",
@@ -152,7 +165,126 @@ class LibraryDatabase {
         );
       }
     }
-    _db.execute('PRAGMA user_version = $schemaVersion');
+    // A page whose files could not be copied keeps the version at 2, so the
+    // next launch tries it again.
+    final kept = storage == null || _keepCachedFiles(storage!);
+    final version = kept ? schemaVersion : 2;
+    // Unchanged, it is not written: on a full disk even that write can fail.
+    if (version != current) _db.execute('PRAGMA user_version = $version');
+  }
+
+  /// Schema 2 -> 3: copies every page's files out of the platform cache and
+  /// stores the paths relative to the root (D-056). Returns whether every page
+  /// made it.
+  ///
+  /// Up to schema 2 the only copy of every scan was where capture and
+  /// image_picker wrote it, a cache the OS may empty. Every path outside the
+  /// root — the original, what `processed_path` names, and
+  /// `<original>.enhanced.jpg`, so a restored page keeps its restoration and
+  /// is not queued again — moves to `<page id>-<name>` in its document's
+  /// folder. A warp and an enhanced output named after the original stay named
+  /// after it, so the `<original>.page.jpg` and `.enhanced.jpg` conventions
+  /// hold at the new place too. A path whose file is already gone moves as
+  /// well: it named nothing and still does, but what is derived from the
+  /// original — a surviving enhanced output, every later restoration — lands
+  /// in storage, and a copy an earlier run made before the OS purged its
+  /// source is found at that name.
+  ///
+  /// Each copy is written as `<name>.part` and then renamed, so a file at a
+  /// page's name is always whole; a copy cut short leaves only its `.part`,
+  /// which a later attempt overwrites and deleting the document removes.
+  /// Nothing a row can name is deleted or overwritten. A name already taken by
+  /// different bytes moves the page to `<page id>.1-<name>` and on; the same
+  /// bytes are this migration's own copy from a run that did not reach its
+  /// row, and are used as they are. That is what makes running it again
+  /// harmless. The cache files stay for the OS to purge.
+  ///
+  /// A page whose copies fail — no space left, which is when Android trims
+  /// caches, or a file purged mid-copy — keeps its row exactly as it was,
+  /// which works for as long as its files exist, and the other pages carry on.
+  ///
+  /// TODO: copies synchronously on the UI isolate the first time the library
+  /// opens, so a library of many cached pages freezes the first screen for as
+  /// long as the copies take; run it in an isolate behind a progress screen if
+  /// a real library shows that.
+  bool _keepCachedFiles(ScanStorage storage) {
+    final root = storage.root.path;
+    bool outside(String? path) =>
+        path != null && p.isAbsolute(path) && !p.isWithin(root, path);
+    bool exists(String path) => File(path).existsSync();
+
+    var everyPage = true;
+    final rows = _db.select(
+      'SELECT id, document_id, original_path, processed_path FROM pages',
+    );
+    for (final row in rows) {
+      final id = row['id'] as int;
+      final original = row['original_path'] as String;
+      final processed = row['processed_path'] as String?;
+      final directory = storage.directoryFor(row['document_id'] as int).path;
+      final moving = <String>{
+        if (outside(original)) ...<String>[original, '$original.enhanced.jpg'],
+        if (outside(processed)) processed!,
+      };
+
+      var attempt = 0;
+      String target(String source) => p.join(directory,
+          '$id${attempt == 0 ? '' : '.$attempt'}-${p.basename(source)}');
+      try {
+        while (moving.any((source) =>
+            exists(source) &&
+            exists(target(source)) &&
+            !_sameBytes(source, target(source)))) {
+          attempt++;
+        }
+        for (final source in moving) {
+          if (!exists(source) || exists(target(source))) continue;
+          Directory(directory).createSync(recursive: true);
+          File(source).copySync('${target(source)}.part');
+          File('${target(source)}.part').renameSync(target(source));
+        }
+
+        String? kept(String? path) =>
+            _toStored(moving.contains(path) ? target(path!) : path);
+        // A retry rewrites only what moves, since every write needs a journal
+        // and a full disk has no room for one; a row that cannot be written
+        // (SQLITE_FULL) is left for the next launch like a failed copy.
+        if (kept(original) != original || kept(processed) != processed) {
+          _db.execute(
+            'UPDATE pages SET original_path = ?, processed_path = ? WHERE id = ?',
+            <Object?>[kept(original), kept(processed), id],
+          );
+        }
+      } on Exception {
+        everyPage = false;
+      }
+    }
+    return everyPage;
+  }
+
+  static bool _sameBytes(String a, String b) {
+    if (File(a).lengthSync() != File(b).lengthSync()) return false;
+    final x = File(a).readAsBytesSync();
+    final y = File(b).readAsBytesSync();
+    for (var i = 0; i < x.length; i++) {
+      if (x[i] != y[i]) return false;
+    }
+    return true;
+  }
+
+  /// What a path is stored as: relative when it is under the root, as given
+  /// otherwise.
+  String? _toStored(String? path) {
+    final root = storage?.root.path;
+    if (path == null || root == null || p.isRelative(path)) return path;
+    return p.isWithin(root, path) ? p.relative(path, from: root) : path;
+  }
+
+  /// What every caller is handed: an absolute path, wherever the root is now.
+  String? _fromStored(String? path) {
+    final root = storage?.root.path;
+    if (path == null || root == null || p.isAbsolute(path)) return path;
+    return p.join(root, path);
   }
 
   // ---- Settings ----
@@ -267,6 +399,39 @@ class LibraryDatabase {
 
   // ---- Pages ----
 
+  /// Adds a page, copying its files out of the cache into [storage] first.
+  ///
+  /// What capture and gallery import call. Both hand over files in the
+  /// platform cache, which the OS may empty, so the row is written only once
+  /// the copies exist: a copy that fails throws before the library can point
+  /// at a file it does not own. The warp is kept beside the frame as
+  /// `<frame>.page.jpg`, the name the re-warp after "adjust corners" writes and
+  /// the D-051 migration looks for.
+  Future<int> keepPage(
+    int documentId, {
+    required String originalPath,
+    String? rectifiedPath,
+    List<double>? quad,
+    int? width,
+    int? height,
+  }) async {
+    final original = await storage!.keep(originalPath, documentId: documentId);
+    // A warp the OS already purged costs the crop, not the page: restoration
+    // falls back to the frame, and the stored quad lets "adjust corners" warp
+    // it again.
+    final rectified = rectifiedPath == null || !File(rectifiedPath).existsSync()
+        ? null
+        : (await File(rectifiedPath).copy('$original.page.jpg')).path;
+    return addPage(
+      documentId,
+      originalPath: original,
+      processedPath: rectified,
+      quad: quad,
+      width: width,
+      height: height,
+    );
+  }
+
   int addPage(
     int documentId, {
     required String originalPath,
@@ -293,8 +458,8 @@ class LibraryDatabase {
       <Object?>[
         documentId,
         next,
-        originalPath,
-        processedPath,
+        _toStored(originalPath),
+        _toStored(processedPath),
         quad == null ? null : jsonEncode(quad),
         text,
         _encodeWords(words),
@@ -358,7 +523,11 @@ class LibraryDatabase {
     _db.execute(
       'UPDATE pages SET processed_path = ?, restored = 0'
       '${quad == null ? '' : ', quad = ?'} WHERE id = ?',
-      <Object?>[processedPath, if (quad != null) jsonEncode(quad), pageId],
+      <Object?>[
+        _toStored(processedPath),
+        if (quad != null) jsonEncode(quad),
+        pageId
+      ],
     );
   }
 
@@ -376,8 +545,8 @@ class LibraryDatabase {
             id: row['id'] as int,
             documentId: row['document_id'] as int,
             position: row['position'] as int,
-            originalPath: row['original_path'] as String,
-            processedPath: row['processed_path'] as String?,
+            originalPath: _fromStored(row['original_path'] as String)!,
+            processedPath: _fromStored(row['processed_path'] as String?),
             restored: (row['restored'] as int? ?? 0) != 0,
             quad: _decodeQuad(row['quad'] as String?),
             text: row['text'] as String?,

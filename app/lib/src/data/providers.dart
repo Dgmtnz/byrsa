@@ -43,9 +43,11 @@ final modelStoreProvider = FutureProvider<ModelStore>((ref) async {
 });
 
 final libraryProvider = FutureProvider<LibraryDatabase>((ref) async {
-  final root = await ref.watch(storageRootProvider.future);
-  final database =
-      LibraryDatabase(sqlite3.open(p.join(root.path, 'library.db')));
+  final storage = await ref.watch(scanStorageProvider.future);
+  final database = LibraryDatabase(
+    sqlite3.open(p.join(storage.root.path, 'library.db')),
+    storage: storage,
+  );
   ref.onDispose(database.dispose);
   return database;
 });

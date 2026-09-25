@@ -693,6 +693,10 @@ el usuario ya borró.
 Seis tests, uno de los cuales borra el directorio de caché entero después de guardar y
 comprueba que el fichero sigue ahí. Es el fallo entero en una aserción.
 
+*(Nota del 2026-09-25: esta entrada describía la regla, no lo que hacía la aplicación.
+`keep()` no tuvo ni un llamante en producción hasta D-056, y los seis tests probaban una clase
+a la que no llamaba nadie.)*
+
 ---
 
 ## D-036 · Las preferencias viven en la base de datos que ya está abierta
@@ -1486,7 +1490,8 @@ acababa apuntando a un `.page.jpg` que no existe, y el `.restored.jpg`, la únic
 quedaba de la página, se perdía de vista. Las rutas se comprueban tal como están guardadas:
 captura e importación guardan la que devuelven el plugin e `image_picker`
 (`capture_screen.dart:127-128`, `library_screen.dart:99`), no una relativa a una raíz como
-describe D-015.
+describe D-015. *(D-056 lo cambia: desde el esquema 3 se guardan relativas, y la migración
+2 → 3 corre después de esta.)*
 
 **Una página cuyos ficheros ya no están falla sola, y una vez.** El bucle de restauración usa
 la rectificada si existe y el original si no (`ScanPage.restoreInput`); si falta todo, esa
@@ -1504,7 +1509,7 @@ almacén de modelos) no se reintente en cada fotograma sí tiene test
 (`document_screen_test.dart`). Nada de esto es una garantía de que la página se
 salve: la captura escribe también el original en el directorio de caché
 (`CaptureSession.kt:210`) y `ScanStorage.keep` no tiene ni un llamante, así que un vaciado se
-lleva los dos ficheros.
+lleva los dos ficheros. *(D-056 lo engancha.)*
 
 **Coste de la migración: una restauración más por página, una sola vez**, la primera vez que
 se abre cada documento. Cuánto es eso en un teléfono no está medido (U-31); en escritorio,
@@ -1912,3 +1917,116 @@ solo uso de la revisión del 2026-09-23 que no están en el repositorio (`ds_old
 contra el código de hoy (U-51). Y nadie ha visto esta etapa correr sobre la fotografía real de
 una mano sujetando un libro, ni sobre una sombra de mano real, que es justo donde un falso
 positivo se paga caro (U-44).
+
+---
+
+## D-056 · Los escaneos salen de la caché al guardarlos, y las rutas se guardan relativas
+**Fecha:** 2026-09-25 · **Estado:** ratificar
+**Cumple lo que D-035 y D-015 daban por hecho**
+
+**Lo que estaba mal.** D-035 dice que los escaneos se copian fuera de la caché al guardarlos, y
+el docstring de `LibraryDatabase` que las rutas se guardan relativas a una raíz, citando D-015.
+No pasaba ninguna de las dos cosas. `ScanStorage.keep()` no tenía ni un llamante en producción,
+sólo sus seis tests. La captura guardaba las rutas que devuelve `byrsa_capture`, que escribe el
+original y la rectificada en `context.cacheDir` (Android) y `NSTemporaryDirectory()` (iOS), y
+la importación la copia en caché que devuelve `image_picker`. **La única copia de cada escaneo
+vivía donde el sistema puede borrar**, y la ruta guardada era absoluta: en iOS la ruta del
+contenedor de la aplicación cambia entre actualizaciones, que es justo el riesgo que D-015 daba
+por resuelto. El docstring de `ScanPage.originalPath` decía «Kept forever».
+
+**Lo que se construye.**
+
+1. **Al guardar, primero se copia.** `LibraryDatabase.keepPage` copia el original con
+   `ScanStorage.keep` a `scans/<documento>/`, la rectificada a su lado como
+   `<original>.page.jpg`, y sólo entonces escribe la fila. La llaman la captura y la
+   importación de galería, las dos. Si una copia falla, la página no se guarda y el error sale
+   en un `SnackBar`: nunca queda una fila apuntando a nada. Las dos pantallas leen el contador
+   de revisión y el `ScaffoldMessenger` de la aplicación antes del primer `await`, para que
+   salir a mitad de guardado no deje el documento fuera de la lista ni el error sin mostrar.
+   Una rectificada que el sistema ya purgó no bloquea la página: se guarda sin ella, la
+   restauración parte del original y el quad guardado deja rectificarla otra vez desde
+   «ajustar esquinas». La restaurada se deriva como `<original>.enhanced.jpg` y el
+   re-rectificado de «ajustar esquinas» escribe `<original>.page.jpg` en las dos fuentes
+   (`CaptureSession.kt:256`, `CaptureSession.swift:244`), así que las dos caen dentro del
+   almacén sin tocarlas. La
+   rectificada de la captura de iOS, que el Swift nombra con una marca de tiempo
+   (`CaptureSession.swift:221`), sigue la convención desde que se copia. Lo de iOS es lo que
+   dice la fuente: el Swift no se ha compilado nunca (U-01).
+2. **Rutas relativas a la raíz.** `LibraryDatabase` guarda relativa toda ruta que está debajo
+   de la raíz del almacén y devuelve siempre absoluta, así que ningún llamante cambia: la
+   pantalla del documento, el PDF, la restauración, el re-rectificado y el OCR reciben lo mismo
+   que antes. Una ruta de fuera de la raíz se guarda tal cual y sigue funcionando mientras el
+   fichero exista.
+3. **Migración 2 → 3**, que correrá sobre la biblioteca real del móvil de desarrollo. Por cada
+   página, toda ruta de fuera de la raíz pasa a `scans/<documento>/<id de página>-<nombre>`:
+   el original, lo que nombre `processed_path` y `<original>.enhanced.jpg`, para que una
+   página restaurada conserve su restauración y no vuelva a la cola. Se copia lo que sigue
+   existiendo y después se guardan las rutas relativas. Una ruta cuyo fichero ya no está
+   también se reescribe: antes no nombraba nada y ahora tampoco, pero la restaurada que
+   sobrevivió a un original purgado se copia junto al original nuevo, y las restauraciones
+   futuras de esa página, que se derivan del original, se escriben en el almacén y no en la
+   caché. Corre
+   después de la 1 → 2, que sigue comprobando las rutas absolutas tal como las encuentra.
+4. **Una página que no se puede copiar falla sola.** Si una copia lanza —sin espacio, que es
+   justo cuando Android vacía cachés, o un fichero purgado a mitad—, esa fila se queda
+   exactamente como estaba, con su ruta absoluta, que funciona mientras el fichero exista, y
+   las demás siguen. La versión se queda entonces en 2 y el siguiente arranque reintenta las
+   filas que quedaron atrás. Ese reintento sólo reescribe las filas que cambian y no toca la
+   versión si no cambia: con el disco lleno hasta esa escritura necesita un diario que no
+   cabe, y una fila que SQLite no puede escribir (`SQLITE_FULL`) se queda también para el
+   arranque siguiente. La biblioteca abre en los dos casos.
+
+**Por qué copiar, y no retirar la clase.** Borrar `ScanStorage` dejaba de prometer lo que no
+hacía, pero dejaba la pérdida de datos donde estaba. Y la copia va dentro de `LibraryDatabase`
+porque es quien ya conoce la raíz: la misma pieza que escribe la fila decide que no la escribe
+hasta que el fichero es suyo, y ningún llamante nuevo puede olvidarse.
+
+**Por qué la migración no usa `keep()`.** `keep()` nombra por marca de tiempo, y una migración
+interrumpida que se repite con nombres nuevos copia dos veces. Con `<id de página>-<nombre>` el
+nombre de destino es siempre el mismo: si ya hay un fichero con los mismos bytes es su propia
+copia de una ejecución que no llegó a escribir la fila, y se usa; si hay otros bytes, aunque
+tengan la misma longitud, no se toca y la página pasa a `<id>.1-<nombre>`, y a `.2` y
+siguientes si hace falta. Cada copia se escribe como `<nombre>.part` y se renombra al
+terminar, así que un fichero con el nombre de una página está siempre entero: una copia
+cortada deja sólo su `.part`. Eso es lo que permite que, si el original ya no está en la
+caché, la fila apunte a la copia que una ejecución interrumpida dejó con ese nombre en vez de
+a la caché vacía. **No borra ni sobrescribe nada que una fila pueda nombrar**, y repetirla no
+cambia nada. Las copias en caché se quedan para que el sistema las purgue.
+
+**Lo que no cubre.**
+
+- Lo que el sistema ya había borrado antes de instalar esta versión está perdido. La migración
+  sólo puede copiar lo que encuentra.
+- Una fila que se queda atrás porque su copia falló sigue apuntando a la caché hasta el
+  siguiente arranque, y si el sistema la vacía antes, lo que no se copió se pierde.
+- Una copia cortada deja su `.part` en la carpeta del documento. La sobrescribe el siguiente
+  intento si el fichero de la caché sigue ahí; si no, se queda hasta que se borre el
+  documento.
+- Un caso de tres fallos seguidos: una fila que se quedó atrás con una copia ya hecha, cuyo
+  fichero de caché cambia después (una restauración o un re-rectificado nuevos) y cuyo
+  original purga luego el sistema. El cambio empuja la página a `<id>.1-<nombre>`, y la copia
+  del original que quedó en `<id>-<nombre>` no se referencia.
+- Un guardado que falla a mitad deja un documento con las páginas copiadas hasta el fallo, y
+  volver a guardar crea otro documento con todas.
+- Borrar una página suelta no borra sus ficheros, como antes; borrar el documento sí.
+- La migración copia de forma síncrona, en el isolate de la interfaz, la primera vez que se
+  abre la biblioteca, y la pantalla se congela mientras copia. Cuánto tarda con una biblioteca
+  real no está medido; el código lo marca con un `TODO`.
+
+**Lo que queda sin medir.** Lo de la base de datos está probado en tests contra ficheros
+temporales en el portátil de desarrollo (`library_database_test.dart`, grupo «files
+(D-056)»): la captura y la importación copian y guardan relativo, una copia que falla no deja
+fila, una rectificada purgada no impide guardar la página, una biblioteca cuya raíz se movió
+encuentra todas sus páginas, y la migración copia, relativiza, reescribe lo que falta, saca
+la restaurada de un original purgado, no sobrescribe (tampoco una copia rota de la misma
+longitud, y con dos nombres ya ocupados), no vuelve a escribir su propia copia, encuentra la
+copia de una ejecución interrumpida cuando la caché ya se vació, y deja atrás con la versión
+en 2 una fila cuyo fichero no se puede leer (`chmod 000`), para migrarla en el arranque
+siguiente. Un disco lleno de verdad sí se provoca: un `.part` que es `/dev/full` hace fallar
+la copia con un ENOSPC real (sólo en Linux), y es el test que rompe si se quita el renombrado.
+Lo que no tiene test es `SQLITE_FULL` al escribir la fila. **El `SnackBar` no tiene ningún test automático**, ni en la captura ni en la
+importación, y tampoco salir a mitad de guardado: la captura necesita la cámara y la
+importación el selector de `image_picker`, y no hay test de widget de ninguna de las dos. En
+un teléfono no ha corrido nada: que un escaneo sobreviva a que Android vacíe la caché (U-52), que la biblioteca real del
+móvil de desarrollo pase la migración (U-53), y que las rutas sobrevivan a que iOS mueva el
+contenedor, que necesita un Mac (U-54).

@@ -40,7 +40,7 @@ corpus de evaluación propio y un error de carácter medido.
 | `harness/` | 1.382 | Corpus, ejecución y puntuación | Dart puro |
 | `demo/` | 695 | La restauración en un navegador | Sin servidor, sin CDN |
 
-**47 commits · 55 decisiones · 221 tests en verde · analyze limpio.**
+**56 decisiones · 232 tests en verde · analyze limpio.**
 
 Tres guardias corren antes de cada commit y en CI: `tool/check_claims.sh`
 (disciplina de afirmaciones), `tool/check_web_parity.sh` (VM y dart2js dan los
@@ -106,7 +106,7 @@ va apagada por defecto y cuyo coste está en esa entrada. No se han vuelto a med
 - **Tiempos en el teléfono.** Ni restauración, ni OCR, ni el codificador nativo.
 - **El camino de denegación del permiso de cámara.**
 
-Las 51 filas de [`UNVERIFIED.md`](UNVERIFIED.md) llevan cada una su comando.
+Las 54 filas de [`UNVERIFIED.md`](UNVERIFIED.md) llevan cada una su comando.
 
 ---
 
@@ -181,7 +181,7 @@ código — y ahora se puede contar con nueve ejemplos fechados.
 
 1. [`plan-escaner-open-source-flutter.md`](plan-escaner-open-source-flutter.md) —
    el plan y el borrador de la solicitud.
-2. [`DECISIONS.md`](DECISIONS.md) — las 55 decisiones, con sus números.
-3. [`UNVERIFIED.md`](UNVERIFIED.md) — 51 filas, cada una con su comando.
+2. [`DECISIONS.md`](DECISIONS.md) — las 56 decisiones, con sus números.
+3. [`UNVERIFIED.md`](UNVERIFIED.md) — 54 filas, cada una con su comando.
 4. [`docs/measurements.md`](docs/measurements.md) — todo lo medido.
 5. [`docs/AUDITORIA.md`](docs/AUDITORIA.md) — cumplimiento y licencias.

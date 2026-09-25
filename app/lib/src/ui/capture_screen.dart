@@ -114,18 +114,21 @@ class _CaptureScreenState extends ConsumerState<CaptureScreen> {
 
   Future<void> _save() async {
     setState(() => _saving = true);
-    // Read the localisation before the first await: the widget may be gone by
-    // the time the library future completes.
+    // Read what the save needs from the widget before the first await: the
+    // user can leave while the pages are copied, and a disposed `ref` throws.
+    // The messenger is the application's, so an error still shows after that.
     final title = AppLocalizations.of(context)!
         .scanTitle(DateTime.now().toIso8601String().substring(0, 16));
+    final revision = ref.read(libraryRevisionProvider.notifier);
+    final messenger = ScaffoldMessenger.of(context);
     try {
       final library = await ref.read(libraryProvider.future);
       final documentId = library.createDocument(title);
       for (final page in _controller.pages) {
-        library.addPage(
+        await library.keepPage(
           documentId,
           originalPath: page.originalPath,
-          processedPath: page.rectifiedPath,
+          rectifiedPath: page.rectifiedPath,
           quad: <double>[
             for (final corner in page.quad.corners) ...<double>[
               corner.x,
@@ -136,8 +139,14 @@ class _CaptureScreenState extends ConsumerState<CaptureScreen> {
           height: page.height,
         );
       }
-      ref.read(libraryRevisionProvider.notifier).state++;
+      revision.state++;
       if (mounted) context.go('/document/$documentId');
+    } on Object catch (error) {
+      // A page whose files could not be copied out of the cache is not saved;
+      // the ones before it are, and every page is still here to save again.
+      // Saying nothing would leave the user believing all of them were kept.
+      revision.state++;
+      messenger.showSnackBar(SnackBar(content: Text('$error')));
     } finally {
       if (mounted) setState(() => _saving = false);
     }

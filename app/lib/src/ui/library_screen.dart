@@ -85,9 +85,12 @@ class LibraryScreen extends ConsumerWidget {
 /// a capture: the corners can be set by hand and restoration runs over it.
 Future<void> _importImage(
     BuildContext context, WidgetRef ref, int? folderId) async {
-  // Read the localisation before the first await: the picker is a whole other
-  // screen, and the widget that opened it may be gone when it returns.
+  // Read what the import needs from the widget before the first await: the
+  // picker is a whole other screen, the copies take a while, and the folder
+  // that started it may be gone by then, with its `ref`.
   final l10n = AppLocalizations.of(context)!;
+  final revision = ref.read(libraryRevisionProvider.notifier);
+  final messenger = ScaffoldMessenger.of(context);
   final images = await ImagePicker().pickMultiImage();
   if (images.isEmpty) return;
 
@@ -95,10 +98,17 @@ Future<void> _importImage(
   final title =
       l10n.importedTitle(DateTime.now().toIso8601String().substring(0, 16));
   final documentId = library.createDocument(title, folderId: folderId);
-  for (final image in images) {
-    library.addPage(documentId, originalPath: image.path);
+  try {
+    // image_picker hands over copies in the cache, as capture does.
+    for (final image in images) {
+      await library.keepPage(documentId, originalPath: image.path);
+    }
+  } on Object catch (error) {
+    revision.state++;
+    messenger.showSnackBar(SnackBar(content: Text('$error')));
+    return;
   }
-  ref.read(libraryRevisionProvider.notifier).state++;
+  revision.state++;
   if (context.mounted) context.push('/document/$documentId');
 }
 

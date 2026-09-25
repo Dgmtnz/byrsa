@@ -82,10 +82,10 @@ class _DocumentScreenState extends ConsumerState<DocumentScreen> {
         // A closed screen stops here: `ref` throws once it is disposed, and
         // the per-page catch below would otherwise swallow that and carry on.
         if (!mounted) break;
-        // The rectified file can be gone, because the OS empties caches, and
-        // then the page is restored from the original and loses its crop. The
-        // original can be gone too: capture writes it to the cache directory
-        // as well (CaptureSession.kt:210) and nothing copies it out yet. That
+        // The rectified file can be gone, and then the page is restored from
+        // the original and loses its crop. The original can be gone too: a
+        // page saved before schema 3 lived in the cache, and whatever the OS
+        // purged before the migration copied it out (D-056) is lost. That
         // costs this page, never the rest of the document.
         try {
           final outcome = await io.restoreFile(
