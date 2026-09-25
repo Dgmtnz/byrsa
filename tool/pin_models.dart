@@ -33,8 +33,7 @@ Future<void> main(List<String> arguments) async {
     if (wanted.isNotEmpty && !wanted.contains(id)) continue;
 
     for (final file in _filesOf(model)) {
-      final label =
-          file['fileName'] == null ? id : '$id/${file['fileName']}';
+      final label = file['fileName'] == null ? id : '$id/${file['fileName']}';
       final pinned = file['sha256'] as String?;
       if (pinned != null && !verify) {
         stdout.writeln(

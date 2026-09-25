@@ -59,7 +59,7 @@ dispositivo:
 | Modelos PP-OCR (det, rec, cls, dict) | Apache-2.0 | Sí | Auditados el 14-sep (D-044). Los datos de entrenamiento **no** están publicados |
 | UVDoc (dewarp) | pendiente de auditar | — | **Contradicción abierta**: el plan dice MIT, `models.json` dice Apache-2.0. Ver abajo |
 | `image_picker` | BSD-3-Clause | Sí | Traía el gancho a Play Services, ya eliminado |
-| `mobile_ocr` | MIT | Sí | Dependencia **git** apuntando a `ref: main`, no a un commit |
+| `mobile_ocr` | MIT | Sí | Dependencia **git**, fijada al commit `0c68f88f` desde el 2026-09-25 (antes, `ref: main`) |
 
 **Ninguna licencia restrictiva. Ningún binario sin fuente pública.** Los dos
 matices que sí importan están en la lista de lo que falta.
@@ -78,8 +78,9 @@ matices que sí importan están en la lista de lo que falta.
    `opencv_dart`**, ambos rechazados por decisiones registradas en ese mismo
    fichero (D-017, D-020, D-022). El §0.3 dice que el plan se corrige primero.
    Es el texto que se convierte en la solicitud.
-4. **Fijar `mobile_ocr` a un commit** en vez de a `main`. Hoy el destino de la
-   única petición de red de la aplicación lo controla una rama ajena.
+4. ~~**Fijar `mobile_ocr` a un commit** en vez de a `main`.~~ Hecho el 2026-09-25:
+   `ref: 0c68f88f…`, el commit al que ya resolvía `pubspec.lock`. El destino de la
+   única petición de red de la aplicación ya no lo controla una rama ajena.
 5. **La obligación §4(a) de Apache-2.0**: acompañar el texto de la licencia de
    los modelos y atribuir a PaddleOCR. La auditoría de licencias la identificó
    como «la obligación real» y no está implementada ni anotada.

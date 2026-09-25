@@ -122,7 +122,9 @@ class _HomeState extends State<_Home> {
     try {
       final watch = Stopwatch()..start();
       final decoded = img.decodeImage(jpeg);
-      if (decoded == null) throw const FormatException('No se pudo leer la imagen.');
+      if (decoded == null) {
+        throw const FormatException('No se pudo leer la imagen.');
+      }
       final rgb = decoded.convert(numChannels: 3);
       final decodeMs = watch.elapsedMilliseconds;
 
@@ -296,8 +298,7 @@ class _Controls extends StatelessWidget {
                 value: PageFilter.blackAndWhite, label: Text('Blanco y negro')),
           ],
           selected: <PageFilter>{filter},
-          onSelectionChanged:
-              busy ? null : (value) => onFilter(value.first),
+          onSelectionChanged: busy ? null : (value) => onFilter(value.first),
         ),
       ],
     );
@@ -422,7 +423,8 @@ class _LeftClipper extends CustomClipper<Rect> {
   final double split;
 
   @override
-  Rect getClip(Size size) => Rect.fromLTWH(0, 0, size.width * split, size.height);
+  Rect getClip(Size size) =>
+      Rect.fromLTWH(0, 0, size.width * split, size.height);
 
   @override
   bool shouldReclip(_LeftClipper old) => old.split != split;
@@ -512,8 +514,7 @@ class _Honesty extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
-          Text('Qué enseña esto, y qué no',
-              style: theme.textTheme.titleMedium),
+          Text('Qué enseña esto, y qué no', style: theme.textTheme.titleMedium),
           const SizedBox(height: 10),
           _Point(
             'No hay servidor.',

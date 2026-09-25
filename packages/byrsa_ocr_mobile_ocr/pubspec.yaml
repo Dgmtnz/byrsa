@@ -25,7 +25,8 @@ dependencies:
   mobile_ocr:
     git:
       url: https://github.com/ente-io/mobile_ocr.git
-      ref: main
+      # The commit every measurement in this repository was taken on; main moves.
+      ref: 0c68f88f20607cfcb10286422860350ccb024acd
 
 dev_dependencies:
   flutter_lints: ^6.0.0
