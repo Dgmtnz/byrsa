@@ -5,6 +5,7 @@ import 'dart:math' as math;
 import 'dart:typed_data';
 
 import 'package:byrsa_restore/byrsa_restore.dart';
+import 'package:byrsa_restore/src/classical.dart' show extremumFilter;
 import 'package:test/test.dart';
 
 const int _width = 240;
@@ -27,6 +28,35 @@ ImageBuffer syntheticPage({double shadowStrength = 0.55}) {
     }
   }
   return ImageBuffer.gray(_width, _height, data);
+}
+
+/// The same page under a hard-edged shadow: a step, not a gradient. A hand or
+/// a window frame casts one of these; the soft kind the other fixtures use is
+/// what the phone's own body casts.
+ImageBuffer hardShadowPage({double shadowStrength = 0.45, int edge = 96}) {
+  final data = Uint8List(_width * _height);
+  for (var y = 0; y < _height; y++) {
+    for (var x = 0; x < _width; x++) {
+      final onLine = (y % 16) < 6 && y > 24 && y < _height - 24;
+      final inColumn = x > 20 && x < _width - 20;
+      final paper = onLine && inColumn ? 40 : 245;
+      data[y * _width + x] =
+          (paper * (x < edge ? shadowStrength : 1.0)).round().clamp(0, 255);
+    }
+  }
+  return ImageBuffer.gray(_width, _height, data);
+}
+
+/// Mean of the blank paper in one column, skipping the text rows.
+double paperColumn(ImageBuffer image, int x) {
+  var total = 0;
+  var count = 0;
+  for (var y = 40; y < _height - 40; y++) {
+    if ((y % 16) < 9) continue;
+    total += image.data[y * _width + x];
+    count++;
+  }
+  return total / count;
 }
 
 /// Standard deviation of the paper — the parts with no text on them.
@@ -125,6 +155,27 @@ void main() {
           reason: 'the red block must stay red');
       expect(channel(170, 130, 2), greaterThan(channel(170, 130, 1) + 40),
           reason: 'the blue block must stay blue');
+    });
+
+    test('a hard shadow edge does not print itself back on the page', () {
+      // The halo, and the reason the paper estimate is a closing rather than
+      // a maximum: the brightest thing near the dark side of a step is the
+      // lit side, so a maximum overestimates the paper there and the division
+      // came back with a band darker than the shadow it had just removed —
+      // wide enough to read as "the shadow is still there". D-042 measured
+      // that band and filed it as a limit of divide-by-background; it was a
+      // limit of one estimator.
+      final after = const ClassicalRestore()(hardShadowPage());
+
+      final lit = paperColumn(after, 180);
+      final shaded = <double>[
+        for (var x = 40; x < 90; x++) paperColumn(after, x),
+      ];
+      // The step itself may survive as an edge a few pixels wide. What may not
+      // survive is a band: of these fifty columns the maximum-only estimate
+      // darkens 21, the closing darkens 3.
+      expect(shaded.where((v) => v < lit * 0.95).length, lessThan(10),
+          reason: 'the shadow edge must not print a band onto the paper');
     });
 
     test('estimates the paper without following the text into the ink', () {
@@ -309,6 +360,57 @@ void main() {
         largeWatch.elapsedMicroseconds,
         lessThan(math.max(smallWatch.elapsedMicroseconds, 1000) * 12),
       );
+    });
+  });
+
+  group('extremum filter', () {
+    test('is the naive filter, sample for sample', () {
+      // van Herk / Gil-Werman is all block and index arithmetic, and a window
+      // shifted by a pixel or two still restores a plausible page, so nothing
+      // above would notice. Held here to the definition instead: the extremum
+      // of the (2r+1)-square around each sample, cut off at the image's edge.
+      // Sizes smaller than the radius are where the padding does all the work.
+      final random = math.Random(54);
+      for (final radius in <int>[1, 2, 3, 7, 16, 31, 64]) {
+        for (final (width, height) in <(int, int)>[
+          (1, 1),
+          (1, 9),
+          (9, 1),
+          (5, 3),
+          (40, 27),
+          (150, 3),
+          (3, 150),
+        ]) {
+          final source = Uint8List.fromList(<int>[
+            for (var i = 0; i < width * height; i++) random.nextInt(256),
+          ]);
+          for (final maximum in <bool>[true, false]) {
+            final pick = maximum ? math.max<int> : math.min<int>;
+            final naive = Uint8List(source.length);
+            for (var y = 0; y < height; y++) {
+              for (var x = 0; x < width; x++) {
+                var best = source[y * width + x];
+                for (var j = math.max(0, y - radius);
+                    j <= math.min(height - 1, y + radius);
+                    j++) {
+                  for (var i = math.max(0, x - radius);
+                      i <= math.min(width - 1, x + radius);
+                      i++) {
+                    best = pick(best, source[j * width + i]);
+                  }
+                }
+                naive[y * width + x] = best;
+              }
+            }
+            expect(
+              extremumFilter(source, width, height, radius, maximum: maximum),
+              naive,
+              reason: '${maximum ? 'maximum' : 'minimum'}, r = $radius, '
+                  '${width}x$height',
+            );
+          }
+        }
+      }
     });
   });
 

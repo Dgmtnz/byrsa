@@ -65,6 +65,14 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                 .setRecogniseAutomatically(enabled: value),
           ),
           const Divider(),
+          SwitchListTile(
+            title: Text(l10n.removeIntrusions),
+            subtitle: Text(l10n.removeIntrusionsBody),
+            value: ref.watch(preferencesProvider).removeIntrusions,
+            onChanged: (value) => ref
+                .read(preferencesProvider.notifier)
+                .setRemoveIntrusions(enabled: value),
+          ),
           const _DewarpModelTile(),
           const Divider(),
           readiness.when(

@@ -48,9 +48,16 @@ enum DocumentDetector {
     }
 
     /// The fallback: classical rectangle detection, tuned for a page that
-    /// roughly fills the frame — the same assumption the Android detector makes,
-    /// so the two platforms fail in the same situations rather than in
-    /// different ones.
+    /// roughly fills the frame.
+    ///
+    /// This used to claim the two platforms therefore fail in the same
+    /// situations. They do not, and the Android side was measured saying so:
+    /// its detector now takes the outermost step that goes from dark outside to
+    /// bright inside, so it requires a page brighter than what surrounds it and
+    /// returns *nothing at all* for a dark document on a bright table. Vision
+    /// has no such requirement, and Apple's own constraints here are different
+    /// again — a minimum size and an aspect-ratio window, not a polarity.
+    /// Filling the frame is the only assumption the two share.
     private static func detectRectangles(
         _ buffer: CVPixelBuffer,
         _ orientation: CGImagePropertyOrientation

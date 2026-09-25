@@ -46,12 +46,21 @@ import 'pipeline.dart';
 /// it does not reach the border.
 ///
 /// Rule 5 was not in the first version, and the test that found it is worth
-/// keeping in mind. Illumination normalisation leaves a **halo at a hard
-/// shadow edge** — dividing by a background built from a local maximum
-/// overestimates on the dark side of a sharp step, and a dark stripe survives
+/// keeping in mind. Illumination normalisation used to leave a **halo at a
+/// hard shadow edge** — dividing by a background built from a local maximum
+/// overestimates on the dark side of a sharp step, and a dark stripe survived
 /// where the edge was. That stripe is thick, differs from the paper, and
 /// touches the border, so it passed every other test. It also runs the full
 /// height of the page, which no hand does.
+///
+/// The background is now a closing (D-054). Along a straight shadow edge what
+/// survives is a few pixels wide, and nothing here takes it for a hand, rule 5
+/// or not. Along a diagonal one a thin dark line survives, and after the
+/// threshold and the erosion what is left of it touches only one edge of the
+/// page, so rule 5 lets it through and the fill erases the text under it.
+/// That was measured on the synthetic hand-shadow documents, where no hand is
+/// in frame, and it is why the application leaves this stage off by default
+/// (D-055).
 ///
 /// ## Where in the pipeline
 ///
@@ -356,8 +365,8 @@ class BorderIntrusion {
   ///
   /// Each connected region is grown separately so the edges it reaches can be
   /// recorded. A region touching two opposite edges is not a hand — it is a
-  /// stripe across the whole image, and the thing that produces one of those
-  /// is the halo left at a hard shadow edge.
+  /// stripe across the whole image, which is what the halo at a hard shadow
+  /// edge used to be (see the class docs).
   static Uint8List _floodFromBorder(Uint8List mask, int width, int height) {
     final out = Uint8List(mask.length);
     final visited = Uint8List(mask.length);

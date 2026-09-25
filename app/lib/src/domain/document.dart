@@ -82,7 +82,14 @@ class ScanPage {
   /// re-restoring an already processed page compounds the artefacts of both.
   final String originalPath;
 
-  /// The rectified page, when it exists.
+  /// The rectified page.
+  ///
+  /// It used to carry two meanings — the warp on capture, then the restoration
+  /// output on top of it — and the second one erased the first, so every
+  /// filter change restored the previous restoration again (D-051). A row can
+  /// still name a restoration output on purpose: a page migrated from schema 1
+  /// whose original and warp were both gone keeps its old `.restored.jpg`, the
+  /// only picture of it left.
   final String? processedPath;
 
   /// The four corners used to warp this page, in the original frame's
@@ -91,7 +98,7 @@ class ScanPage {
   /// Kept so the corners can be corrected weeks later, from the original.
   final List<double>? quad;
 
-  /// Whether [processedPath] has been through restoration, not merely warped.
+  /// Whether [restoredPath] has been written, not merely the warp.
   ///
   /// The distinction is what lets the application finish a job it started: a
   /// page can be perspective-corrected the instant it is captured and have its
@@ -109,29 +116,31 @@ class ScanPage {
   final int? width;
   final int? height;
 
-  String get displayPath => processedPath ?? originalPath;
+  /// Where restoration writes, derived rather than stored.
+  ///
+  /// A second column would be a second thing to keep in step; a convention
+  /// cannot drift. The suffix is `.enhanced.jpg` and not `.restored.jpg`
+  /// precisely because a database written before this split may still hold the
+  /// old name in [processedPath], and an input that equals its own output is
+  /// the bug this replaces.
+  String get restoredPath => '$originalPath.enhanced.jpg';
+
+  /// What restoration reads: the rectified page while [exists] finds it on
+  /// disk, the original frame otherwise.
+  ///
+  /// Never [restoredPath]: restoring a restoration compounds it. The check is
+  /// passed in so this class stays free of I/O.
+  String restoreInput(bool Function(String path) exists) {
+    final rectified = processedPath;
+    return rectified != null && exists(rectified) ? rectified : originalPath;
+  }
+
+  String get displayPath =>
+      restored ? restoredPath : (processedPath ?? originalPath);
   bool get hasText => (text ?? '').trim().isNotEmpty;
 
   /// Whether this page can produce a genuinely searchable PDF page.
   bool get hasWordBoxes => words.isNotEmpty;
-
-  ScanPage copyWith({
-    String? processedPath,
-    String? text,
-    List<PageWord>? words,
-    int? position,
-  }) =>
-      ScanPage(
-        id: id,
-        documentId: documentId,
-        position: position ?? this.position,
-        originalPath: originalPath,
-        processedPath: processedPath ?? this.processedPath,
-        text: text ?? this.text,
-        words: words ?? this.words,
-        width: width,
-        height: height,
-      );
 }
 
 /// A scanned document: an ordered set of pages, in a folder.

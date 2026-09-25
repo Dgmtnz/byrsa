@@ -11,13 +11,20 @@ import kotlin.math.min
  * Finds the four corners of a page in a luminance image.
  *
  * The approach is deliberately classical and small: for each side of the frame
- * it scans inwards, records where the strongest brightness step is on every
- * scan line, fits a straight line through those points while throwing out the
- * ones that disagree, and intersects the four lines.
+ * it scans inwards, records the **outermost** dark-outside-to-bright-inside
+ * step on every scan line, fits a straight line through those points while
+ * throwing out the ones that disagree, and intersects the four lines.
+ *
+ * Outermost and signed, not strongest: see [fitEdge]. The strongest step on a
+ * scan line down a printed page is the title, not the paper edge.
  *
  * TODO: this is a baseline, and its ceiling is documented rather than
- * hidden. It assumes the page is the dominant bright region and roughly fills
- * the frame — which is what the capture UI asks the user to do. It will miss a
+ * hidden. It requires the page to be brighter than what surrounds it and to
+ * roughly fill the frame — which is what the capture UI asks the user to do.
+ * Brighter is now a requirement rather than a preference: a dark document on a
+ * bright table returns no quad at all, measured, where the old unsigned rule
+ * returned a good one. That is the price of not latching onto the title, and
+ * the capture UI already falls back to the full frame. It will also miss a
  * small page on a busy desk, and it does not follow a curved edge. The upgrade
  * path is contour extraction, or a small segmentation network in
  * `byrsa_restore`; the milestone benchmark is what decides whether that is
@@ -42,7 +49,12 @@ object QuadDetector {
     /** Fraction of each scan line ignored at the ends, where corners confuse the fit. */
     private const val MARGIN = 0.12f
 
-    /** Minimum brightness step, out of 255, that counts as an edge. */
+    /**
+     * Minimum **signed rise**, out of 255, that counts as an edge: how much
+     * brighter the inside of a step has to be than the outside. A fall of any
+     * size is not an edge at all, whatever its magnitude — that is the whole
+     * point, and it is why this is not a plain threshold on `abs`.
+     */
     private const val MIN_STEP = 12
 
     /** Fraction of scan lines that must agree for a side to be believed. */
@@ -123,6 +135,48 @@ object QuadDetector {
         }
     }
 
+    /**
+     * Where one side of the page is, as a line fitted over every scan line.
+     *
+     * The rule is **the outermost step that goes from dark outside to bright
+     * inside, and stop there**. Both halves of that were wrong before and they
+     * compounded: the loop kept the argmax over the whole search depth — half
+     * the image — and the step was `abs(a - b)`, which cannot tell paper from
+     * ink. Printed ink on white paper is a far stronger step than white paper
+     * against any normal desk, so the top edge latched onto the title and the
+     * bottom onto the footer. On a real harness page composited onto a desk
+     * that cut 24.5% off the top and 33.3% off the bottom of the page.
+     *
+     * `a` is always sampled one position further out than `b`, on all four
+     * sides, so `b - a` is positive exactly for a dark-outside/bright-inside
+     * transition and the sign does the discriminating for free.
+     *
+     * Rejected, all four measured rather than argued:
+     *  - strongest step within the outer 20%: the title still wins.
+     *  - outermost `abs` step over the threshold, the tempting simplification
+     *    of this one: a page casts a shadow on its desk, so going inward you
+     *    meet desk→shadow (a fall) before shadow→paper (a rise); it stops one
+     *    transition early and swallows the shadow band. Measured at 2.9% too
+     *    large by the shadow scene in `QuadDetectorTest`, which exists to catch
+     *    exactly this — the scene that reproduces the user's bug does not.
+     *  - requiring the darker side to stay dark out to the frame edge: correct,
+     *    but a second pass and a uniformity threshold for no measured gain.
+     *
+     * No safety margin, deliberately. The double 3-tap blur spreads an edge
+     * over ~4 work px and the first qualifying `d` lands on the outer end of
+     * that ramp, so the quad already comes out 0.31–0.84% *outside* the true
+     * edge on [QuadDetectorTest]'s two scenes. A margin would only hide
+     * whether this rule is right, and on those two scenes the failure
+     * direction is the harmless one: the old rule failed by cutting content,
+     * which forces a rescan, this one by including a sliver of desk, which
+     * the corner editor fixes. That is not universal, though: a single
+     * least-squares fit per side, refit once after dropping the worst
+     * quarter of residuals, is not proof against a bright patch on part of
+     * the desk near an edge (a lamp reflection, uneven daylight). That can
+     * tilt the fitted line and pull the far corner of the same edge inward,
+     * into the page, instead — synthetic, measured, see `DECISIONS.md`
+     * D-052.
+     */
     private fun fitEdge(image: ByteArray, w: Int, h: Int, side: Side): Line? {
         val vertical = side == Side.LEFT || side == Side.RIGHT
         val scanCount = if (vertical) h else w
@@ -136,7 +190,6 @@ object QuadDetector {
 
         for (scan in first until last) {
             var bestPosition = -1
-            var bestStep = MIN_STEP
             for (d in 1 until depth) {
                 val (a, b) = when (side) {
                     Side.LEFT -> sample(image, w, d - 1, scan) to sample(image, w, d + 1, scan)
@@ -144,14 +197,14 @@ object QuadDetector {
                     Side.TOP -> sample(image, w, scan, d - 1) to sample(image, w, scan, d + 1)
                     Side.BOTTOM -> sample(image, w, scan, h - d) to sample(image, w, scan, h - d - 2)
                 }
-                val step = abs(a - b)
-                if (step > bestStep) {
-                    bestStep = step
+                val step = b - a
+                if (step > MIN_STEP) {
                     bestPosition = when (side) {
                         Side.LEFT, Side.TOP -> d
                         Side.RIGHT -> w - d - 1
                         Side.BOTTOM -> h - d - 1
                     }
+                    break
                 }
             }
             if (bestPosition >= 0) {

@@ -37,6 +37,16 @@ class _DocumentScreenState extends ConsumerState<DocumentScreen> {
   bool _busy = false;
   bool _restoring = false;
 
+  /// Pages whose restoration threw, left alone until the screen is closed.
+  ///
+  /// `build` schedules [_restorePending] after every frame and a failed page is
+  /// still waiting, so without this it would be retried, and fail, forever.
+  final Set<int> _failed = <int>{};
+
+  /// Bumped by every change to what a restoration should produce, so a pass
+  /// that started before it does not mark its stale output as done.
+  int _generation = 0;
+
   /// Pages captured but not yet restored are finished off in the background as
   /// soon as the document is opened.
   ///
@@ -46,8 +56,11 @@ class _DocumentScreenState extends ConsumerState<DocumentScreen> {
   /// and then visibly improves.
   Future<void> _restorePending(ScanDocument document) async {
     if (_restoring) return;
-    final pending = document.pages.where((page) => !page.restored).toList();
+    final pending = document.pages
+        .where((page) => !page.restored && !_failed.contains(page.id))
+        .toList();
     if (pending.isEmpty) return;
+    final generation = _generation;
 
     final l10n = AppLocalizations.of(context)!;
     setState(() {
@@ -63,26 +76,45 @@ class _DocumentScreenState extends ConsumerState<DocumentScreen> {
         dewarpModelPath: preferences.dewarp && store.isInstalled('uvdoc-grid')
             ? store.fileFor('uvdoc-grid').path
             : null,
+        removeIntrusions: preferences.removeIntrusions,
       );
       for (final page in pending) {
-        final outcome = await io.restoreFile(
-          // Always from the perspective-corrected page, never from a previous
-          // restoration: applying the correction twice compounds it.
-          inputPath: page.processedPath ?? page.originalPath,
-          outputPath: '${page.originalPath}.restored.jpg',
-        );
-        await _forgetCached(outcome.path);
-        library.setPageRestored(page.id, outcome.path);
-        if (mounted) ref.read(libraryRevisionProvider.notifier).state++;
+        // A closed screen stops here: `ref` throws once it is disposed, and
+        // the per-page catch below would otherwise swallow that and carry on.
+        if (!mounted) break;
+        // The rectified file can be gone, because the OS empties caches, and
+        // then the page is restored from the original and loses its crop. The
+        // original can be gone too: capture writes it to the cache directory
+        // as well (CaptureSession.kt:210) and nothing copies it out yet. That
+        // costs this page, never the rest of the document.
+        try {
+          final outcome = await io.restoreFile(
+            inputPath: page.restoreInput((path) => File(path).existsSync()),
+            outputPath: page.restoredPath,
+          );
+          await _forgetCached(outcome.path);
+          // A filter or corner change made while this pass ran has re-queued
+          // the page, and marking it done would keep this stale output. The
+          // rebuild after `finally` starts a pass with the new settings. A
+          // screen closed meanwhile leaves the page for the next opening.
+          if (!mounted || generation != _generation) break;
+          library.setPageRestored(page.id);
+          if (mounted) ref.read(libraryRevisionProvider.notifier).state++;
 
-        // Recognition follows enhancement when the user has asked for it, and
-        // only then: on Android the first run downloads models, and reaching
-        // for the network unasked is what this project exists not to do.
-        if (ref.read(preferencesProvider).recogniseAutomatically) {
-          await _recognisePage(library, page.id, outcome.path);
+          // Recognition follows enhancement when the user has asked for it,
+          // and only then: on Android the first run downloads models, and
+          // reaching for the network unasked is what this project exists not
+          // to do.
+          if (ref.read(preferencesProvider).recogniseAutomatically) {
+            await _recognisePage(library, page.id, outcome.path);
+          }
+        } on Object catch (error) {
+          _failed.add(page.id);
+          if (mounted) setState(() => _status = '$error');
         }
       }
     } on Object catch (error) {
+      _failed.addAll(pending.map((page) => page.id));
       if (mounted) setState(() => _status = '$error');
     } finally {
       if (mounted) {
@@ -196,12 +228,14 @@ class _DocumentScreenState extends ConsumerState<DocumentScreen> {
     ref.read(preferencesProvider.notifier).setFilter(filter);
     if (document == null) return;
     final library = await ref.read(libraryProvider.future);
-    for (final page in document.pages) {
-      // Back to the rectified image: restoring a restored page would apply
-      // the correction twice.
-      library.setPageProcessed(
-          page.id, page.processedPath ?? page.originalPath);
-    }
+    // The rectified page stays exactly where it is; only the flag moves. This
+    // loop used to write `processed_path` back over itself, which pinned the
+    // previous restoration as the next input and compounded the filter on
+    // every change.
+    library.setPagesNeedRestore(document.id);
+    _generation++;
+    // An explicit change earns a failed page one more try.
+    _failed.clear();
     ref.read(libraryRevisionProvider.notifier).state++;
     final refreshed = library.document(document.id);
     if (refreshed != null) await _restorePending(refreshed);
@@ -245,6 +279,9 @@ class _DocumentScreenState extends ConsumerState<DocumentScreen> {
           for (final corner in quad.corners) ...<double>[corner.x, corner.y],
         ],
       );
+      _generation++;
+      // A new warp is a new input, so a page that failed gets another try.
+      _failed.remove(page.id);
       ref.read(libraryRevisionProvider.notifier).state++;
     } on Object catch (error) {
       if (mounted) setState(() => _status = '$error');
@@ -342,9 +379,13 @@ class _DocumentScreenState extends ConsumerState<DocumentScreen> {
         final bytes = await File(page.displayPath).readAsBytes();
         pdf.addPage(SearchablePage(
           image: PdfImage.decode(bytes),
-          // The boxes are in the coordinate space of the image being embedded:
-          // recognition runs on the restored page, and `displayPath` returns
-          // that same file once restoration has written it.
+          // The boxes are in the pixels of the image OCR last ran on, normally
+          // the restored page, so they line up with what is embedded only
+          // while the page is restored. Mid-restoration `displayPath` is the
+          // rectified page or the original frame, which can be another size.
+          // And a re-restoration that moves pixels — a fallback to the
+          // original, a new dewarp framing (D-053) — keeps the old boxes until
+          // OCR runs again.
           words: <PdfWord>[
             for (final word in page.words)
               PdfWord(

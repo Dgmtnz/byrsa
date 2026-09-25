@@ -17,6 +17,7 @@ class Preferences {
     this.autoCapture = true,
     this.recogniseAutomatically = false,
     this.dewarp = true,
+    this.removeIntrusions = false,
   });
 
   final PageFilter filter;
@@ -36,11 +37,25 @@ class Preferences {
   /// carries on.
   final bool dewarp;
 
+  /// Whether to erase a finger holding the page down and fill the paper back in.
+  ///
+  /// Off by default, as D-042 left it: the failure is destructive and silent,
+  /// and the synthetic set now shows it happening. The closing that estimates
+  /// the paper (D-054) removes the halo along a straight shadow edge, but a
+  /// diagonal one still leaves a thin dark line; the detector takes that line
+  /// for something holding the page and, on hand-shadow documents with no hand
+  /// in frame, erases the words under it. PSNR against the clean page rises
+  /// all the same — the dark residue goes with the words — so PSNR is not the
+  /// measure that can clear it. The numbers are in D-055; what a real
+  /// photograph of a hand does is U-44.
+  final bool removeIntrusions;
+
   Preferences copyWith({
     PageFilter? filter,
     bool? autoCapture,
     bool? recogniseAutomatically,
     bool? dewarp,
+    bool? removeIntrusions,
   }) =>
       Preferences(
         filter: filter ?? this.filter,
@@ -48,6 +63,7 @@ class Preferences {
         recogniseAutomatically:
             recogniseAutomatically ?? this.recogniseAutomatically,
         dewarp: dewarp ?? this.dewarp,
+        removeIntrusions: removeIntrusions ?? this.removeIntrusions,
       );
 }
 
@@ -66,6 +82,7 @@ class PreferencesNotifier extends StateNotifier<Preferences> {
       autoCapture: database.setting('autoCapture') != 'false',
       recogniseAutomatically: database.setting('autoOcr') == 'true',
       dewarp: database.setting('dewarp') != 'false',
+      removeIntrusions: database.setting('removeIntrusions') == 'true',
     );
   }
 
@@ -87,6 +104,11 @@ class PreferencesNotifier extends StateNotifier<Preferences> {
   void setDewarp({required bool enabled}) {
     _database?.setSetting('dewarp', '$enabled');
     state = state.copyWith(dewarp: enabled);
+  }
+
+  void setRemoveIntrusions({required bool enabled}) {
+    _database?.setSetting('removeIntrusions', '$enabled');
+    state = state.copyWith(removeIntrusions: enabled);
   }
 }
 

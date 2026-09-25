@@ -194,6 +194,13 @@ class AppLocalizationsEn extends AppLocalizations {
   String get dewarpReady => 'Downloaded. Curved pages will be flattened.';
 
   @override
+  String get removeIntrusions => 'Remove fingers at the edge';
+
+  @override
+  String get removeIntrusionsBody =>
+      'Erases a thumb, a finger or whatever else holds the page down at the edge, and fills the paper back in.';
+
+  @override
   String get remove => 'Remove';
 
   @override

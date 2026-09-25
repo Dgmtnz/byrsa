@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:sqlite3/common.dart';
 
@@ -26,7 +27,7 @@ class LibraryDatabase {
 
   final CommonDatabase _db;
 
-  static const int schemaVersion = 1;
+  static const int schemaVersion = 2;
 
   void _migrate() {
     _db.execute('PRAGMA foreign_keys = ON');
@@ -103,6 +104,52 @@ class LibraryDatabase {
            END;''',
       ]) {
         _db.execute(trigger);
+      }
+    }
+    if (current < 2) {
+      // `processed_path` used to hold the rectified page until restoration
+      // overwrote it with its own output, `<original>.restored.jpg`, after
+      // which the row no longer named the rectified page (D-051). Each such
+      // row is pointed at the best picture of the page still on disk, and
+      // `restored = 0` queues it to be enhanced once more from that:
+      //
+      // 1. `<original>.page.jpg`, the warp. Android capture writes it under
+      //    that name (CaptureSession.kt:239), and the re-warp after "adjust
+      //    corners" is written that way in both sources (CaptureSession.kt:256,
+      //    CaptureSession.swift:244). iOS capture is not: the Swift source
+      //    names its warp from a fresh timestamp (CaptureSession.swift:221,
+      //    :250) and has never been compiled (U-01), so on iOS only a
+      //    re-warped page would be found here.
+      // 2. Otherwise nothing, so restoration starts from the original frame,
+      //    as it does for a gallery import, which never had a warp. A capture
+      //    whose warp alone was purged loses its crop this way, and the v1
+      //    output that still holds it is left unreferenced: restoring from it
+      //    would bring the compounding back, and nothing in the row says
+      //    whether the page was captured or imported.
+      // 3. Otherwise the v1 output is left where it is. When the OS cache
+      //    purge has taken the original and its warp, it is the only picture
+      //    of the page there is, and dropping it would strand it.
+      //
+      // The paths are checked as stored: capture and import both store
+      // absolute ones.
+      final rows = _db.select(
+        'SELECT id, original_path, processed_path FROM pages '
+        "WHERE processed_path LIKE '%.restored.jpg'",
+      );
+      for (final row in rows) {
+        final original = row['original_path'] as String;
+        final warp = '$original.page.jpg';
+        _db.execute(
+          'UPDATE pages SET processed_path = ?, restored = 0 WHERE id = ?',
+          <Object?>[
+            File(warp).existsSync()
+                ? warp
+                : File(original).existsSync()
+                    ? null
+                    : row['processed_path'],
+            row['id'],
+          ],
+        );
       }
     }
     _db.execute('PRAGMA user_version = $schemaVersion');
@@ -235,15 +282,22 @@ class LibraryDatabase {
       <Object?>[documentId],
     ).first['next'] as int;
 
+    // `quad` and `words` are in the column list because they once were not:
+    // the corners detected at capture were accepted as an argument and thrown
+    // away, so "adjust corners" always opened on the full frame rather than on
+    // what the detector had found.
     _db.execute(
-      'INSERT INTO pages(document_id, position, original_path, processed_path, text, width, height) '
-      'VALUES (?, ?, ?, ?, ?, ?, ?)',
+      'INSERT INTO pages(document_id, position, original_path, processed_path, '
+      'quad, text, words, width, height) '
+      'VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)',
       <Object?>[
         documentId,
         next,
         originalPath,
         processedPath,
+        quad == null ? null : jsonEncode(quad),
         text,
+        _encodeWords(words),
         width,
         height
       ],
@@ -274,15 +328,26 @@ class LibraryDatabase {
 
   /// Records a page that has been through restoration.
   ///
-  /// Separate from a plain processed path so the application can tell a
-  /// perspective-corrected page from one that has also had its light
-  /// flattened, and can finish the job for the pages still waiting.
-  void setPageRestored(int pageId, String processedPath) {
+  /// A flag and no path: where the restored image lives is
+  /// [ScanPage.restoredPath], a convention on the original frame. This method
+  /// used to take the path and write it into `processed_path`, which destroyed
+  /// the only reference to the rectified page and made every later
+  /// re-restoration read its own previous output.
+  void setPageRestored(int pageId) {
     _db.execute(
-      'UPDATE pages SET processed_path = ?, restored = 1 WHERE id = ?',
-      <Object?>[processedPath, pageId],
+      'UPDATE pages SET restored = 1 WHERE id = ?',
+      <Object?>[pageId],
     );
   }
+
+  /// Queues every page of a document to be restored again.
+  ///
+  /// What a filter change is: the rectified page is untouched and still the
+  /// input, only the enhancement that runs over it differs.
+  void setPagesNeedRestore(int documentId) => _db.execute(
+        'UPDATE pages SET restored = 0 WHERE document_id = ?',
+        <Object?>[documentId],
+      );
 
   /// Records a new warp of a page, from new corners.
   ///

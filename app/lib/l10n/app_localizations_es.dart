@@ -195,6 +195,13 @@ class AppLocalizationsEs extends AppLocalizations {
   String get dewarpReady => 'Descargado. Las páginas curvadas se aplanarán.';
 
   @override
+  String get removeIntrusions => 'Quitar dedos del borde';
+
+  @override
+  String get removeIntrusionsBody =>
+      'Borra el pulgar, el dedo o lo que sujete la página en el borde, y devuelve el papel que tapaba.';
+
+  @override
   String get remove => 'Eliminar';
 
   @override

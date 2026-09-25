@@ -40,7 +40,7 @@ corpus de evaluación propio y un error de carácter medido.
 | `harness/` | 1.382 | Corpus, ejecución y puntuación | Dart puro |
 | `demo/` | 695 | La restauración en un navegador | Sin servidor, sin CDN |
 
-**47 commits · 48 decisiones · 205 tests en verde · analyze limpio.**
+**47 commits · 55 decisiones · 221 tests en verde · analyze limpio.**
 
 Tres guardias corren antes de cada commit y en CI: `tool/check_claims.sh`
 (disciplina de afirmaciones), `tool/check_web_parity.sh` (VM y dart2js dan los
@@ -72,6 +72,10 @@ Todo con su fecha y su máquina en [`docs/measurements.md`](docs/measurements.md
 | **Curvada** | **29,09%** |
 | **Dos daños a la vez** | **42,85% y 63,90%** |
 
+Medido el 14 y el 16 de septiembre, con el estimador del papel anterior a D-054 y, en la
+página curvada, con el encuadre del dewarp anterior a D-053 si la etapa llegó a correr (U-34).
+No se ha vuelto a medir.
+
 **El hallazgo no es la media, es la forma.** Un daño casi no se nota; dos a la
 vez no degradan, rompen. Entre 2,56% y 42,85% no hay escalones. La causa parece
 arquitectónica: el pipeline clásico estima un campo de color de papel y un juego
@@ -84,6 +88,9 @@ de mapas, y cada corrección supone que los demás problemas no están (D-048).
 | Restauración, 12 MP | 0,61 s |
 | Pipeline sobre 50 páginas | mediana 448 ms, p90 578 ms |
 | Restauración en navegador, 1,4 MP | 304 ms, **cero peticiones externas** |
+
+Las tres filas son de antes del estimador de D-054 y sin la etapa de intrusiones de D-055, que
+va apagada por defecto y cuyo coste está en esa entrada. No se han vuelto a medir.
 
 ---
 
@@ -99,7 +106,7 @@ de mapas, y cada corrección supone que los demás problemas no están (D-048).
 - **Tiempos en el teléfono.** Ni restauración, ni OCR, ni el codificador nativo.
 - **El camino de denegación del permiso de cámara.**
 
-Las 40 filas de [`UNVERIFIED.md`](UNVERIFIED.md) llevan cada una su comando.
+Las 51 filas de [`UNVERIFIED.md`](UNVERIFIED.md) llevan cada una su comando.
 
 ---
 
@@ -108,8 +115,10 @@ Las 40 filas de [`UNVERIFIED.md`](UNVERIFIED.md) llevan cada una su comando.
 ### 1. Las cincuenta fotografías — sólo las puede hacer Diego
 
 Bloquean D-039 (¿merece alguna red de sombras sus 120 MB?) y D-042 (¿se activa
-el quitado de intrusiones?), y son lo único que convierte el CER en una
-afirmación sobre el producto.
+el quitado de intrusiones? Desde D-055 la etapa está conectada, con interruptor y
+apagada por defecto, porque sobre el corpus sintético borra texto bajo una sombra de
+mano diagonal), y son lo único que convierte el CER en una afirmación sobre el
+producto.
 
 **La instrucción cambió el 14 de septiembre** y está en
 [`harness/dataset/README.md`](harness/dataset/README.md): hacen falta al menos
@@ -172,7 +181,7 @@ código — y ahora se puede contar con nueve ejemplos fechados.
 
 1. [`plan-escaner-open-source-flutter.md`](plan-escaner-open-source-flutter.md) —
    el plan y el borrador de la solicitud.
-2. [`DECISIONS.md`](DECISIONS.md) — las 48 decisiones, con sus números.
-3. [`UNVERIFIED.md`](UNVERIFIED.md) — 40 filas, cada una con su comando.
+2. [`DECISIONS.md`](DECISIONS.md) — las 55 decisiones, con sus números.
+3. [`UNVERIFIED.md`](UNVERIFIED.md) — 51 filas, cada una con su comando.
 4. [`docs/measurements.md`](docs/measurements.md) — todo lo medido.
 5. [`docs/AUDITORIA.md`](docs/AUDITORIA.md) — cumplimiento y licencias.

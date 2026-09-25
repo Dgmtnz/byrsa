@@ -36,7 +36,12 @@ final pipeline = RestorePipeline(<RestoreStage>[
 |---|---|
 | Compiles on Android | verified |
 | Compiles on iOS | not verified — no macOS machine |
-| Inference has ever run | **no**, on any platform |
+| Inference through this package, on a device | not verified — see `UNVERIFIED.md` U-34 |
+
+The `.onnx` file itself has run, under Python on a desktop — see the class
+documentation on `UvdocStage` for what that measured. But the pipeline records
+no per-stage outcome, so nothing yet distinguishes this package's stage
+running on a device from it being skipped.
 
 The model is a 31.8 MB download the user starts explicitly. Until it is
 present, the stage reports itself unavailable and the pipeline carries on — a

@@ -136,7 +136,9 @@ All of this runs in an isolate, so it is a progress bar rather than a frozen
 interface — a difference invisible in a benchmark and very visible in the hand.
 
 **Not measured:** any of this on a phone. Expect several times slower, and do
-not quote a multiplier until someone has run it (`UNVERIFIED.md`, U-31).
+not quote a multiplier until someone has run it (`UNVERIFIED.md`, U-31). Nor has
+the desktop figure been re-run since D-054 replaced the paper estimator on
+2026-09-20, or with the intrusion stage D-055 wired in, which ships off.
 
 ### Page filters, and a surprise in the encoder
 
@@ -302,7 +304,8 @@ Synthetic 768×1024 page, PSNR against the un-shadowed original:
 The second column is built specifically to break the classical method's
 assumption — additive ambient light, a blue tint and a wide penumbra, none of
 which dividing by a background inverts. It still wins by 5.9 dB at a
-twenty-fifth of the cost.
+twenty-fifth of the cost. The classical rows use the paper estimator D-054
+replaced on 2026-09-20, and have not been re-run with the closing.
 
 **What this does not show.** Both pages are synthetic, and DocShadow was
 trained on real photographs; a model can score badly on synthetic data and well

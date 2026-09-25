@@ -219,18 +219,26 @@ void main() {
       );
     });
 
-    test('the halo at a hard shadow edge is not mistaken for a hand', () async {
-      // Dividing by a background built from a local maximum overestimates on
-      // the dark side of a sharp illumination step, so a dark stripe survives
-      // where the edge was. It is thick, it differs from the paper and it
-      // touches the border — it passed every test until the one that says a
-      // hand does not reach two opposite edges of the page.
-      final flattened = await RestorePipeline(const <RestoreStage>[
-        ClassicalStage(),
-      ]).run(shadowed());
+    test('the halo at a hard shadow edge is not mistaken for a hand', () {
+      // Dividing by a background built from a local maximum overestimated on
+      // the dark side of a sharp illumination step, so a dark stripe survived
+      // where the edge was, down the middle of the page and across the text.
+      // It is thick, it differs from the paper and it touches the border — it
+      // passed every test until the one that says a hand does not reach two
+      // opposite edges of the page. The closing (D-054) no longer leaves it
+      // behind a straight edge, so flattening shadowed() proves nothing about
+      // rule 5 any more; the stripe is drawn here instead.
+      final halo = Uint8List.fromList(page().data);
+      for (var y = 0; y < _height; y++) {
+        for (var x = 230; x < 270; x++) {
+          halo[y * _width + x] = 150;
+        }
+      }
 
       expect(
-        const BorderIntrusion().detect(flattened.image).areaFraction,
+        const BorderIntrusion()
+            .detect(ImageBuffer.gray(_width, _height, halo))
+            .areaFraction,
         0,
         reason: 'a full-height stripe is an artefact, not an object',
       );

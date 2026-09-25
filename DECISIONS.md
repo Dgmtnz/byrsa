@@ -1425,3 +1425,490 @@ falsa y más atractiva de «no pide red».
 que alguien escribiera «no pide permiso de red» — la afirmación que era **verdadera** mientras
 el permiso faltaba — y ninguna que comprobara que el permiso existiera. Enforzaba la regla al
 revés.
+
+---
+
+## D-051 · `processed_path` significaba dos cosas, y la segunda borraba la primera
+**Fecha:** 2026-09-19 · **Estado:** ratificar
+
+Cada cambio de filtro empeoraba el escaneo. No era el filtro: era que el realce se comía su
+propia salida. La cifra que lo enseñó —la fracción de píxeles quemados a blanco puro,
+**1,72% → 12,76% → 16,47%**— sale de un script de diagnóstico que no está en el repositorio
+(`degrade.dart`, 2026-09-19, el portátil de desarrollo): una página **sintética** de 900x1200 a
+la que se aplica `ClassicalRestore` en color tres veces seguidas sobre su propia salida —una
+restauración y dos re-restauraciones, no tres cambios de filtro—, sin pasar por JPEG y con el
+estimador de antes de D-054. Vuelto a correr el 2026-09-23 contra el estimador de D-054, el
+mismo script da 25,87% → 14,60% → 19,93%: esa fracción ya no crece al componer, así que no
+sirve para distinguir el arreglo del fallo (U-47).
+
+**La columna tenía dos dueños.** La captura escribía en `processed_path` la página
+rectificada; `setPageRestored` la sobrescribía después con la imagen realzada, y a partir de
+ese instante **la rectificada ya no era recuperable desde la fila**. El comentario de
+`_setFilter` decía «de vuelta a la imagen rectificada» y era sincero — sólo que lo que leía
+ya era la realzada. El nombre de salida se derivaba del original (`.restored.jpg`), así que
+desde la segunda pasada **la entrada y la salida eran el mismo fichero**.
+
+**Dos nombres para dos imágenes.** `processed_path` vuelve a significar únicamente la página
+rectificada, que es lo que su docstring afirmaba desde el principio. Dónde vive la realzada
+no se guarda: se deriva, `<original>.enhanced.jpg`. Una segunda columna sería una segunda
+cosa que mantener en sincronía; una convención no se desincroniza. Y el sufijo cambia a
+`.enhanced.jpg` a propósito: una base de datos de la versión anterior todavía puede tener
+`.restored.jpg` escrito en la columna, y el sufijo nuevo garantiza que nada pueda volver a
+leer y escribir el mismo fichero aunque una fila se escape de la migración.
+
+**La migración (esquema 1 → 2), que es la parte delicada.** Poner `processed_path = NULL`
+en todas las filas habría sido lo cómodo y es **incorrecto**: la restauración caería al
+fotograma original —la foto con la mesa dentro— y toda página capturada perdería su corrección
+de perspectiva en el primer toque de filtro del usuario. Así que cada fila que apunta a un
+`.restored.jpg` se reapunta a la mejor imagen de la página que siga **en disco**, y
+`restored = 0` la pone en cola para realzarse otra vez desde ahí:
+
+1. `<original>.page.jpg`, la rectificada, si existe. La captura de Android la escribe con ese
+   nombre (`CaptureSession.kt:239`), y el re-rectificado de «ajustar esquinas» también, en las
+   dos fuentes (`CaptureSession.kt:256`, `CaptureSession.swift:244`). **La captura de iOS no:**
+   el Swift nombra su rectificada con una marca de tiempo nueva (`CaptureSession.swift:221` y
+   `:250`), así que en iOS sólo una página re-rectificada se encontraría aquí. La primera
+   versión de esta entrada decía que las dos plataformas seguían la convención, y era falso
+   para iOS. No afecta a ninguna biblioteca que exista: el Swift no se ha compilado nunca
+   (U-01), así que no hay bibliotecas de iOS en el esquema 1.
+2. Si no, `NULL`: la restauración parte del original, como en una importación de galería, que
+   nunca tuvo rectificada. Una captura que sólo perdió la rectificada pierde así su recorte, y
+   el `.restored.jpg` que aún lo conserva queda sin referencia: restaurar desde él devolvería la
+   acumulación, y nada en la fila dice si la página vino de la cámara o de la galería.
+3. Si tampoco queda el original, se deja el `.restored.jpg`. Es la única imagen de la página
+   que queda, y realzarla una vez más —una pasada de más, de las que este arreglo quita— es
+   mejor que dejar la fila apuntando a un fichero que no existe.
+
+**Esto contradice la primera versión de esta entrada**, que decía que la migración no miraba
+el disco a propósito, para que `LibraryDatabase` no hiciera E/S de ficheros. Sin mirarlo, en
+el tercer caso —el sistema vació la caché y se llevó el original y la rectificada— la fila
+acababa apuntando a un `.page.jpg` que no existe, y el `.restored.jpg`, la única imagen que
+quedaba de la página, se perdía de vista. Las rutas se comprueban tal como están guardadas:
+captura e importación guardan la que devuelven el plugin e `image_picker`
+(`capture_screen.dart:127-128`, `library_screen.dart:99`), no una relativa a una raíz como
+describe D-015.
+
+**Una página cuyos ficheros ya no están falla sola, y una vez.** El bucle de restauración usa
+la rectificada si existe y el original si no (`ScanPage.restoreInput`); si falta todo, esa
+página falla, se anota como fallida mientras la pantalla siga abierta y el resto del documento
+sigue. Antes no era así: un único `try` envolvía el bucle entero, la primera página rota
+paraba las demás, y como cada `build` vuelve a lanzar la restauración, lo reintentaba en cada
+fotograma. Y un cambio de filtro o de esquinas durante una pasada ya no deja marcada como
+hecha la salida de la configuración anterior: un contador de generación descarta esa pasada y
+la siguiente usa la nueva. Esto último no tiene test, porque bajo `flutter test` el isolate de
+`compute` no arranca (`image_io_test.dart`). Si la pantalla se cierra a mitad de pasada, la
+pasada se detiene y la página en curso queda para la próxima apertura; el `catch` por página se
+tragaba el error que lanza `ref` tras `dispose`, y la pasada seguía restaurando sin OCR. Un
+cambio de filtro da otro intento a las páginas fallidas. Que un fallo de preparación (el
+almacén de modelos) no se reintente en cada fotograma sí tiene test
+(`document_screen_test.dart`). Nada de esto es una garantía de que la página se
+salve: la captura escribe también el original en el directorio de caché
+(`CaptureSession.kt:210`) y `ScanStorage.keep` no tiene ni un llamante, así que un vaciado se
+lleva los dos ficheros.
+
+**Coste de la migración: una restauración más por página, una sola vez**, la primera vez que
+se abre cada documento. Cuánto es eso en un teléfono no está medido (U-31); en escritorio,
+restaurar y codificar una página de 6,8 MP eran ~1,7 s el 2026-09-09 (`docs/measurements.md`),
+antes de D-054 y con el codificador de Dart. Y se realza con la configuración de hoy: el
+filtro es uno solo para toda la biblioteca —no hay columna de filtro por documento—, así que un
+documento que se dejó en blanco y negro vuelve con el filtro que esté puesto, y si el usuario
+ha encendido «Quitar dedos del borde», la etapa de D-055 pasa por páginas que nunca la
+pasaron. No se borra nada: el original, la rectificada y el viejo `.restored.jpg` siguen en
+disco, y elegir el filtro otra vez rehace el documento.
+
+**Lo que no arregla: las cajas de OCR.** La migración y `setPagesNeedRestore` sólo tocan
+`restored`; el texto y las cajas de palabras se quedan. Si la nueva restauración mueve píxeles
+—el respaldo al original, o el encuadre nuevo de D-053 en una página que pasó por el dewarp—,
+el PDF buscable pone la capa de texto donde estaba antes hasta que la página se vuelva a
+reconocer.
+
+**Dos fallos más, del mismo camino.** `addPage` aceptaba `quad` y `words` y los omitía de la
+lista de columnas del `INSERT`: las esquinas detectadas en la captura se tiraban en el mismo
+momento de detectarlas, y «ajustar esquinas» abría siempre sobre el marco completo. Y
+`ScanPage.copyWith` dejaba caer en silencio `quad` y `restored` — no lo llamaba nadie en todo
+el repositorio, así que se borra en vez de arreglarse: un método sin usuarios que pierde datos
+es una trampa esperando a su primer llamante.
+
+**Lo que queda sin medir.** Que el filtro ya no se componga está afirmado en tests
+(`ScanPage.restoreInput` nunca devuelve el fichero realzado), no visto en un teléfono (U-41).
+Que una biblioteca real del esquema 1 salga de la migración con cada página apuntando a un
+fichero que existe está probado contra ficheros temporales, no contra un teléfono actualizado
+(U-46). Y la cifra de arriba necesita un script en el repositorio para poder citarse (U-47).
+
+---
+
+## D-052 · El recorte se comía el título, y el detector buscaba el escalón más fuerte
+**Fecha:** 2026-09-19 · **Estado:** ratificar
+
+Escanear un folio normal y que el recorte se lleve el título por arriba y el pie por abajo.
+Los lados, perfectos. No era `MARGIN`, que recorta a lo largo del borde y no en profundidad:
+`QuadDetector.fitEdge` elegía mal el candidato en **cada línea de barrido**, por dos errores
+que se multiplicaban.
+
+**Uno: se quedaba con el argmax sobre toda la profundidad de búsqueda** — media imagen — en
+vez de parar en la primera transición de verdad. **Dos: `abs(a - b)` tiraba el signo**, con lo
+que la tinta (claro→oscuro hacia dentro) era indistinguible del borde del papel
+(oscuro→claro hacia dentro). Y la tinta negra sobre papel blanco es un escalón mucho más
+fuerte que el papel contra cualquier mesa. Una línea de barrido superior del diagnóstico,
+sobre una mesa gris 185 y con el borde real del folio en y=12 px de trabajo:
+
+```
+d=11..14   escalones 16, 28, 28, 17   <- borde real del papel, una SUBIDA (190 -> 218)
+d=33       escalón 75                 <- tinta del título, una BAJADA (218 -> 143)  <- ganaba
+```
+
+Veintidós píxeles de trabajo dentro de la página. Sobre una página del banco de pruebas
+compuesta sobre una mesa: **24,5% cortado por arriba y 33,3% por abajo**. Esa traza y esa cifra
+salen del diagnóstico del 2026-09-19, hecho con un puerto a Python de `QuadDetector.kt`
+(`quad_port.py`, fuera del repositorio) sobre `book-page-01` compuesta en una mesa a 1080x1440,
+no con el Kotlin. Nada del repositorio las reproduce: la escena con título de
+`QuadDetectorTest` da, con la regla de entonces, el +4,69% de la tabla de abajo, y sus niveles
+de gris no son los de la traza (U-48). Las cifras que se pueden volver a correr son las de esa
+tabla.
+
+**La regla nueva es el escalón más exterior que va de oscuro fuera a claro dentro, y parar
+ahí.** `a` se muestrea siempre una posición más afuera que `b` en los cuatro lados, así que
+`b - a` positivo *es* esa transición y el signo hace la discriminación gratis. Las otras tres
+candidatas se implementaron y se midieron en vez de discutirse: «el más fuerte dentro del 20%
+exterior» sigue perdiendo contra el título; «el más exterior por magnitud» se traga la sombra
+que la hoja proyecta sobre la mesa, porque hacia dentro te encuentras mesa→sombra (una
+bajada) antes que sombra→papel (una subida); y «el lado oscuro sigue oscuro hasta el borde
+del encuadre» es correcta pero pide una segunda pasada y un umbral de uniformidad para
+ninguna ganancia medible.
+
+**Sin margen de seguridad, a propósito.** El desenfoque de tres taps aplicado dos veces
+reparte el borde sobre ~4 px de trabajo y la primera `d` que cualifica cae en el extremo
+exterior de esa rampa, así que el cuadrilátero ya sale entre 0,31% y 0,84% **por fuera** del
+papel. Un margen sólo taparía si la regla es buena. En las escenas del test la dirección del
+fallo se ha dado la vuelta hacia el lado bueno: antes se perdía contenido, ahora entra una tira
+de mesa que el editor de esquinas quita. **No es universal.** Una franja clara sobre parte de
+la mesa, pegada a un borde —al menos 25 niveles por encima de la mesa, entre el 30% y el 60%
+de ese lado—, inclina la recta ajustada y mete la esquina opuesta hasta un 1,31% del encuadre
+dentro de la página, donde la regla anterior se quedaba un 0,31% fuera. Es sintético, medido
+compilando este `QuadDetector.kt` en un arnés de un solo uso de la revisión del 2026-09-23 que
+no está en el repositorio. El editor de esquinas trabaja sobre el original y corrige las dos
+direcciones; cómo se porta con luz real queda en U-42.
+
+**El precio, medido:** el detector ahora **exige** que la página sea más clara que su fondo.
+Un documento oscuro sobre una mesa blanca devuelve `null`, donde la regla sin signo devolvía
+un cuadrilátero bueno (0,0708 frente a 0,075 reales). La captura cae al encuadre completo, que
+es un recorte grande y no uno equivocado, pero es un dominio más estrecho que antes y está
+escrito en el docstring en vez de descubrirse en un teléfono. Y es un `null` para un documento
+oscuro **liso**: con impresión encima, el paso de la tinta de vuelta a la página también es una
+subida de oscuro a claro, y en una escena sintética así el detector devolvió un cuadrilátero en
+vez de `null`. Por eso la escena oscura de `QuadDetectorTest` no lleva tinta (U-42).
+
+**Lo que más vale de todo esto no es el arreglo: es que `QuadDetector` no lo había ejecutado
+nunca nadie.** La infraestructura de JUnit llevaba configurada desde el primer día
+(`build.gradle.kts` :42-43 y :84-85) y `src/test/kotlin` estaba **vacío**. Ahora hay
+`QuadDetectorTest`, y hace falta contar por qué tiene dos escenas —más una tercera, la del
+documento oscuro, que sólo comprueba el `null`—. Poniendo cada regla mala de vuelta y volviendo
+a correr:
+
+| Regla | Escena con título | Escena con sombra |
+|---|---|---|
+| argmax + `abs` (la que iba en producción) | falla, +4,69% dentro de la página | falla, +4,69% |
+| más exterior por magnitud (`abs` + `break`) | **pasa** | falla, -2,92% |
+| más exterior con signo (la buena) | pasa, peor error -0,84% | pasa, peor error -0,84% |
+
+La tabla es de las escenas del 2026-09-19. El 2026-09-23 las bandas de tinta del título y del
+pie se copiaron también a izquierda y derecha, para que la regla del escalón más exterior se
+pruebe en los cuatro lados, y con ellas la tabla no se ha vuelto a medir.
+
+Es decir: **el test obvio, el que reproduce exactamente el fallo que contó el usuario, no
+distingue el arreglo de su imitación más tentadora.** Sólo la escena con la sombra fija el
+signo. Un test que reproduce el síntoma no es lo mismo que un test que protege la causa.
+
+De paso, `DocumentDetector.swift` afirmaba que el detector de Android y el respaldo de Vision
+«fallan en las mismas situaciones». Con el signo, es falso y medible: Android no devuelve nada
+para un documento más oscuro que su fondo y Vision no tiene esa restricción. Corregido el
+comentario; ni una línea de Swift tocada, y nada de iOS se afirma como verificado.
+
+
+---
+
+## D-053 · UVDoc no retorcía las esquinas: le dábamos un encuadre que nunca ha visto
+**Fecha:** 2026-09-19 · **Estado:** ratificar
+
+El usuario dice que el desdoblado **retuerce las esquinas** en vez de dejar la página plana, y
+que **se pierde contenido por los bordes**. Son dos síntomas de la misma causa, y la causa no
+está en la red.
+
+UVDoc casi nunca ha visto una página que toque el borde de su entrada. Su propio cargador de
+datos (`crop_image_tight`, en `data_utils.py`) recorta al rectángulo del documento dejando
+**hasta** `s = 20` px de fondo real —menos si la foto no tiene tanto— y después recorta esa
+franja al azar a unos 4-20 px por lado antes de redimensionar: las muestras de entrenamiento
+casi siempre flotan dentro del cuadro. Byrsa rectifica al cuadrilátero en la captura y después
+estira esa página de borde a borde dentro del tensor de 496x720.
+
+Medido sobre seis páginas sintéticas curvadas a 2250x3000, error en píxeles de la fuente contra
+la rejilla verdadera. El `.onnx` es el fijado en `models.json`, pero corrió bajo Python
+(onnxruntime), en scripts que no están en el repositorio (`uvlib.py`, `exp5.py`, `exp6.py`,
+`span.py`; 2026-09-19, el portátil de desarrollo); una revisión los volvió a correr el
+2026-09-23 y dan lo mismo (U-49):
+
+| Entrada del modelo | media | borde | esquinas |
+|---|---|---|---|
+| ~1,5% de fondo real por lado — el encuadre con el que se entrenó | 20,1 | 18,9 | 19,7 |
+| página de borde a borde — lo que hacíamos | 101,6 | 153,6 | **201,0** |
+| página con 3% de relleno — el arreglo | 30,9 | 38,6 | **25,1** |
+
+Diez veces peor en las esquinas, y **concentrado justo ahí**. La red es buena; el encuadre era
+malo.
+
+**La tercera fila no midió `toModelInput`.** Se hizo con un redimensionado exacto en numpy. El de
+`toModelInput` pasaba entonces por una rejilla identidad de 2x2, cuyos pesos de 8 bits llevan
+cada muestra a una de 257 posiciones por eje: en una página de 466x676 duplicaba 209 de las 465
+parejas de columnas contiguas y 419 de las 675 de filas. A través de ese redimensionado la fila
+da 33,0 / 38,1 / 24,5 (la misma revisión, `exp_dart.py`, fuera del repositorio). Ya está
+corregido —la rejilla identidad tiene ahora el tamaño de la salida, y `uvdoc_stage_test.dart`
+comprueba que no quedan filas ni columnas repetidas—, pero las seis páginas no se han vuelto a
+medir a través del código corregido.
+
+**El segundo síntoma sale de lo mismo.** Como siempre predice un documento con margen, ante una
+entrada que llena el cuadro devuelve una rejilla que abarca sólo el **91,3% del ancho y el 95,4%
+del alto**. `remapThroughGrid` estira ese subrectángulo sobre toda la salida, así que a 2250x3000
+**descarta 98 px por lado en horizontal y 69 en vertical** —cabecera y pie entre ellos— sin un
+solo error. Con el relleno, la rejilla abarca el 100,4% y el 100,8%.
+
+**El arreglo no añade ninguna dependencia.** `toModelInput` mete la página en un
+rectángulo centrado de 466x676 dentro del tensor y rellena el resto de gris plano; `toGrid` divide
+la rejilla devuelta por la parte del lienzo que ocupa la página (465/495 en x, 675/719 en y) para
+expresarla en coordenadas de la página. Que algún valor salga un poco de ±1 es correcto:
+`remapThroughGrid` recorta al borde de la fuente a propósito.
+
+**El 0,03 no está ajustado y no debe leerse como si lo estuviera:** en los rellenos medidos del
+2% al 8% (2, 3, 4, 6 y 8%) el error de esquinas queda entre 21 y 31 px, y el color del borde da
+igual (60, 128 y 200 coinciden dentro de un píxel). El 3% cae dentro de esa meseta, no en su
+mejor punto: el 2% dio 21,5 px. Al 12% ya cuesta (39,3).
+
+**La tentación contraria también está medida.** Pasarle la foto entera sin recortar no es la
+alternativa: ensanchar el recorte hasta que la página ocupe sólo el 67% del cuadro —un margen del
+25% del ancho de la página por lado— cuesta entre 119 y 152 px de esquina (`exp2.py`). Esa medida
+es de otra escena, una página a 1500x2000 sobre tres radios de curvatura, no de las seis de
+arriba. Demasiado contexto es tan malo como ninguno. UVDoc quiere un recorte apretado con un borde fino, que es justo lo que produce
+`crop_image_tight`.
+
+**Lo que esto NO arregla, y es de la captura.** El recorte al cuadrilátero ya pierde contenido
+antes de que UVDoc corra: los bordes superior e inferior de una página curvada se abomban **fuera**
+del rectángulo que pasa por sus cuatro esquinas, así que rectificar al cuadrilátero corta el centro
+de esos bordes. Medido sobre las mismas seis páginas, **el 5,5% de la altura de la página** (rango
+4,3%-8,4%), y el 5,2% de los puntos de la rejilla verdadera caen fuera de [-1,1]
+(rango 4,2%-7,2%). Rellenar aquí no
+lo recupera: esos píxeles ya no están en la imagen.
+
+**Queda abierto: el mismo redimensionado está en `intrusion.dart`.** La etapa de intrusiones
+reduce la página a su copia de análisis y devuelve a resolución completa el relleno y la máscara
+suavizada con `SamplingGrid.identity()` de 2x2 (`intrusion.dart:216`, `:222` y `:255`), así que
+tiene la misma cuantización a 257 posiciones por eje. Cuánto le cuesta ahí no se ha medido.
+
+**Lo que queda sin medir (U-43, U-49).** Todo lo anterior es sintético: ninguna fotografía real
+de un libro se ha medido contra una verdad conocida. Y si esta etapa ha corrido alguna vez en un
+teléfono no se sabe. El 16 de septiembre una página curvada pasó por el móvil con el modelo
+instalado y el ajuste encendido (`docs/measurements.md`), pero la aplicación no guarda el
+`StageOutcome`, así que nada distingue que la etapa corriera de que se saltara o fallara (U-34,
+abierta). El comentario del fichero que decía «ninguna línea de esta inferencia se ha ejecutado
+nunca» afirmaba de más; la primera versión de esta entrada, que lo daba por falso porque el
+usuario llevaba días viendo resultados de esta red en un teléfono, afirmaba de más en la
+dirección contraria. Lo que sí ha corrido es el `.onnx` bajo Python, en escritorio, que es de
+donde salen los números de arriba.
+
+
+---
+
+## D-054 · El halo no era un límite del método clásico: era de un estimador
+**Fecha:** 2026-09-20 · **Estado:** ratificar
+**Corrige el diagnóstico de D-042**
+
+El usuario dice que la restauración **«ni quita sombras»**. Tiene razón, y lo que medía mal
+no era la división por el fondo sino cómo se construía ese fondo.
+
+Uniformidad del papel sobre `harness/dataset/synthetic` —p5/p95 de la luminancia media por
+bloque en una rejilla de 16x16, restringida a los píxeles que son papel en el original
+limpio; 1,000 es papel perfectamente plano—. Las imágenes y el PSNR salen de `harness run`; la
+uniformidad y el papel oscuro, de un script de un solo uso que no está en el repositorio
+(`evenness.py`, Python con numpy y Pillow, 2026-09-19, el portátil de desarrollo). El
+2026-09-23 la columna «ahora» salió igual sobre un `harness run` nuevo del código de hoy, y la
+de «antes», puntuada otra vez sobre las imágenes guardadas de entonces (U-50):
+
+| | entrada | antes | ahora | original limpio |
+|---|---|---|---|---|
+| uniformidad, 3 documentos con sombra de mano | 0,425 | 0,503 | **0,857** | 0,994 |
+| papel por debajo del 75% de su mediana, esos 3 | 42,8% | 14,2% | **7,5%** | — |
+| PSNR contra el original limpio, esos 3 | — | 13,31 dB | **16,87 dB** | — |
+| uniformidad, los otros 47 documentos | 0,955 | 0,919 | 0,919 | 0,996 |
+
+De 0,425 a 0,503 es cerrar el **14%** de la distancia entre la entrada y el original limpio;
+0,857 cierra el 76%. Y no era que la división fallara: el **cuerpo** de la sombra se quitaba
+casi entero. Lo que sobrevivía era una **banda oscura
+pegada al borde de la sombra**, y esa banda es todo lo que el ojo lee como «sigue ahí».
+
+**El mecanismo.** El fondo se estimaba con un máximo local: lo más claro que hay cerca es el
+papel, porque la tinta es oscura. En un escalón de iluminación lo más claro que hay cerca del
+lado oscuro es **el lado iluminado**, así que el estimador sobreestima el papel justo ahí y la
+división devuelve un resultado más oscuro exactamente donde estaba el borde. El máximo es
+correcto contra un párrafo denso y equivocado contra un escalón.
+
+**El arreglo: un cierre morfológico.** Máximo de radio r, mínimo del mismo radio, y después un
+desenfoque suave. El mínimo devuelve la sobreestimación al papel del que salió. No es afinar un
+parámetro: con el estimador nuevo el barrido del radio sobre esos 3 documentos da 0,891 al 2%,
+0,857 al 6%, 0,729 al 12% y 0,498 al 25% —monótono, y el 6% que ya estaba puesto no es el
+óptimo de ninguna curva que este conjunto pueda ver.
+
+**Y sale más barato, que es lo que lo hace fácil.** Un cierre necesita máximo *y* mínimo a radio
+completo; con el filtro ingenuo que había sería casi cuatro veces el trabajo. Los dos extremos
+pasan a van Herk / Gil-Werman —O(píxeles) sea cual sea el radio, que es justo lo que el
+comentario del propio fichero apuntaba como camino de mejora—. Sobre una imagen de análisis de 512x352 con
+r=31, veinte pasadas tras calentar: máximo ingenuo a medio radio **38,4 ms**, máximo y mínimo
+ingenuos a radio completo **142,0 ms**, van Herk **10,6 ms** (`vh_bench.dart`, de un solo uso,
+2026-09-20, el portátil de desarrollo; no se ha vuelto a correr). La etapa de restauración baja
+de unos **124 ms a unos 112 ms** de mediana sobre los cincuenta documentos, según `harness run`:
+entre ejecuciones, la mediana osciló entre 121 y 126 ms antes y entre 110 y 112 ms después. La
+equivalencia con el filtro ingenuo, muestra a muestra, para máximo y mínimo en r = 1, 2, 3, 7,
+16, 31 y 64, está en `classical_test.dart` (grupo `extremum filter`), con líneas más cortas que
+el radio incluidas.
+
+**Esto contradice a D-042 y hay que decirlo en voz alta.** D-042 anotó este halo como «un límite
+medido del método clásico» y dijo que era «exactamente donde una red de sombras podría ganarse
+los 120 MB» que D-039 le negó. Es falso: era una propiedad de **un** estimador, no de dividir por
+el fondo. Cambiar el estimador se lleva por delante la mayor parte de lo que allí se atribuyó al
+método: en el test de abajo, de 21 columnas oscurecidas a 3. D-042 sigue valiendo en todo lo
+demás —incluida su **regla 5**, la que descarta una región que toca dos bordes opuestos: existía
+sobre todo para que este halo no se confundiera con un dedo, y se queda—. Pero el halo no ha
+dejado de existir, y la primera versión de esta entrada decía que sí y que la regla 5 ya no
+costaba nada. En un borde de sombra recto el cierre deja un escalón de unos píxeles; en uno
+**diagonal** —el único que genera el corpus, `deg_hand_shadow` en `tool/make_corpus.py`— deja
+una línea oscura fina. Después del umbral y la erosión, lo que queda de ella toca un solo borde
+de la página, la regla 5 la deja pasar y `BorderIntrusion` la borra junto con el texto que tiene
+debajo. Es lo que dejó la etapa de D-055 apagada por defecto.
+
+**El desenfoque a la mitad del radio es un compromiso medido, no un ajuste.** A un cuarto el papel
+sale aún más plano (0,880 y 17,30 dB) pero entonces el fondo estimado sigue tan de cerca a un pulgar
+apoyado en la página que lo aplana: `BorderIntrusion`, que corre **después**, encuentra el 0,59% de
+la página donde su test exige el 1%. A la mitad encuentra el 2,04%. Se elige la mitad: 0,023 de
+uniformidad y 0,43 dB a cambio de no degradar en silencio una etapa que el repositorio ya prueba.
+El 0,59% y el 2,04% salen de un script de un solo uso del 2026-09-20 que no se ha vuelto a correr
+(U-50).
+
+**El test que queda** falla con el estimador viejo, que es la única prueba de que prueba algo: sobre
+una página con un escalón duro, de las cincuenta columnas de papel del lado en sombra el estimador
+de máximo oscurece **21** por debajo del 95% del papel iluminado y el cierre oscurece **3** —el
+escalón sobrevive como un borde de unos píxeles, no como una banda.
+
+**Lo que cuesta, medido después.** Dos cosas que esta entrada no midió, las dos con scripts de un
+solo uso de la revisión del 2026-09-23 que no están en el repositorio (`edge.dart`,
+`thumb_old.dart`, `thumb_new.dart`, `colour_old.dart`, `colour_new.dart`), vueltos a correr ese
+mismo día contra el `classical.dart` de hoy:
+
+- **El marco.** En el borde de la imagen la ventana se trunca. Donde la luz sube hacia dentro, el
+  máximo en el borde ya es el papel de r píxeles más adentro, y fuera del encuadre no queda nada
+  con que el mínimo lo baje: el cierre sale plano sobre los r píxeles exteriores. Es el mismo
+  exceso que se quita en un escalón interior, trasladado al marco. Sobre una página gris de
+  1600x1200 con la luz cayendo hacia el borde izquierdo (0,75 en el borde, 1 al 15%), la media del
+  papel en la columna 0 sale a 160 con el cierre, 189 con el estimador anterior y 184 en la
+  entrada: **más oscura que la foto sin tocar**. Con un viñeteado radial del 35%, la uniformidad
+  —una aproximación de la métrica de arriba— baja de 0,917 a 0,863 y el papel oscuro sube del 0,0%
+  al 0,7%. El corpus no tiene ninguna degradación que caiga hacia el borde de la imagen
+  (`tool/make_corpus.py`), así que «los otros 47 no se mueven» no puede ver esto. Cerrar sobre el
+  encuadre extendido r píxeles lo arreglaría, pero cambia qué cuenta como papel pegado al borde y
+  obligaría a repetir estas medidas y las de D-055.
+- **Una mano grande se vuelve papel.** El cierre conserva como fondo cualquier región oscura en
+  la que quepa un cuadrado de 2r+1, y junto al borde, con la ventana truncada, antes. Esa región
+  se divide por sí misma: en gris sale blanca, y en color, como la corrección escala los tres
+  canales por el cociente de luminancia, la piel queda como una mancha melocotón con la
+  luminancia del papel, que `BorderIntrusion` —mide distancia al papel sólo en luminancia— no
+  ve. Sobre una página de 1200x1600 con una elipse que entra por el borde izquierdo, lo que
+  `BorderIntrusion` encuentra pasa, del estimador anterior al cierre: mano clara (190) de 22% del
+  ancho por 16% del alto, del 2,72% de la página al 0,00%; de 22% por 24%, del 3,74% al 0,00%;
+  mano oscura (150) de 22% por 24%, del 4,04% al 0,76%. Los pulgares de hasta el 8% de alto no
+  cambian. En color y con la etapa de intrusiones encendida, una mano (205, 160, 135) de 15% por
+  24% sigue visiblemente distinta del papel en el 52,2% de su núcleo con el estimador anterior y
+  en el 97,1% con el cierre. El compromiso del desenfoque a la mitad, arriba, se midió sobre un
+  solo pulgar; esto no.
+
+**Lo que esto NO cierra.** D-048 atribuye un CER del 42,85% a un límite arquitectónico cuando hay
+dos daños a la vez; parte de eso puede ser esta banda cortando una raya por el texto, pero el CER
+necesita un teléfono y aquí no se mide. Y todo lo de arriba es sintético: los renders generados
+tienen trazos más finos que cualquiera de estos radios, y por eso el contraste de la tinta se mueve
+un solo nivel de gris en todo el barrido —la mitad de «demasiado pequeño se come las letras» que el
+docstring afirma **no se ve en este conjunto**. Queda en `UNVERIFIED.md` U-45, con el marco;
+lo que hace falta para citar la tabla de arriba desde el repositorio, en U-50.
+
+---
+
+## D-055 · Quitar lo que sujeta la página se construye por fin, y se queda apagado por defecto
+**Fecha:** 2026-09-20 · **Revisada:** 2026-09-23 · **Estado:** ratificar
+**Construye la etapa de D-042 y mantiene su última línea**
+
+El usuario dice «ni quitan dedos». Tiene razón, y el motivo no es que la detección falle:
+**la etapa no se construía en ninguna parte.** `IntrusionStage` estaba terminada, exportada en
+`byrsa_restore.dart:21` y cubierta por tests desde el 13 de septiembre (19 en
+`intrusion_test.dart`; D-042 dice 22), pero `grep -rn "Intrusion" app` no devolvía nada. El
+único pipeline de producción —`_restoreAndEncode`, en `app/lib/src/data/image_io.dart`— montaba
+`[UvdocStage (opcional), ClassicalStage]` y se acababa ahí. D-042 decidió no encenderla por
+defecto y nadie llegó a escribir el interruptor, así que lo que había no era una opción
+apagada: era código muerto.
+
+**Ahora se construye, y está apagada por defecto.** `restoreStages` la monta después de
+`ClassicalStage` cuando la preferencia está encendida, con su interruptor en
+`Ajustes > Quitar dedos del borde`; apagada, el pipeline es exactamente el anterior. La primera
+versión de esta entrada la encendía por defecto con el título «50 documentos y ni uno peor».
+Esa conclusión era falsa, y lo que sigue es por qué.
+
+**Lo que se midió.** Sobre los 50 documentos sintéticos del harness, `ClassicalRestore` y después
+`BorderIntrusion` —una cadena que `harness run` no ejecuta: `harness/lib/src/runner.dart` llama a
+`ClassicalRestore` directamente, sin `RestorePipeline`—:
+
+- **Con el estimador de antes de D-054 se dispara en 4:** los 3 documentos con un dedo en el
+  encuadre (`handwriting-05` 1,04%, `form-04` 0,83%, `adversarial-03` 1,09% de la página) e
+  `invoice-07`, inclinado, 2,18% —la cuña oscura de la tabla que destapa la inclinación—. Son las
+  cifras de la primera versión, que se midieron así.
+- **Con el cierre de D-054, que es el que va en la aplicación, se dispara en 7:** los mismos 3
+  dedos (0,91%, 0,82%, 1,14%), `invoice-07` al 4,08%, y **3 páginas con sombra de mano y ninguna
+  mano en el encuadre**: `form-05` 3,09%, `adversarial-02` 3,82%, `invoice-02` 4,40%. Lo que
+  encuentra en esas tres es la línea oscura que el cierre deja en un borde de sombra diagonal
+  (D-054): toca un solo borde, la regla 5 la deja pasar, y el relleno borra lo que tiene debajo.
+- **Y lo que tiene debajo es texto.** Contando los píxeles de tinta del original limpio
+  (luminancia < 110) que caen bajo la máscara y siguen legibles (< 150) antes y después de la
+  etapa: `form-05` 1256 → 431, `adversarial-02` 3498 → 1321, `invoice-02` 1513 → 401. **Borra
+  entre el 62% y el 73% de la tinta que toca**, en páginas donde no hay nada que quitar. En las de
+  dedo también se lleva la poca tinta legible que queda bajo la máscara: `form-04` 111 → 15
+  píxeles, `adversarial-03` 114 → 11.
+- **El PSNR no lo ve.** Sube en los siete (handwriting-05 21,01 → 23,07; form-04 18,59 → 18,76;
+  form-05 18,33 → 18,73; adversarial-02 14,69 → 14,94; adversarial-03 15,69 → 16,52; invoice-02
+  17,59 → 18,28; invoice-07 13,50 → 13,56), porque el residuo oscuro se va con las palabras y esa
+  ganancia tapa la pérdida. «En 50 documentos no empeoró ni una sola página», que decía la
+  primera versión, se apoyaba en esa subida.
+- **Una mano grande se le escapa.** El cierre absorbe en el papel una mano de un 22% del ancho y
+  un 16-24% del alto, y en color queda una mancha que el detector, que sólo mide luminancia, no
+  ve (los números, en D-054).
+- **Coste a la resolución de la aplicación.** `ImageIo` decodifica a 3000 px como mucho, así que
+  la etapa corre a 2250x3000. En el portátil de desarrollo (AMD Ryzen 7 5825U, Linux), compilado
+  AOT, cuatro pasadas: cuando no encuentra nada, 87-96 ms; cuando se dispara sobre un pulgar
+  sintético del 2,26% de la página, **1,6-1,8 s** (1,61-1,76 s en la revisión; 1,63-1,67 s
+  repetido después, y más con la máquina cargada por otras compilaciones), unas cinco veces la
+  etapa clásica. Es más que los 0,3-1,5 s que extrapolaba la primera versión, y antes de ningún
+  factor de teléfono. Lo caro son los dos `remapThroughGrid` a resolución completa y la mezcla
+  sobre cada píxel, aunque la máscara cubra el 2% de la página. Memoria pico del proceso: de
+  53-54 MB a 72-73 MB.
+
+**Así que se queda apagada por defecto, con interruptor.** Es lo que D-042 pedía y por la misma
+razón: el fallo es destructivo y silencioso. Lo nuevo es que el conjunto sintético ya lo enseña
+pasando, en tres páginas sin mano. Arreglarlo pide una regla que rechace regiones largas y
+finas —una mano no es una banda muchas veces más larga que ancha—, no sólo las que cruzan la
+página; hasta entonces encenderla es decisión de quien la use.
+
+**El orden no se elige aquí: después de la iluminación, nunca antes.** Lo pedía ya el docstring
+de `intrusion.dart` y la penúltima línea de D-042. El detector mide distancia al papel, y sobre
+una captura cruda esa estimación la arrastra la sombra que proyecta la propia mano.
+
+**Queda abierto:** la etapa reduce la página y devuelve su relleno y su máscara a resolución
+completa con la misma rejilla identidad de 2x2 que D-053 corrigió en `toModelInput`
+(`intrusion.dart:216`, `:222` y `:255`).
+
+**Lo que queda sin medir.** Todos los números de arriba son sintéticos y salen de scripts de un
+solo uso de la revisión del 2026-09-23 que no están en el repositorio (`ds_old.dart`,
+`ds_new.dart`, `ink.dart`, `check_intrusion.dart`, `cost.dart`), vueltos a correr ese mismo día
+contra el código de hoy (U-51). Y nadie ha visto esta etapa correr sobre la fotografía real de
+una mano sujetando un libro, ni sobre una sombra de mano real, que es justo donde un falso
+positivo se paga caro (U-44).

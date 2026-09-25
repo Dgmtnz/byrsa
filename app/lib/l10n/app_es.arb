@@ -85,6 +85,8 @@
   "dewarp": "Aplanar páginas curvadas",
   "dewarpBody": "Un modelo neuronal que desdobla una página fotografiada en un libro. {megabytes} MB, licencia {license}.",
   "dewarpReady": "Descargado. Las páginas curvadas se aplanarán.",
+  "removeIntrusions": "Quitar dedos del borde",
+  "removeIntrusionsBody": "Borra el pulgar, el dedo o lo que sujete la página en el borde, y devuelve el papel que tapaba.",
   "remove": "Eliminar",
   "@dewarpBody": {
     "placeholders": {

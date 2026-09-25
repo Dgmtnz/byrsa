@@ -1,6 +1,8 @@
 // SPDX-FileCopyrightText: 2026 Diego Martínez Fernández
 // SPDX-License-Identifier: GPL-3.0-or-later
 
+import 'dart:io';
+
 import 'package:byrsa/src/data/library_database.dart';
 import 'package:byrsa/src/domain/document.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -19,7 +21,7 @@ void main() {
 
   group('schema', () {
     test('creates itself and records its version', () {
-      expect(LibraryDatabase.schemaVersion, 1);
+      expect(LibraryDatabase.schemaVersion, 2);
       expect(db.documents(), isEmpty);
     });
 
@@ -132,9 +134,138 @@ void main() {
       expect(page.processedPath, 'raw.jpg.page.jpg');
       expect(page.restored, isFalse);
 
-      db.setPageRestored(pageId, 'raw.jpg.restored.jpg');
+      db.setPageRestored(pageId);
       expect(db.pagesOf(id).single.restored, isTrue);
-      expect(db.pagesOf(id).single.displayPath, 'raw.jpg.restored.jpg');
+      expect(db.pagesOf(id).single.displayPath, 'raw.jpg.enhanced.jpg');
+      expect(db.pagesOf(id).single.processedPath, 'raw.jpg.page.jpg',
+          reason: 'the rectified page must survive its own restoration');
+    });
+
+    test('the corners found at capture reach the row', () {
+      // They used to be accepted as an argument and dropped from the INSERT,
+      // so "adjust corners" opened on the full frame every time and the
+      // detector's work was thrown away at the moment it was done.
+      final id = db.createDocument('Escaneo');
+      db.addPage(
+        id,
+        originalPath: 'raw.jpg',
+        quad: const <double>[0.1, 0.1, 0.9, 0.1, 0.9, 0.9, 0.1, 0.9],
+        words: const <PageWord>[
+          PageWord(text: 'Total', left: 1, top: 2, right: 3, bottom: 4),
+        ],
+      );
+      final page = db.pagesOf(id).single;
+      expect(page.quad, <double>[0.1, 0.1, 0.9, 0.1, 0.9, 0.9, 0.1, 0.9]);
+      expect(page.words.single.text, 'Total');
+    });
+
+    test('changing the filter restores the rectified page, not the last result',
+        () {
+      // The filter compounded on itself: `processed_path` was overwritten with
+      // the restoration output, so the next pass read its own previous result
+      // and, since the output name was derived from the original either way,
+      // wrote it back to the same file (D-051).
+      final id = db.createDocument('Escaneo');
+      final pageId = db.addPage(
+        id,
+        originalPath: '/scans/raw.jpg',
+        processedPath: '/scans/raw.jpg.page.jpg',
+      );
+      db.setPageRestored(pageId);
+
+      db.setPagesNeedRestore(id);
+      final again = db.pagesOf(id).single;
+      expect(again.restored, isFalse);
+
+      // What the restoration loop reads, and where it writes.
+      final input = again.restoreInput((_) => true);
+      expect(input, '/scans/raw.jpg.page.jpg',
+          reason: 'the previous restoration must never become the input');
+      expect(again.restoreInput((_) => false), '/scans/raw.jpg',
+          reason: 'a warp the OS has purged falls back to the original');
+    });
+
+    test('a filter change re-queues its own document and no other', () {
+      // Two documents so page and document ids differ: a WHERE on the wrong
+      // column would still pass with one of each.
+      final decoy = db.createDocument('Otro');
+      final decoyPages = <int>[
+        db.addPage(decoy, originalPath: 'a.jpg'),
+        db.addPage(decoy, originalPath: 'b.jpg'),
+      ];
+      final target = db.createDocument('Escaneo');
+      final targetPages = <int>[
+        db.addPage(target, originalPath: 'c.jpg'),
+        db.addPage(target, originalPath: 'd.jpg'),
+      ];
+      [...decoyPages, ...targetPages].forEach(db.setPageRestored);
+
+      db.setPagesNeedRestore(target);
+      expect(db.pagesOf(target).map((p) => p.restored), <bool>[false, false]);
+      expect(db.pagesOf(decoy).map((p) => p.restored), <bool>[true, true]);
+    });
+
+    test('a database written before the split keeps the best picture it has',
+        () {
+      // v1 stored the restoration output in `processed_path`, which is the
+      // column the next restoration reads. The tables are identical in v1 and
+      // v2 — only the meaning of that column changed — so the fixture is the
+      // real schema with `user_version` wound back, v1-shaped rows, and the
+      // files each of them still has on disk.
+      final dir = Directory.systemTemp.createTempSync('byrsa_migration');
+      addTearDown(() => dir.deleteSync(recursive: true));
+      String file(String name) {
+        final path = '${dir.path}/$name';
+        File(path).writeAsStringSync('');
+        return path;
+      }
+
+      // A capture whose warp survived.
+      final captured = file('captured.jpg');
+      file('captured.jpg.page.jpg');
+      file('captured.jpg.restored.jpg');
+      // A gallery import, which never had a warp, caught by the upgrade in
+      // the middle of a filter change (restored = 0).
+      final imported = file('imported.jpg');
+      file('imported.jpg.restored.jpg');
+      // A capture whose original and warp the OS purged.
+      final purged = '${dir.path}/purged.jpg';
+      final survivor = file('purged.jpg.restored.jpg');
+      // A capture v1 never got round to restoring: not the migration's.
+      final pending = file('pending.jpg');
+
+      final raw = sqlite3.openInMemory();
+      LibraryDatabase(raw);
+      raw.execute('PRAGMA user_version = 1');
+      raw.execute(
+        "INSERT INTO documents(title, created_at, updated_at) "
+        "VALUES ('Escaneo', 0, 0)",
+      );
+      final insert = raw.prepare(
+        'INSERT INTO pages(document_id, position, original_path, '
+        'processed_path, restored) VALUES (1, ?, ?, ?, ?)',
+      );
+      insert.execute(<Object?>[0, captured, '$captured.restored.jpg', 1]);
+      insert.execute(<Object?>[1, imported, '$imported.restored.jpg', 0]);
+      insert.execute(<Object?>[2, purged, survivor, 1]);
+      insert.execute(<Object?>[3, pending, '$pending.page.jpg', 0]);
+      insert.dispose();
+
+      final migrated = LibraryDatabase(raw);
+      final pages = migrated.pagesOf(1);
+      expect(pages.map((p) => p.restored), everyElement(isFalse),
+          reason: 'every page is queued to be enhanced again');
+      expect(pages[0].processedPath, '$captured.page.jpg',
+          reason: 'Android capture writes the warp under that name');
+      expect(pages[1].processedPath, isNull,
+          reason: 'no warp on disk: restoration starts from the original');
+      expect(pages[1].displayPath, imported);
+      expect(pages[2].processedPath, survivor,
+          reason: 'the only picture left must stay referenced');
+      expect(pages[2].displayPath, survivor);
+      expect(pages[3].processedPath, '$pending.page.jpg',
+          reason: 'a row that never held a restoration is left alone');
+      migrated.dispose();
     });
 
     test('re-warping a page marks it as needing restoration again', () {
@@ -142,7 +273,7 @@ void main() {
       // the old restored one no longer describes it.
       final id = db.createDocument('Escaneo');
       final pageId = db.addPage(id, originalPath: 'raw.jpg');
-      db.setPageRestored(pageId, 'raw.jpg.restored.jpg');
+      db.setPageRestored(pageId);
       expect(db.pagesOf(id).single.restored, isTrue);
 
       db.setPageProcessed(pageId, 'raw.jpg.page.jpg');

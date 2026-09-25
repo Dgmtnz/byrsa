@@ -11,5 +11,5 @@ SPDX-License-Identifier: CC-BY-4.0
   evaluation harness can run the baseline it measures.
 - `UvdocStage`: page dewarping through the grid export of UVDoc.
 
-Android compiles. iOS has never been compiled, and inference has never run on
-any platform.
+Android compiles. iOS has never been compiled. Whether this stage's inference
+ever executes on a device is unverified — see `UNVERIFIED.md` U-34.

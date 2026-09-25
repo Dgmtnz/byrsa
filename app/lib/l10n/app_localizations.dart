@@ -422,6 +422,18 @@ abstract class AppLocalizations {
   /// **'Downloaded. Curved pages will be flattened.'**
   String get dewarpReady;
 
+  /// No description provided for @removeIntrusions.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove fingers at the edge'**
+  String get removeIntrusions;
+
+  /// No description provided for @removeIntrusionsBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Erases a thumb, a finger or whatever else holds the page down at the edge, and fills the paper back in.'**
+  String get removeIntrusionsBody;
+
   /// No description provided for @remove.
   ///
   /// In en, this message translates to:

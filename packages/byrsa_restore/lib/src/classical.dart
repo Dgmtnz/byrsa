@@ -4,6 +4,8 @@
 import 'dart:math' as math;
 import 'dart:typed_data';
 
+import 'package:meta/meta.dart';
+
 import 'image_buffer.dart';
 
 /// What the restored page should look like.
@@ -66,8 +68,12 @@ class ClassicalRestore {
   /// Radius of the paper-colour estimate, as a fraction of the longer side.
   ///
   /// Too small and the estimate follows the text, washing out letters; too
-  /// large and a real shadow survives. Six percent is about two lines of body
-  /// text at typical capture distances.
+  /// large and a real shadow survives. Only the second half of that is
+  /// visible in the fifty synthetic documents, whose generated glyphs are
+  /// thinner than any radius worth trying (the sweep is in `DECISIONS.md`
+  /// D-054) — so six percent, about two lines of body text at typical capture
+  /// distances, is held on the argument and not on a measurement. The fifty
+  /// photographs are what would settle it (`UNVERIFIED.md` U-45).
   final double backgroundRadius;
 
   /// Tiles per axis for the adaptive equalisation.
@@ -116,12 +122,39 @@ class ClassicalRestore {
     return curve;
   }
 
-  /// Estimates the colour of the paper at every pixel.
+  /// Estimates the colour of the paper at every pixel: a morphological
+  /// closing — local maximum, then local minimum at the same radius — and
+  /// then a light blur.
   ///
   /// A plain blur is not enough: where text is dense it drags the estimate down
   /// and the letters come back grey. Taking a local maximum first — the
-  /// brightest thing nearby is the paper, since ink is dark — and only then
-  /// smoothing gives an estimate that survives a dense paragraph.
+  /// brightest thing nearby is the paper, since ink is dark — gives an
+  /// estimate that survives a dense paragraph.
+  ///
+  /// The maximum alone overshoots at a hard shadow edge, because the
+  /// brightest thing near the dark side of a step is the lit side. Dividing
+  /// by that estimate came back *darker* than the paper exactly where the
+  /// edge was: the body of the shadow was removed almost perfectly and a band
+  /// was printed along its border, which is what the user reads as "it does
+  /// not remove shadows". The minimum walks the overshoot back to the paper
+  /// it came from. What that is worth over the synthetic set is in
+  /// `DECISIONS.md` D-054.
+  ///
+  /// It cannot walk back what the frame cuts off. Where light rises inward
+  /// from the edge of the image, the maximum at the edge is already the paper
+  /// `r` pixels in, nothing outside the frame is left to bring it down, and
+  /// the closing is flat over the outer `r` pixels at that brighter value. A
+  /// page whose light falls off towards its frame — vignetting, a lamp to one
+  /// side — therefore comes out darker along the frame than it did under the
+  /// maximum alone, and can come out darker there than the photograph it
+  /// started from. The synthetic set has no page lit like that
+  /// (`tool/make_corpus.py`), so D-054's numbers cannot see it.
+  ///
+  /// The blur is half the structuring element and that number is a trade, not
+  /// a tuning: at a quarter the paper comes out flatter still, but the
+  /// background estimate then follows a thumb held against the page closely
+  /// enough to flatten it, and `BorderIntrusion` — which runs after this —
+  /// finds too little of it to pass its own test (D-054).
   ///
   /// Exposed at full resolution for testing and for callers who want the field
   /// itself. The pipeline calls it on a downscaled image; see the class docs.
@@ -132,8 +165,9 @@ class ClassicalRestore {
     required int radius,
   }) {
     final r = math.min(math.max(radius, 2), math.max(width, height));
-    final dilated = _maxFilter(luma, width, height, r ~/ 2);
-    return _boxBlur(dilated, width, height, r);
+    final dilated = _extremumFilter(luma, width, height, r, maximum: true);
+    final closed = _extremumFilter(dilated, width, height, r, maximum: false);
+    return _boxBlur(closed, width, height, r ~/ 2);
   }
 
   /// Divides the image by its own background, which is what removes a shadow.
@@ -317,45 +351,85 @@ class ClassicalRestore {
     return out;
   }
 
-  /// Separable local maximum.
+  /// Separable local maximum or minimum, O(pixels) whatever the radius.
   ///
-  /// TODO: naive, so O(pixels x radius). That is fine because the pipeline
-  /// only ever runs it on the analysis image, where the radius is a couple of
-  /// dozen pixels. Calling it directly on a 12 MP photograph is what made the
-  /// first version of this file take a minute; if you ever need that, the
-  /// replacement is van Herk / Gil-Werman, which is O(pixels) whatever the
-  /// radius.
-  static Uint8List _maxFilter(
-      Uint8List source, int width, int height, int radius) {
+  /// van Herk / Gil-Werman: every line is cut into blocks as long as the
+  /// window, a running extremum is taken forwards and backwards inside each
+  /// block, and each output is the better of one backward value and one
+  /// forward value — three comparisons per sample instead of 2r+1.
+  ///
+  /// The naive filter this replaces was fine while the estimate needed one
+  /// maximum at half the radius; a closing needs both extrema at the full
+  /// radius, which naively costs several times as much. The timings are in
+  /// `DECISIONS.md` D-054. `classical_test.dart` holds this to the naive
+  /// filter sample for sample, both extrema, r = 1, 2, 3, 7, 16, 31 and 64.
+  ///
+  /// Borders truncate the window rather than repeating the edge, which is what
+  /// the naive filter did and what the outer rows of a page were computed with
+  /// until now. It costs no special case: the line is padded with the neutral
+  /// element — 0 for a maximum, 255 for a minimum — so the samples that fall
+  /// outside cannot win.
+  static Uint8List _extremumFilter(
+    Uint8List source,
+    int width,
+    int height,
+    int radius, {
+    required bool maximum,
+  }) {
     if (radius < 1) return Uint8List.fromList(source);
     final horizontal = Uint8List(source.length);
-    for (var y = 0; y < height; y++) {
-      final row = y * width;
-      for (var x = 0; x < width; x++) {
-        var best = 0;
-        final from = math.max(0, x - radius);
-        final to = math.min(width - 1, x + radius);
-        for (var i = from; i <= to; i++) {
-          final value = source[row + i];
-          if (value > best) best = value;
-        }
-        horizontal[row + x] = best;
-      }
-    }
+    _extremumLines(
+        source, horizontal, width, height, 1, width, radius, maximum);
     final out = Uint8List(source.length);
-    for (var x = 0; x < width; x++) {
-      for (var y = 0; y < height; y++) {
-        var best = 0;
-        final from = math.max(0, y - radius);
-        final to = math.min(height - 1, y + radius);
-        for (var i = from; i <= to; i++) {
-          final value = horizontal[i * width + x];
-          if (value > best) best = value;
+    _extremumLines(horizontal, out, height, width, width, 1, radius, maximum);
+    return out;
+  }
+
+  /// One axis of [_extremumFilter]: [count] lines of [length] samples, where
+  /// sample `i` of line `j` sits at `j * lineStep + i * step`.
+  static void _extremumLines(
+    Uint8List source,
+    Uint8List out,
+    int length,
+    int count,
+    int step,
+    int lineStep,
+    int radius,
+    bool maximum,
+  ) {
+    final window = radius * 2 + 1;
+    final blocks = (length + radius * 2 + window - 1) ~/ window;
+    final padded = blocks * window;
+    final pad = maximum ? 0 : 255;
+    final prefix = Uint8List(padded);
+    final suffix = Uint8List(padded);
+
+    for (var line = 0; line < count; line++) {
+      final base = line * lineStep;
+      for (var block = 0; block < blocks; block++) {
+        final from = block * window;
+        final to = from + window;
+        var forward = pad;
+        for (var i = from; i < to; i++) {
+          final k = i - radius;
+          final value = (k < 0 || k >= length) ? pad : source[base + k * step];
+          if (maximum ? value > forward : value < forward) forward = value;
+          prefix[i] = forward;
         }
-        out[y * width + x] = best;
+        var backward = pad;
+        for (var i = to - 1; i >= from; i--) {
+          final k = i - radius;
+          final value = (k < 0 || k >= length) ? pad : source[base + k * step];
+          if (maximum ? value > backward : value < backward) backward = value;
+          suffix[i] = backward;
+        }
+      }
+      for (var x = 0; x < length; x++) {
+        final a = suffix[x];
+        final b = prefix[x + window - 1];
+        out[base + x * step] = maximum ? (a > b ? a : b) : (a < b ? a : b);
       }
     }
-    return out;
   }
 }
 
@@ -591,8 +665,20 @@ class _TileMaps {
     final inverse = 256 - weight;
     final top = (topLeft * inverse + topRight * weight) >> 8;
     final bottom = (bottomLeft * inverse + bottomRight * weight) >> 8;
-    final result =
-        (top * (256 - row.weight) + bottom * row.weight) >> 8;
+    final result = (top * (256 - row.weight) + bottom * row.weight) >> 8;
     return result < 0 ? 0 : (result > 255 ? 255 : result);
   }
 }
+
+/// [ClassicalRestore]'s extremum filter, for the test that holds it to the
+/// naive one. The package does not export it.
+@visibleForTesting
+Uint8List extremumFilter(
+  Uint8List source,
+  int width,
+  int height,
+  int radius, {
+  required bool maximum,
+}) =>
+    ClassicalRestore._extremumFilter(source, width, height, radius,
+        maximum: maximum);

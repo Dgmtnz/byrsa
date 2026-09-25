@@ -32,6 +32,7 @@ class ImageIo {
     this.jpegQuality = 92,
     this.filter = PageFilter.colour,
     this.dewarpModelPath,
+    this.removeIntrusions = false,
   });
 
   /// What the restored page should look like.
@@ -44,6 +45,13 @@ class ImageIo {
   /// pipeline carries on — which is the whole point of recording a skip rather
   /// than throwing.
   final String? dewarpModelPath;
+
+  /// Whether to erase whatever is holding the page down at the edge.
+  ///
+  /// Needs no model, so unlike [dewarpModelPath] this is the user's preference
+  /// and nothing else. `Preferences.removeIntrusions` says why it is off by
+  /// default.
+  final bool removeIntrusions;
 
   /// Longest side the page is processed and stored at.
   ///
@@ -129,6 +137,7 @@ class ImageIo {
         quality: jpegQuality,
         filter: filter,
         dewarpModelPath: dewarpModelPath,
+        removeIntrusions: removeIntrusions,
         // A background isolate has no platform channel until it is given the
         // root isolate's token. Without this the native encoder is simply
         // unreachable and the Dart one runs, which is correct but slow.
@@ -197,6 +206,7 @@ class _RestoreRequest {
     required this.quality,
     required this.filter,
     required this.dewarpModelPath,
+    required this.removeIntrusions,
     required this.rootIsolateToken,
   });
 
@@ -208,6 +218,7 @@ class _RestoreRequest {
   final int quality;
   final PageFilter filter;
   final String? dewarpModelPath;
+  final bool removeIntrusions;
   final RootIsolateToken? rootIsolateToken;
 }
 
@@ -231,6 +242,31 @@ Uint8List _asRgb(ImageBuffer image) {
   return out;
 }
 
+/// What a page goes through, in an order none of the three stages choose.
+///
+/// Geometry before light: flattening the page first means the paper-colour
+/// estimate is made on a page that is actually flat. Light before the hand:
+/// the intrusion detector asks how far a pixel is from the paper, and on a raw
+/// capture that estimate is dragged around by the very shadow the hand casts
+/// (`intrusion.dart`, D-042).
+///
+/// A named function rather than a list inside the isolate entry point because
+/// this is the only place the wiring can be observed from a test:
+/// [ImageIo.restoreFile] cannot run under `flutter test` at all, since
+/// `BackgroundIsolateBinaryMessenger.ensureInitialized` in a `compute` isolate
+/// fails there with "Callbacks into the Dart VM are currently prohibited".
+@visibleForTesting
+List<RestoreStage> restoreStages({
+  required PageFilter filter,
+  required bool removeIntrusions,
+  String? dewarpModelPath,
+}) =>
+    <RestoreStage>[
+      if (dewarpModelPath != null) UvdocStage(modelFile: File(dewarpModelPath)),
+      const ClassicalStage().withFilter(filter),
+      if (removeIntrusions) const IntrusionStage(),
+    ];
+
 /// Runs in an isolate: restore, encode, write.
 Future<_RestoreReply> _restoreAndEncode(_RestoreRequest request) async {
   final input = request.channels == 4
@@ -242,13 +278,11 @@ Future<_RestoreReply> _restoreAndEncode(_RestoreRequest request) async {
           data: request.pixels,
         );
 
-  final pipeline = RestorePipeline(<RestoreStage>[
-    // Geometry before light: flattening the page first means the paper-colour
-    // estimate is made on a page that is actually flat.
-    if (request.dewarpModelPath != null)
-      UvdocStage(modelFile: File(request.dewarpModelPath!)),
-    const ClassicalStage().withFilter(request.filter),
-  ]);
+  final pipeline = RestorePipeline(restoreStages(
+    filter: request.filter,
+    dewarpModelPath: request.dewarpModelPath,
+    removeIntrusions: request.removeIntrusions,
+  ));
   final restored = await pipeline.run(input);
 
   final watch = Stopwatch()..start();

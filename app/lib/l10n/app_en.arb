@@ -95,6 +95,8 @@
     }
   },
   "dewarpReady": "Downloaded. Curved pages will be flattened.",
+  "removeIntrusions": "Remove fingers at the edge",
+  "removeIntrusionsBody": "Erases a thumb, a finger or whatever else holds the page down at the edge, and fills the paper back in.",
   "remove": "Remove",
   "hintNoDocument": "Point at a document",
   "hintTooFar": "Move closer",
