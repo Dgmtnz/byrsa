@@ -1,349 +1,309 @@
 # Byrsa — plan de desarrollo y solicitud Restack
 
-**Un stack libre de captura, rectificación y OCR de documentos en el dispositivo, para Flutter (Android + iOS).**
+**Un stack libre y modelos abiertos de captura, rectificación y OCR de documentos en el dispositivo, para Flutter (Android, iOS, Web y macOS) — sin dependencias de Google.**
 
-Versión 3 · 8 de septiembre de 2026
-Documento único: es a la vez el plan técnico y la fuente de la solicitud a NLnet / Restack Fund.
-**Deadline de la solicitud: 3 de noviembre de 2026, 12:00 CET. Quedan 8 semanas exactas.**
+Versión 4 · Octubre de 2026
+Documento único: es a la vez el plan técnico actualizado con las mediciones del repositorio y la fuente de la solicitud a NLnet / Restack Fund.
+**Deadline de la solicitud: 3 de noviembre de 2026, 12:00 CET.**
 
-> **Qué cambia respecto a la v2.** La v2 ya reorientó los entregables de "una app" a "cuatro paquetes reutilizables". La v3 no cambia esa arquitectura: cierra las ambigüedades que quedaban (§0), incorpora la solicitud como anexo para que plan y formulario no puedan divergir (Anexo A), y sustituye "los primeros diez días" por un calendario real contra el deadline (§12).
+> **Qué cambia respecto a la v3.** Entre el 8 y el 20 de septiembre de 2026 se construyó el repositorio completo, se probó de extremo a extremo en un teléfono Android real (Xiaomi Mi 9T Pro) y en navegador (Chrome headless), y se registraron 56 decisiones de ingeniería (`DECISIONS.md`) y 232 tests automatizados. Esta versión incorpora todos los hallazgos medidos (`ESTADO.md`, `docs/measurements.md`), amplía el alcance a **Web** (sin servidor ni CDN, partiendo de `demo/`) y **macOS** (junto con la verificación de iOS mediante el Mac presupuestado), añade la **destilación y entrenamiento de modelos abiertos de escaneo** motivada por el precipicio de CER medido cuando se solapan dos defectos, y ajusta el presupuesto detallado dentro del tope de 50.000 € de Restack.
 
 ---
 
-## 0.5 Adenda de medición — 8 de septiembre de 2026, tarde
+## 0.5 Estado medido del repositorio — septiembre de 2026
 
-Esta sección la exige §0.3: si un número cambia al tocar el código, cambia aquí primero.
-El repositorio ya existe, y estas cinco cosas se midieron o se comprobaron el mismo día.
-Detalle completo con los comandos en `docs/measurements.md`; el impacto sobre la
-solicitud, en `docs/application-notes.md`.
+Esta sección la exige §0.3: nada se afirma sin medirlo, y si un número cambia al tocar el código, cambia aquí primero y se propaga al Anexo A. Detalle completo con fechas, máquinas y comandos en [`ESTADO.md`](ESTADO.md) y [`docs/measurements.md`](docs/measurements.md).
 
-| Lo que decía el plan | Lo que se ha medido | Dónde |
+### Lo que ya existe y corre hoy
+
+| Pieza | Líneas | Qué es | Estado actual |
+|---|---|---|---|
+| `byrsa_restore` | 2.011 | Restauración de imagen: iluminación, filtros, intrusiones, remapeo de grid | Dart puro · **publicable** · paridad byte a byte entre VM y Web (`tool/check_web_parity.sh`) |
+| `dart_searchable_pdf` | 1.316 | Escritor de capa de texto invisible en PDF (render mode 3, `Tz` por palabra) | Dart puro · **publicable** · verificado con Poppler en Linux y con PDFs exportados desde móvil |
+| `byrsa_capture` | 1.503 | Cámara, detección de bordes en vivo y corrección de perspectiva | Flutter · implementación propia sobre CameraX (Android) y AVFoundation (iOS, 977 líneas de Swift) |
+| `byrsa_ocr` | 421 | API de OCR, modelo de páginas/palabras y reconstrucción de orden de lectura | Dart puro · **publicable** |
+| `byrsa_ocr_mobile_ocr` | 339 | Motor nativo de OCR: Apple Vision (iOS) / PP-OCRv5 ONNX (Android) | Paquete puente no publicado para aislar la dependencia git de `mobile_ocr` (D-027) |
+| `byrsa_restore_onnx` | 206 | `UvdocStage` sobre ONNX Runtime, separado para mantener puro `byrsa_restore` | Flutter · fijado a `uvdoc-grid-onnx` (Apache-2.0) |
+| `app/` | 3.890 | **Byrsa**, aplicación de referencia (biblioteca, carpetas, SQLite FTS5, export) | GPLv3 · **48,8 MB** en APK release `arm64-v8a` con 0 clases ni servicios de Google Play Services |
+| `harness/` | 1.382 | Generador sintético, ejecutor de corpus y puntuador de CER/WER/PSNR | Dart puro |
+| `demo/` | 695 | Restauración interactiva en el navegador (`--no-web-resources-cdn`) | 304 ms en 1,4 MP en Chrome headless · **cero peticiones externas** |
+
+**56 decisiones documentadas (`DECISIONS.md`) · 232 tests en verde · `flutter analyze` limpio · 100% REUSE/SPDX.**
+
+### Correcciones al plan original forzadas por las mediciones
+
+| Lo que asumía el plan inicial | Lo que demostró el código y las mediciones | Decisión |
 |---|---|---|
-| §4.1: "no lo reimplementes, forkea `doclens`" | `doclens` 0.0.9 declara `play-services-mlkit-*` como dependencia Gradle **incondicional**. Cualquier app que lo use mete Play Services en el APK. Gana §0.1: `byrsa_capture` lleva detector propio, y el arreglo se propone upstream | D-017 |
-| §11: "tamaño de app > 150 MB", probabilidad alta | **48,0 MB** en `arm64-v8a` release con splits por ABI, app completa, antes de descargar ningún modelo. Con 0 clases de Play Services tras R8 | D-026 |
-| §4.3: "DocShadow-SD7K ONNX" · "es el 80% del efecto percibido" | **Descartado, medido.** 120.041.674 bytes en fp32 y 10.612 nodos; la salida es una imagen del tamaño de la entrada, así que 0,79 MP cuestan 3.566 ms y **534 MB de RSS pico** en un CPU de sobremesa. La app procesa 6,8 MP. No es un problema de cuantización: reduce los pesos, no las operaciones. Y en dos pruebas sintéticas el pipeline clásico le gana por 5,9-8,7 dB a 1/25 del coste. Si alguna red de sombras merece los 120 MB solo lo deciden las 50 fotos por CER | D-024, **D-039** |
-| §2/§4.4: "faltan idiomas y medición" sobre `mobile_ocr` | Además: no está en pub.dev, y pub.dev rechaza dependencias git. Resuelto invirtiendo la dependencia: `byrsa_ocr` es la API en Dart puro y **se publica hoy**; el motor vive en `byrsa_ocr_mobile_ocr`, que es el único que carga con el git | D-021, D-027 |
-| §3, tabla de stack: `drift`, `opencv_dart` | Ninguno de los dos entra por ahora: SQL a mano sobre `sqlite3` (FTS5 hay que escribirlo igual, y `build_runner` estorba a una build reproducible) y restauración clásica en Dart puro | D-022, D-020 |
-
-Ninguno de los dos problemas bloquea ya un hito: `byrsa_capture` lleva detector propio y
-`byrsa_ocr` es publicable. Se contribuyen upstream desde esa posición, que es la que
-produce mejores parches y no ata M1 ni M5 al calendario de un tercero (D-028, D-027).
-
-**El séptimo reto técnico de §13.5 ya no hace falta inventarlo.** Es el primero de esa
-tabla, es un hallazgo propio, y el evaluador lo puede reproducir en un comando.
+| §4.1: "no lo reimplementes, forkea `doclens`" | `doclens` (incluso en 0.0.12) declara `play-services-mlkit-*` como dependencia Gradle **incondicional**, metiendo Play Services en cualquier APK. Además, `image_picker_android` inyectaba en silencio un `<service>` de `com.google.android.gms.metadata.ModuleDependencies` en `AndroidManifest.xml` sin dejar rastro en `classes.dex`. `byrsa_capture` se escribió desde cero sobre CameraX/AVFoundation y `tool/check_no_play_services.sh` inspecciona tanto el bytecode DEX como el manifiesto binario XML. | D-017 |
+| §3: `opencv_dart` y `drift` en el stack | Ninguno de los dos entra: el pipeline clásico en Dart puro (con análisis submuestreado y pase entero fusionado, D-029) procesa 12 MP en **608 ms** en escritorio (92× más rápido que la primera versión) y corre idéntico en navegador sin arrastrar binarios C++; SQLite + FTS5 se escribe directo sobre `sqlite3` sin `build_runner` para proteger la build reproducible. | D-020, D-022, D-029 |
+| §4.2: `PaddlePaddle/UVDoc_onnx` directo | El export que devuelve una imagen rectificada consume **477 MB de RSS pico** a 6,8 MP (OOM en gama media). Sustituido por `fredcallagan/uvdoc-grid-onnx` (Apache-2.0), que devuelve el grid `[1,2,45,31]` en **173 ms y 127 MB de RSS pico** independientemente de la resolución de salida, aplicando `remapThroughGrid` en Dart. | D-037 |
+| §4.3: "DocShadow-SD7K ONNX es el 80% del efecto percibido" | **Descartado con números.** 120.041.674 bytes en fp32 y 10.612 nodos; a solo 0,79 MP cuesta **3.566 ms y 534 MB de RSS pico**, y el estimador clásico le gana por 5,9–8,7 dB a 1/25 del coste. | D-024, D-039 |
+| Comportamiento del pipeline ante daños reales (CER en dispositivo) | En un Xiaomi Mi 9T Pro (Android 16, arm64), el CER es **1,00%** en 5 páginas limpias y **0,39%–2,56%** con un solo daño (movimiento, inclinación, reflejo, luz mixta), sube a **29,09%** en página curvada, y **se desploma a 42,85% y 63,90% cuando se solapan dos daños** (`hand-shadow + low-light` y `skewed + motion-blur`). Esto redefine T2: lo clásico basta para un defecto aislado, pero el solapamiento de defectos y la curvatura severa exigen **entrenar/destilar modelos abiertos compactos** que estimen campos de ganancia y grids de baja resolución. | D-048 |
 
 ---
 
 ## 0. Reglas cerradas — no se re-litigan
 
-Estas cuatro no son propuestas. Son decisiones tomadas. Si algo más abajo en este documento parece contradecirlas, gana esta sección.
+Estas cuatro reglas gobiernan todo el repositorio y la solicitud a NLnet.
 
-### 0.1 Sin Google Play Services. ML Kit está descartado.
+### 0.1 Cero dependencias de Google (ni en código, ni en manifiesto, ni en CDN web)
 
-Hubo una decisión previa, el mismo 8 de septiembre, de usar ML Kit Document Scanner como único camino de captura y aceptar la pérdida de F-Droid a cambio de velocidad. **Queda revertida.** La captura es `doclens` (MIT) y el pipeline propio.
+El proyecto se presenta a Restack como infraestructura libre europea, alternativa soberana a Google ML Kit Document Scanner y Apple VisionKit. Un paquete que arrastre servicios propietarios de Google queda descalificado para F-Droid y para cualquier distribución independiente.
 
-**Por qué:** el proyecto se presenta a Restack, y el entregable son cuatro paquetes que otros deben poder adoptar. Un paquete que arrastra Play Services no lo adopta nadie en el ecosistema al que va dirigido, y difícilmente lo financia un fondo cuyo criterio es la soberanía tecnológica europea. El coste — semanas de ingeniería de cámara que ML Kit regalaba — se paga a conciencia.
+- **En Android:** cero referencias a `com.google.android.gms`, `com.google.mlkit`, `com.google.firebase` o `com.google.android.play` tanto en `classes*.dex` como en el `AndroidManifest.xml` compilado, verificado automáticamente por `tool/check_no_play_services.sh`.
+- **En Web:** compilación con `--no-web-resources-cdn` para servir CanvasKit y todos los activos desde el mismo origen, con **cero peticiones externas**.
+- **En modelos:** destilación y publicación de pesos abiertos bajo licencia **Apache-2.0** con scripts de entrenamiento reproducibles.
 
-**Consecuencia:** F-Droid vuelve a ser requisito desde el commit uno (§9), no un extra.
+### 0.2 iOS y macOS: código escrito hoy, verificación y soporte macOS presupuestados
 
-### 0.2 iOS: hoy no hay build, pero todo se escribe iOS-ready
+El desarrollo actual se realiza en Linux (CachyOS). Hoy no hay Mac, luego **no se afirma ninguna cifra ni compilación de iOS o macOS no medida**. Pero la arquitectura es multiplataforma desde el primer día:
 
-El desarrollo es en Linux (CachyOS). No hay Mac, luego **no hay build ni medición de iOS**. Pero el proyecto **no es Android-only**: en cualquier momento puede ponerse un agente a trabajar sobre este mismo repositorio desde un Mac, y debe encontrarlo listo.
+- El lado nativo de Apple (`AVFoundation` y `Vision`, 977 líneas de Swift) está escrito y expuesto tras las mismas APIs Dart simétricas.
+- **Prohibido afirmar resultados no medidos en iOS.** `tool/check_claims.sh` bloquea cualquier afirmación de rendimiento o paridad en iOS en los documentos del repositorio.
+- Todo lo pendiente de verificar en hardware de Apple (o en las 50 fotografías reales) figura en [`UNVERIFIED.md`](UNVERIFIED.md) (54 filas, cada una con el comando exacto que la cierra).
+- **El presupuesto de la solicitud incluye explícitamente un equipo Mac de compilación** para: (1) verificar y perfilar iOS, (2) llevar `byrsa_capture`, `byrsa_ocr` y la aplicación de referencia a **macOS**, y (3) validar el Plan B sobre Core ML si ONNX Runtime FFI en iOS presenta problemas de memoria o de revisión en App Store.
 
-Doctrina operativa, sin excepciones:
+### 0.3 Este documento y `docs/measurements.md` son la fuente de verdad
 
-- **Se escribe el lado iOS igual que el de Android.** Plugins con su implementación Swift/AVFoundation completa, carpeta `ios/` completa, APIs Dart simétricas. Nada de "ya lo haremos".
-- **CI tiene job de iOS** aunque falle o quede en `continue-on-error`. Un job rojo es información; un job ausente es deuda invisible.
-- **Prohibido afirmar resultados de iOS.** Ni cifras, ni "funciona", ni paridad, sin haberlo medido en hardware. Ni en el README, ni en la solicitud, ni en un commit.
-- **Todo lo no verificado se registra en `UNVERIFIED.md`**, con qué máquina hace falta y qué comando exacto lo comprobaría. Ese fichero es el encargo del futuro agente con Mac.
+Todo lo que se escribe en el Anexo A sale de mediciones reales registradas en `docs/measurements.md` o se declara explícitamente como tarea financiada / punto abierto en `UNVERIFIED.md`.
 
-Esto afecta a la solicitud: el spike de ONNX en iOS (§4.6) **no se puede correr antes del 3 de noviembre**. La respuesta correcta en el formulario no es inventarlo ni esconderlo, sino declararlo como riesgo abierto con plan B. Ver §11 y Anexo A / *Technical challenges*.
+### 0.4 Punto de partida real: cadena completa funcionando en Android y demostrador en Web
 
-Lo mismo aplica a la validación de PDF (§4.5): Poppler, Chrome y pdf.js se verifican en Linux; **Acrobat y Preview van a `UNVERIFIED.md`**.
-
-### 0.3 Este documento es la fuente de verdad
-
-Lo que se escriba en la solicitud sale de aquí. Si un número cambia en un spike, cambia aquí primero y se propaga al Anexo A. Nunca al revés.
-
-### 0.4 Punto de partida real: cero
-
-A 8 de septiembre de 2026 no existe repositorio, ni código, ni set de prueba. Existe este documento. Cualquier plan que asuma otra cosa está mintiendo, y §12 está calculado desde cero.
+A diferencia de una propuesta sobre papel, Byrsa llega a la convocatoria del 3 de noviembre con un repositorio público, 6 paquetes modulares, aplicación Android funcionando de extremo a extremo en hardware real, demostrador web sin servidor, banco de pruebas con CER medido y tres auditorías/parches enviados upstream (`docs/upstream/`). La subvención financia el salto de este prototipo verificado a un stack de producción completo en **Android, iOS, Web y macOS**, junto con el corpus de 50 fotografías reales y los **modelos abiertos compactos de escaneo**.
 
 ---
 
 ## 1. Por qué existe el hueco
 
-Ninguna app libre cubre las features de Adobe Scan. Pero el diagnóstico útil no es ese, sino este:
+Digitalizar documentos en papel desde el móvil, el navegador o el escritorio es una necesidad cotidiana (documentos de identidad, contratos, nóminas, facturas, informes médicos). Sin embargo, el ecosistema actual sufre tres fracturas estructurales:
 
-**Cada escáner libre que existe es un monolito en una tecnología distinta.** OSS Document Scanner es NativeScript. MakeACopy es Kotlin nativo. FairScan y Open Note Scanner, Android nativo. Ninguno puede reutilizar el trabajo duro del otro. Cada intento nuevo empieza en un repositorio vacío.
+1. **Dependencia de stacks propietarios cerrados.** La vía fácil para cualquier desarrollador móvil hoy es invocar Google ML Kit Document Scanner en Android o Apple VisionKit en iOS, o subir las imágenes a una API en la nube fuera de la UE. Ninguna de esas opciones es auditable, reutilizable en la web o compatible con F-Droid y sistemas des-googlizados.
+2. **Cada escáner libre existente es un monolito aislado.** OSS Document Scanner está escrito en NativeScript; MakeACopy en Kotlin nativo; FairScan y Open Note Scanner son aplicaciones Android cerradas sobre sí mismas. Ninguno expone paquetes reutilizables para que otros desarrolladores construyan encima, y ninguno cubre conjuntamente **Android, iOS, Web y escritorio (macOS)**.
+3. **El vacío de los modelos abiertos de restauración y rectificación para dispositivos reales.** Nuestras mediciones en el repositorio demuestran por qué ningún escáner libre ha resuelto aún las páginas curvas o con defectos combinados:
+   - Los modelos académicos publicados como `DocShadow-SD7K` (120 MB en fp32, 10.612 nodos) devuelven una imagen a resolución completa y consumen **534 MB de RAM pico y 3.566 ms** en apenas 0,79 MP, provocando cierres por falta de memoria (OOM) en teléfonos de gama media.
+   - Los métodos clásicos puros (como el implementado hoy en `byrsa_restore`) son rapidísimos (608 ms a 12 MP en escritorio, 304 ms en navegador) y logran un CER excelente en páginas limpias (**1,00%**) o con un solo defecto (**0,39%–2,56%**), pero **colapsan cuando el papel está curvado (29,09% CER) o cuando se solapan dos defectos como sombra de mano + baja luz o inclinación + desenfoque (42,85% y 63,90% CER)**.
 
-La consecuencia se ve en el mercado: en Android hay media docena de opciones libres imperfectas; en iOS, prácticamente ninguna.
-
-Y hay dos capacidades que **no existen en ningún sitio del ecosistema libre**, pese a que los modelos y los formatos son abiertos y están disponibles:
-
-1. **Rectificación geométrica y eliminación de sombras en el dispositivo.** Es lo que separa una foto de un papel de un escaneo legible. UVDoc existe como modelo abierto, y en el export correcto —el que devuelve un grid de muestreo, no una imagen— cuesta 173 ms y 127 MB (D-037). Nadie lo ha empaquetado. Para sombras la respuesta medida resultó ser otra: la normalización clásica de iluminación gana a DocShadow en calidad y por veinticinco a uno en coste (D-039), así que lo que hay que empaquetar ahí no es una red.
-2. **Un escritor de capa de texto invisible en PDF en Dart puro.** Es lo que hace que un escaneo sea buscable, copiable y accesible a lectores de pantalla. No hay nada equivalente en el ecosistema Dart.
-
-Esas dos son el núcleo de la propuesta. Lo demás es integración.
+El núcleo de Byrsa es cerrar esas tres fracturas a la vez:
+- **Cuatro paquetes Dart/Flutter reutilizables (Apache-2.0)** y una aplicación de referencia (GPLv3) para **Android, iOS, Web y macOS**, con cero dependencias de Google.
+- **Modelos abiertos compactos (Apache-2.0) y su corpus de entrenamiento/evaluación**, diseñados específicamente para predecir **grids de rectificación 2D y campos de ganancia de iluminación de baja frecuencia** (en lugar de bitmaps pesados a resolución completa), cerrando el precipicio de CER de los dos daños con menos de 150 MB de RAM pico.
+- **Un escritor en Dart puro de capas de texto invisible para PDF (`dart_searchable_pdf`)**, con alineación exacta por palabra (`Tz`) y salida determinista byte a byte.
 
 ---
 
-## 2. Los cuatro entregables, y cómo se corresponden con la solicitud
+## 2. Los entregables y cómo se corresponden con la solicitud
 
-Esta tabla es la que evita que plan, hitos y formulario se desincronicen. Si tocas una columna, tocas la fila entera.
+Esta tabla mantiene sincronizados los paquetes del repositorio, las tareas del presupuesto (T1–T6) y los hitos de NLnet (M1–M6).
 
-| Paquete | Tarea (solicitud) | Hito | Qué hace | Estado del arte hoy |
+| Entregable | Tarea | Hito | Qué hace y en qué plataformas corre | Estado actual en el repo |
 |---|---|---|---|---|
-| `byrsa_capture` | T1 | M1 | Detección de bordes en vivo y corrección de perspectiva, sin Play Services | Parcial: `doclens` (MIT) resuelve la base; faltan lotes, ajuste manual de esquinas y API estable |
-| `byrsa_restore` | T2 | M3 | Rectificación (UVDoc, export de grid) y normalización de iluminación. La eliminación de sombras resultó no necesitar red: D-039 | **No existe** |
-| `byrsa_ocr` | T3 | M5 | OCR en dispositivo tras una API Dart única: Vision en iOS, PP-OCR ONNX en Android | Base: `ente-io/mobile_ocr` (MIT); faltan idiomas y medición |
-| `dart_searchable_pdf` | T4 | M4 | Capa de texto invisible (render mode 3) con métrica de fuente correcta | **No existe en Dart** |
-| **Byrsa** (app) | T5 | M6 | Implementación de referencia: biblioteca, carpetas, FTS, export, i18n, accesibilidad | — |
-| Harness de evaluación | T6 | M2 (línea base) + M6 (informe) | 50 documentos reales + script de CER, tiempo y memoria | **No existe para este dominio** |
-
-Un desarrollador que solo necesite PDFs buscables se lleva `dart_searchable_pdf` e ignora el resto. Ese es el punto, y es lo que se financia.
+| `byrsa_capture` | T1 | M1 | Captura nativa (CameraX en Android, AVFoundation en iOS y macOS) y captura en navegador (Web), detección de bordes en vivo, corrección de perspectiva homográfica, ajuste manual de esquinas y modo por lotes. Cero Play Services. | Funcional en Android real; 977 líneas de Swift escritas para Apple; 39 tests en verde. Falta compilar/medir en iOS/macOS y completar el flujo de cámara Web. |
+| `byrsa_restore` + `byrsa_restore_onnx` + **Modelos abiertos** | T2 | M3 | Pipeline clásico en Dart puro (iluminación, filtros, eliminación de intrusiones, paridad VM/Web) + **destilación y entrenamiento de modelos ONNX abiertos (Apache-2.0)** para segmentación de página, rectificación geométrica por grid y restauración ante múltiples defectos solapados. | Clásico publicado y verificado en móvil y Web; `UvdocStage` integrado con `uvdoc-grid-onnx` (173 ms, 127 MB RSS en escritorio). Falta entrenar/destilar los modelos ligeros propios para cerrar el precipicio del 29,09% / 42,85%–63,90% de CER. |
+| `byrsa_ocr` (+ `byrsa_ocr_mobile_ocr`) | T3 | M5 | API unificada de OCR en dispositivo y reconstrucción de orden de lectura: PP-OCRv5 ONNX en Android y Web, Apple Vision en iOS y macOS. Descarga de modelos bajo demanda verificada con SHA-256. | Publicable en pub.dev (`byrsa_ocr`); OCR funcionando de extremo a extremo en Android real con diacríticos intactos (`0,41%–1,00%` CER en páginas limpias). Falta soporte Web/macOS y evaluación multilingüe completa. |
+| `dart_searchable_pdf` | T4 | M4 | Escritor en Dart puro de capa de texto invisible en PDF (render mode 3, escalado horizontal `Tz` por palabra, WinAnsi/Unicode, bytes reproducibles). Corre en móvil, escritorio y Web. | Publicable en pub.dev; 34 tests incluyendo verificación con `pdftotext -layout` y bytes crudos exportados desde un teléfono real. Falta soporte de fuentes CJK/no-latinas embebidas y validación en Acrobat/Preview. |
+| **Byrsa** (app de referencia) | T5 | M6 | Aplicación completa en **Android, iOS, Web (sin servidor ni CDN) y macOS**: biblioteca, carpetas, búsqueda SQLite FTS5, cifrado opcional (SQLCipher + AES-GCM), exportación PDF/JPEG/TXT, i18n, accesibilidad. | Funcional de extremo a extremo en Android (3.890 líneas) y demostrador de restauración en navegador (`demo/`, 695 líneas). Falta llevar la app completa a Web y macOS, cifrado en disco y pulido de producción. |
+| Harness de evaluación y corpus | T6 | M2 + M6 | `harness/` + corpus público de **50 documentos reales** fotografiados (incluyendo ≥10 con dos defectos solapados) + corpus sintético reproducible + empaquetado F-Droid y builds reproducibles. | `harness/` operativo (1.382 líneas) con corpus sintético y puntuación en dispositivo (`score_device.dart`). Faltan las 50 fotografías reales y la telemetría de etapas en la app. |
 
 ---
 
 ## 3. Arquitectura
 
 ```
-┌─────────────────────────────────────────────────────────┐
-│  Byrsa (app de referencia)                              │
-│  Flutter · Riverpod · go_router · Material 3/Cupertino  │
-├─────────────────────────────────────────────────────────┤
-│  Dominio (Dart puro, testeable sin Flutter)             │
-│  Scan · Page · Document · Folder · Pipeline             │
-├────────────┬────────────┬────────────┬──────────────────┤
-│byrsa_capture│byrsa_restore│ byrsa_ocr │dart_searchable_  │
-│            │            │            │pdf               │
-│ CameraX /  │ ONNX RT    │ Vision(iOS)│ pdf_cos          │
-│ AVFoundation│ UVDoc      │ PP-OCR(And)│ render mode 3    │
-│ doclens    │ DocShadow  │            │                  │
-├────────────┴────────────┴────────────┴──────────────────┤
-│  SQLite (drift) + FTS5 · ficheros en disco              │
-│  Cifrado opcional: SQLCipher + AES-GCM                  │
-└─────────────────────────────────────────────────────────┘
+┌──────────────────────────────────────────────────────────────────────────┐
+│  Byrsa (aplicación de referencia — GPLv3)                                │
+│  Android · iOS · Web (--no-web-resources-cdn) · macOS                    │
+│  Flutter · Riverpod · Material 3 / Cupertino                             │
+├──────────────────────────────────────────────────────────────────────────┤
+│  Dominio y telemetría (Dart puro, testeable en CI sin emulador)          │
+│  Scan · ScanPage · Folder · RestorePipeline · StageOutcome · ModelCatalog│
+├─────────────────┬────────────────────┬───────────────┬───────────────────┤
+│ byrsa_capture   │ byrsa_restore      │ byrsa_ocr     │dart_searchable_pdf│
+│                 │ + byrsa_restore_   │ + byrsa_ocr_  │                   │
+│ CameraX (And)   │   onnx             │   mobile_ocr  │ Escritor PDF en   │
+│ AVFound. (iOS/  │ Clásico Dart puro  │ PP-OCRv5 ONNX │ Dart puro         │
+│   macOS)        │ (VM + Web idéntico)│ (And + Web)   │ Render mode 3     │
+│ Web MediaStream │ + Modelos abiertos │ Apple Vision  │ Escalado Tz exacto│
+│ Cero Play Serv. │   ONNX (grid/gain) │ (iOS + macOS) │ Bytes determinist.│
+├─────────────────┴────────────────────┴───────────────┴───────────────────┤
+│  Almacenamiento local: SQLite + FTS5 (sin build_runner) · Archivos       │
+│  Cifrado opcional: SQLCipher + AES-GCM                                   │
+└──────────────────────────────────────────────────────────────────────────┘
 ```
 
-El dominio es Dart puro a propósito: es lo que permite testear el pipeline entero en CI de Linux sin dispositivo ni simulador, que es la única forma de tener cobertura real bajo la restricción de §0.2.
+### Decisiones de stack verificadas en el repositorio
 
-### Stack, con licencias verificadas
+| Capa | Elección actual | Licencia | Por qué (decisión registrada) |
+|---|---|---|---|
+| Estado | `flutter_riverpod` | MIT | Sin generación de código para no entorpecer builds reproducibles |
+| Base de datos y FTS | `sqlite3` + `sqlite3_flutter_libs` (SQL directo + FTS5) | MIT | `drift` y `build_runner` se descartaron (D-022): FTS5 requiere SQL manual de todos modos |
+| Captura | Propia en `byrsa_capture` (CameraX / AVFoundation / Web) | Apache-2.0 | `doclens` se descartó al auditar su Gradle y hallar `play-services-mlkit-*` incondicional (D-017; reportado en `doclens#20`) |
+| Visión e iluminación | Dart puro en `byrsa_restore` | Apache-2.0 | `opencv_dart` se descartó para la ruta clásica (D-020): el pase entero fusionado en Dart puro tarda 608 ms a 12 MP y compila a JS/Wasm con paridad exacta de bytes |
+| Inferencia neuronal | `onnxruntime` (FFI) / ONNX Runtime Web / Core ML (Plan B Apple) | MIT | En Android comparte determinísticamente `libonnxruntime.so` 1.27.0 con el motor de OCR, verificado en CI por `tool/check_native_collisions.sh` |
+| Modelos de restauración | `uvdoc-grid-onnx` + **modelos abiertos propios (T2)** | Apache-2.0 | El export por grid (`[1,2,45,31]`) usa 127 MB de RSS frente a los 477 MB del export de imagen (D-037) y los 534 MB de DocShadow (D-039) |
+| OCR | `byrsa_ocr` (Dart puro) + `byrsa_ocr_mobile_ocr` (`ente-io/mobile_ocr`) | Apache-2.0 / MIT | Separar interfaz y motor permite publicar `byrsa_ocr` en pub.dev hoy mientras la dependencia git queda aislada (D-027; reportado en `mobile_ocr#26`) |
+| PDF buscable | `dart_searchable_pdf` (Dart puro, sin dependencias externas de PDF) | Apache-2.0 | Escritor propio con soporte WinAnsi, métricas Helvetica y escalado horizontal `Tz` por palabra |
 
-| Capa | Paquete / modelo | Licencia |
-|---|---|---|
-| Estado / rutas | `riverpod`, `go_router` | MIT, BSD-3 |
-| BD + búsqueda | `drift`, `sqlite3_flutter_libs` (FTS5) | MIT |
-| Captura | `doclens` | MIT |
-| Visión | `opencv_dart` (→ `dartcv4`) | Apache-2.0 |
-| Inferencia | `onnxruntime` (Dart) | MIT |
-| OCR | `ente-io/mobile_ocr` | MIT (modelos: licencia PaddleOCR — **verificar por modelo**, §9) |
-| PDF bajo nivel | `pdf_cos`, `pdf_document` | ver repo |
-| PDF alto nivel | `pdf` (DavBfr) | Apache-2.0 |
-| Códigos | `mobile_scanner` | BSD-3 |
-| Sync | `webdav_client` | MIT |
-| Rectificación | UVDoc ONNX (~31 MB) | MIT |
-| Sombras | ~~DocShadow-SD7K ONNX~~ → normalización clásica | MIT (los pesos, por inferencia; licencia del dataset SD7K sin establecer). Descartado por coste, D-039 |
-
-**Licencia del proyecto:** GPLv3 para la app, **Apache-2.0 para los cuatro paquetes**. Un paquete Apache-2.0 se adopta; uno GPLv3 no lo toca nadie. La adopción es exactamente lo que Restack financia.
-
-`REUSE.toml` y cabeceras SPDX desde el primer commit.
+**Licencia del proyecto:** **Apache-2.0** para todos los paquetes reutilizables y para los modelos abiertos entrenados; **GPLv3** para la aplicación de referencia Byrsa. `REUSE.toml` y cabeceras SPDX verificadas con `reuse lint` en cada commit.
 
 ---
 
-## 4. Los ocho problemas duros
+## 4. Los ocho problemas técnicos duros (y lo que ya hemos medido en ellos)
 
-### 4.1 Detección de bordes fluida
-No lo reimplementes. `doclens` ya expone el quad de cuatro esquinas a Dart por frame, con Apple Vision en iOS y CameraX en Android. Forkéalo el día uno.
+### 4.1 Detección de bordes fluida y sistemas de coordenadas de cámara
+Al descartar ML Kit y `doclens` por arrastrar Google Play Services (D-017), `byrsa_capture` implementa su propio detector de cuadriláteros en el hilo de análisis nativo de CameraX (Android) y AVFoundation (iOS/macOS), enviando a Dart únicamente las cuatro esquinas normalizadas.
 
-**Trampa:** el `Texture` de Flutter más el stream de frames a Dart es donde se va la batería. Mantén la detección en la capa nativa y pasa solo el quad. Un día entero de perfilado con DevTools antes de dar la captura por buena.
+**Lección medida en hardware real:** al probar la cámara en el Xiaomi Mi 9T Pro, los 194 tests en verde no impidieron dos fallos visuales graves: la textura de previsualización aparecía estirada y el contorno del documento salía girado 90°. Causa: `CaptureSession.analyse` rotaba las esquinas según `imageInfo.rotationDegrees` (espacio de pantalla), mientras que el `Preview` de CameraX entregaba el buffer en espacio del sensor (4:3). Se resolvió leyendo `SurfaceRequest.setTransformationInfoListener` en nativo y aplicando `RotatedBox` + `AspectRatio` (`contain`) compartido entre textura y overlay en Dart.
 
-### 4.2 Rectificación de páginas curvas
-UVDoc en ONNX. Hace su propio downscale interno a 712×488 y reescala el grid; **no le hagas resize tú antes**. Detecta el shape de salida en runtime, porque según el export devuelve imagen rectificada o grid de muestreo.
+### 4.2 Rectificación de páginas curvas: por qué el export de grid cambia las reglas
+`PaddlePaddle/UVDoc_onnx` devuelve un tensor de 3 canales del tamaño de la imagen de entrada: a 6,8 MP consume **487 ms y 477 MB de RSS pico**, matando por OOM un móvil de gama media. En cambio, el export de grid (`fredcallagan/uvdoc-grid-onnx`, Apache-2.0) recibe `[1,3,720,496]` y devuelve un grid de muestreo `[1,2,45,31]` en **173 ms y 127 MB de RSS pico** constantes, dejando que `remapThroughGrid` reconstruya la imagen a resolución completa en Dart siguiendo la convención `align_corners=True` de los autores originales (D-037).
 
-**Límite honesto:** curvatura suave y moderada, sí. Lomo cerrado con luz mala, no. Dilo en la UI. Y mídelo: parte de la tarea es establecer dónde está la frontera real y publicarlo.
+**Frontera medida:** en el teléfono real, la página curvada del corpus (`book-page-02`, 3.335 caracteres) arroja un **CER del 29,09%**, frente al 0,39%–2,56% de cualquier otro defecto aislado. Además, descubrimos que la aplicación descartaba los `StageOutcome` devueltos por `RestorePipeline.run`, impidiendo distinguir en la base de datos si `UvdocStage` se ejecutó o se omitió (U-34). Persistir esa telemetría y mejorar el modelo de rectificación son parte central de T2 y T6.
 
-### 4.3 Eliminación de sombras y suciedad
-Tres problemas que Adobe vende como uno:
-- **Sombras** → **la normalización clásica, no una red.** Esto era "DocShadow-SD7K ONNX, el 80% del efecto percibido" hasta medirlo, y no se sostiene: 534 MB de pico a 0,79 MP y peor calidad que dividir por el fondo estimado en dos modelos de sombra distintos, uno de ellos construido a propósito para romper la suposición del método clásico (D-039). Lo que sigue en pie es que las sombras son el efecto percibido dominante — solo que la herramienta correcta es barata. Si alguna red merece los 120 MB lo deciden las 50 fotos por CER, no una intuición.
-- **Manchas y arrugas** → normalización de iluminación local (CLAHE + división por fondo estimado con blur gaussiano grande). Clásico, barato, mejora todos los escaneos. **Empieza por aquí: es una tarde, y es la línea base contra la que se mide todo lo demás en M2.**
-- **Dedos en el borde** → máscara HSV de piel + `cv.inpaint` (Telea). Llega sorprendentemente lejos sin red neuronal.
+### 4.3 El precipicio de los dos daños y el coste real de las redes de sombras
+Tres problemas que los escáneres comerciales venden como uno:
+- **Por qué se descartó DocShadow-SD7K ONNX (D-039):** pesa 120.041.674 bytes en fp32, tiene 10.612 nodos (frente a 259 del grid de UVDoc) y a solo 0,79 MP consume **3.566 ms y 534 MB de RSS pico**. Además, en nuestras pruebas con sombras sintéticas multiplicativas y físicas (con luz ambiente azulada y penumbra ancha), el estimador clásico en Dart puro le ganó por **5,9 a 8,7 dB de PSNR** en 124 ms (1/25 del tiempo).
+- **Dónde falla lo clásico (el hallazgo del 14 de septiembre, D-048):** al pasar 11 páginas por el pipeline completo en el Xiaomi Mi 9T Pro, las 5 páginas sin daño dieron **1,00% de CER** y las 4 páginas con un único daño (desenfoque de movimiento, inclinación, reflejo, luz mixta) dieron entre **0,39% y 2,56% de CER**. Pero las 2 páginas con **dos daños simultáneos** (`hand-shadow + low-light` y `skewed + motion-blur`) se desplomaron a **42,85% y 63,90% de CER**.
+- **La solución arquitectónica en T2:** el método clásico estima un único campo de color de papel y un juego de mapas locales; cuando dos distorsiones se solapan, corrige dos veces el campo equivocado. La solución no es una red imagen-a-imagen de 120 MB, sino **entrenar/destilar un modelo abierto ligero que prediga un campo de ganancia de iluminación de baja resolución** (a 384×512 el truco de campo de ganancia reduce el coste 5× manteniendo 27,0 dB, §docs/measurements.md) acoplado al grid geométrico.
 
-### 4.4 OCR en dos plataformas
-Apple Vision en iOS, PP-OCR ONNX en Android, misma API Dart. Vision es de sistema y no pesa; en Android no hay equivalente sin Play Services, que rompería F-Droid (§0.1).
+### 4.4 OCR multiplataforma (Android, iOS, macOS y Web) y auditoría de modelos
+Apple Vision en iOS y macOS; PP-OCRv5 en ONNX Runtime en Android y Web, detrás de la API en Dart puro de `byrsa_ocr`.
+- **Aislamiento de dependencias git (D-027):** `ente-io/mobile_ocr` no está publicado en pub.dev y pub.dev prohíbe dependencias git. Separar `byrsa_ocr` (publicable hoy con cero avisos) de `byrsa_ocr_mobile_ocr` desbloqueó el hito sin hacer un fork privado.
+- **Hallazgo en la auditoría de artefactos ONNX (`docs/measurements.md`, 14-sep):** al inspeccionar sin librerías externas las cabeceras protobuf de los tres modelos (`det.onnx`, `cls.onnx`, `rec.onnx`) y el diccionario `ppocrv5_dict.txt` (18.383 entradas + 2 tokens CTC = 18.385 clases de salida en `rec.onnx`), demostramos que `cls.onnx` (opset 11, 2 clases, BatchNorm sin plegar, espacio de nombres `p2o.`) no es un clasificador PP-OCRv5 de 4 ángulos sino un export heredado de `ch_ppocr_mobile_v2.0_cls`. Documentado y enviado upstream en `mobile_ocr#26`.
 
-**Decisión de diseño:** los modelos ONNX **no van en el binario**. Descarga bajo demanda desde una URL fijada, con verificación SHA-256 y caché en disco. El usuario opta explícitamente la primera vez que pide OCR.
+### 4.5 Capa de texto invisible en PDF y validación a nivel de bytes
+`dart_searchable_pdf` dibuja cada palabra reconocida sobre su caja con **render mode 3** (invisible) y ajusta el ancho exacto mediante el operador `Tz` por palabra para que la selección y el copiar-pegar coincidan píxel a píxel con la imagen escaneada.
 
-### 4.5 Capa de texto invisible
-Dibujar cada palabra reconocida en su bounding box con **render mode 3**. Idéntico visualmente, seleccionable y buscable.
+**Trampa descubierta al exportar desde el teléfono (16-sep):** los tests de ida y vuelta con `pdftotext -layout` pasaban, pero el título del PDF exportado en el móvil aparecía corrupto (`Importado\2402026\25509...`). `_winAnsiFromRune` mapeaba el espacio (`U+0020`) a `0xA0` (espacio de no separación) y el guion (`U+002D`) a `0xAD` (guion blando). Ningún test basado en Poppler lo detectaba porque **`pdftotext` normaliza ambos bytes a ASCII al extraer el texto**. Se corrigió la tabla WinAnsi y se añadieron tests que inspeccionan directamente los bytes generados del PDF.
 
-**Trampa:** el ancho de la caja invisible tiene que coincidir con el ancho del texto renderizado o el copiar-pegar sale desalineado. Se ajusta con `Tz` por palabra. Un PDF que parece buscable y se comporta mal es peor que no hacerlo.
+### 4.6 ONNX en iOS/macOS y colisiones nativas en Android Release
+- **En Android (resuelto y vigilado en CI):** al compilar el APK en modo *release* (en *debug* no falla), Gradle abortaba porque `mobile_ocr` empaqueta `libonnxruntime.so` 1.27.0 (28 MB en arm64) y `onnxruntime_flutter` empaqueta su propia copia 1.15.1 (14 MB). Usar `pickFirsts` reducía el APK en 13 MB pero emparejaba en silencio el shim JNI de 1.27.0 con la librería antigua de 1.15.1. Se resolvió excluyendo determinísticamente la copia del paquete FFI para que ambos usen la versión 1.27.0, y `tool/check_native_collisions.sh` verifica la cadena de versión dentro del `.so` en cada build release. Además se parcheó el `compileSdkVersion 33` roto de `onnxruntime_flutter` (enviado upstream en `onnxruntime_flutter#55`).
+- **En iOS y macOS (riesgo abierto hasta disponer del Mac presupuestado):** ONNX Runtime vía FFI en iOS tiene techos estrictos de memoria por proceso. Cuando se adquiera el Mac mini del presupuesto, se medirá en hardware real; si ONNX FFI resulta inviable en iOS, el **Plan B** es convertir los modelos de rectificación/restauración a Core ML en iOS y macOS manteniendo la misma API Dart de `byrsa_restore`.
 
-**Validación obligatoria:** Poppler (`pdftotext -layout`), Chrome y pdf.js **se verifican en Linux desde el primer día**. Acrobat y Preview van a `UNVERIFIED.md` hasta que haya máquina (§0.2). Declarar los cuatro como verificados sin haberlo hecho es exactamente el tipo de afirmación que hunde una solicitud.
+### 4.7 Medir sin engañarse: lo que 205 tests en verde no ven
+Entre el 14 y el 16 de septiembre, llevar el código con más de 200 tests en verde a un teléfono Android real y a un segundo compilador (`dart2js` en Chrome headless) destapó **nueve fallos reales** inalcanzables desde los tests en la VM de Dart: desde el desplazamiento de bits con signo (`-1 >> 8` da `-1` en Dart VM pero `4294967295` en `dart2js`, rompiendo la interpolación bilineal en Web hasta que se blindó con `tool/check_web_parity.sh`) hasta un *use-after-free* nativo (`SIGSEGV`) en `ImageIo.decode` al liberar `ImageDescriptor` antes de decodificar el frame, o un script de evaluación que reutilizaba la ruta en `MediaStore` y medía cinco veces la primera página. Por eso el harness de evaluación (`harness/`) y las pruebas en dispositivos físicos y navegador real son entregables de primera clase.
 
-### 4.6 ONNX en iOS — riesgo abierto, no medible antes del deadline
-El riesgo mayor del plan. ONNX Runtime vía FFI en iOS está menos rodado que en Android: tamaño de binario, techos de memoria y revisión de App Store son riesgos reales.
-
-**Y no se puede cerrar antes del 3 de noviembre**, porque no hay Mac (§0.2). Esto se declara tal cual en la solicitud: riesgo identificado, plan B definido, medición pendiente de hardware. Un riesgo declarado con mitigación puntúa; uno escondido que el evaluador detecta, descarta.
-
-**Plan B:** convertir a Core ML en iOS y mantener ONNX en Android tras la misma API Dart. La API Dart simétrica de §0.2 es precisamente lo que hace que este plan B sea un cambio de implementación y no un rediseño.
-
-### 4.7 Medir sin engañarse
-Afirmar que igualas a un escáner comercial no significa nada sin evidencia. El harness de evaluación es entregable de primera clase, no una tarea de limpieza. §5.
-
-### 4.8 La contradicción "cero red" — resuélvela ahora, no en el formulario
-
-§4.4 descarga modelos bajo demanda. Eso obliga a declarar el permiso `INTERNET` en Android, que es de instalación y no se pide en runtime. Por tanto **la frase "la build no pide permiso de red" es falsa** y no puede aparecer en la solicitud ni en el README.
-
-La formulación correcta, que además es más fuerte porque es verificable:
-
-> Ningún documento sale nunca del dispositivo. El único tráfico de red que la aplicación puede generar es una descarga de modelos que el usuario inicia explícitamente, desde una URL fijada y con verificación SHA-256.
-
-**Riesgo asociado, real:** F-Droid mira con lupa las apps que descargan blobs en tiempo de ejecución, y puede etiquetarlas. Hay que confirmar el criterio exacto antes de M5 y, si hace falta, ofrecer un *flavor* con los modelos cuantizados empaquetados. Va a §11.
+### 4.8 La garantía de red verificable (móvil, escritorio y Web)
+- **En Android, iOS y macOS:** los modelos ONNX (31,7 MB para UVDoc grid; 21,8 MB para PP-OCRv5) se descargan bajo demanda con consentimiento explícito del usuario desde URLs fijadas en `models.json` y se verifican con SHA-256 antes de guardarse en caché. Por tanto, el binario declara el permiso `INTERNET` y la garantía se formula siempre de forma exacta y verificable (vigilada por `tool/check_claims.sh`):
+  > Ningún documento sale nunca del dispositivo. El único tráfico de red que la aplicación puede generar es una descarga de modelos que el usuario inicia explícitamente, desde una URL fijada y con verificación SHA-256.
+- **En Web (`demo/` y la futura app Web de T5):** compilada con `--no-web-resources-cdn`, sirve todos sus recursos desde el propio origen sin tocar servidores de Google (`gstatic.com`) y procesa el documento íntegramente en la pestaña del navegador con **cero peticiones externas**.
+- **Para F-Droid:** si la política de F-Droid etiqueta como * Anti-Feature* la descarga opcional de pesos abiertos, se publicará un *flavor* de build con los modelos compactos cuantizados ya empaquetados en el APK.
 
 ---
 
-## 5. El harness de evaluación
+## 5. El harness de evaluación (`harness/`)
 
-Es lo que convierte el proyecto en I+D en lugar de en desarrollo de producto, y es el criterio que Restack evalúa.
+Es lo que convierte el proyecto en I+D verificable por terceros:
 
-**Set de prueba:** **50 documentos** reales fotografiados por ti — recibos arrugados, facturas, páginas de libro, DNI, pizarras, luz mala, sombra de mano. Publicado con licencia abierta si los documentos lo permiten, o sintético equivalente si no. Cuidado con los datos personales: el DNI y las facturas propias se fotografían, se anotan y **no se publican**; para esas categorías se publica un equivalente sintético o anonimizado, y el script funciona igual.
-
-**Script:** corre el pipeline completo sobre los 50 y reporta CER (character error rate), tiempo por etapa, memoria pico y tamaño de salida. Un comando, resultado reproducible por terceros.
-
-**Compromiso:** publicar los resultados desfavorables también. Un benchmark que solo sale bien no es un benchmark.
-
-**El número 50 es fijo** y aparece igual en el plan, en M2 y en el formulario. No lo dejes como `[N]` en ningún sitio.
-
-Este set es tu activo más valioso del proyecto. Fotografíalo en la semana uno — es lo único de la lista que no depende de que nada compile.
+1. **Corpus sintético reproducible (ya construido):** genera páginas en varios idiomas europeos con tipografías Liberation (Latin-1 y Latin Extended-A) y aplica degradaciones controladas (sombra multiplicativa, sombra física con penumbra azulada, curvatura, inclinación, desenfoque, luz mixta y combinaciones adversarias de dos daños). Permite detectar regresiones en segundos desde CI.
+2. **Corpus de 50 fotografías reales (entregable de M2):** 50 documentos reales fotografiados (recibos arrugados, facturas, páginas de libro curvadas, pizarras, documentos con sombra de mano). Siguiendo el hallazgo del 14 de septiembre (`harness/dataset/README.md`), **al menos 10 de las 50 fotografías deben combinar dos dificultades a la vez** (p. ej., sombra sobre página torcida o poca luz con intrusión de dedos), que es exactamente donde se mide el precipicio del método clásico. Los documentos con datos personales (DNI, facturas reales) se evalúan en privado y se publican como equivalentes sintéticos/anonimizados.
+3. **Métricas y telemetría:** `harness` y `score_device.dart` reportan CER (Character Error Rate), WER, PSNR, tiempo por etapa (`StageOutcome`), memoria pico y tamaño de archivo. Se publican todos los resultados, incluidos los desfavorables.
 
 ---
 
-## 6. Hitos
+## 6. Hitos (12 meses)
 
-NLnet paga contra hitos. Esta es la estructura que propondrías en el MoU si te seleccionan.
+NLnet paga contra hitos verificables. Esta es la estructura alineada con T1–T6 y con el presupuesto del Anexo A:
 
 | Hito | Tarea | Entregable verificable |
 |---|---|---|
-| **M1** | T1 | `byrsa_capture` publicado en pub.dev. Captura y perspectiva funcionando **medidas en Android**, implementación iOS completa y compilable en CI, sin Play Services. Demo compilable. |
-| **M2** | T6 | Set de 50 documentos + harness público. Línea base medida con el pipeline clásico (§4.3). |
-| **M3** | T2 | `byrsa_restore` publicado. UVDoc en gama media con benchmark de tiempo y memoria y límites documentados, y la línea base clásica medida contra él. DocShadow ya no forma parte del hito: descartado con números en D-039, que es un resultado del hito y no un incumplimiento. |
-| **M4** | T4 | `dart_searchable_pdf` publicado. PDFs validados en Poppler, Chrome, pdf.js y — con la máquina disponible — Acrobat y Preview. |
-| **M5** | T3 | `byrsa_ocr` publicado, con cobertura y CER medidos para español, inglés, francés, alemán, italiano y portugués. |
-| **M6** | T5 | App Byrsa v1.0: biblioteca, carpetas, FTS, export, i18n, accesibilidad. Build reproducible, REUSE compliant, publicada en F-Droid y GitHub Releases. Informe final de evaluación. |
-
-Cada hito es autocontenido: si el proyecto se parara en M3, lo entregado hasta ahí sigue siendo útil para terceros. Ese es el criterio.
-
-**Regla de honestidad en los hitos:** cada uno declara en qué plataforma está medido. Un hito "verde en Android, compilado pero no medido en iOS" se escribe así, no se redondea.
+| **M1** | T1 | `byrsa_capture` publicado en pub.dev. Captura, detección de bordes en vivo, ajuste manual de esquinas y modo por lotes funcionando y medidos en Android, iOS y macOS (con el Mac presupuestado), más soporte de captura en navegador Web. Cero Google Play Services verificado en CI. |
+| **M2** | T6 | Corpus público de 50 documentos reales (incluyendo ≥10 con dos defectos solapados) + `harness` con telemetría completa de `StageOutcome` en dispositivo. Línea base de CER, tiempo y RAM publicada en Android, iOS, macOS y Web. |
+| **M3** | T2 | `byrsa_restore` y `byrsa_restore_onnx` publicados junto con la primera versión de los **modelos abiertos compactos de escaneo (Apache-2.0)** y sus scripts/datos de entrenamiento: rectificación geométrica por grid y restauración por campo de ganancia para cerrar el precipicio de CER en páginas curvas y con doble daño (<150 MB RAM pico). |
+| **M4** | T4 | `dart_searchable_pdf` v1.0 en pub.dev con soporte completo Unicode/fuentes embebidas, alineación `Tz` por palabra y bytes reproducibles. Validado automáticamente en Poppler, Chrome y pdf.js, y verificado en Adobe Acrobat y macOS Preview. |
+| **M5** | T3 | `byrsa_ocr` v1.0 en pub.dev con soporte unificado en Android (PP-OCRv5 ONNX), iOS y macOS (Apple Vision) y Web (ONNX Runtime Web). Cobertura y CER medidos sobre el corpus de 50 documentos en español, inglés, francés, alemán, italiano y portugués. |
+| **M6** | T5 + T6 | Aplicación **Byrsa v1.0** en Android, iOS, Web (sin servidor ni CDN) y macOS: biblioteca, carpetas, búsqueda SQLite FTS5, cifrado opcional (SQLCipher + AES-GCM), i18n y accesibilidad. Build reproducible, 100% REUSE/SPDX, publicada en F-Droid, GitHub Releases, Web estática, Play y App Store, con informe final de evaluación. |
 
 ---
 
 ## 7. Alcance: dentro y fuera
 
-Recortar es lo que hace creíble una propuesta de doce meses.
-
 **Dentro del año subvencionado:**
-captura · perspectiva · filtros · multipágina · lotes · rectificación · sombras · OCR · PDF buscable · biblioteca · carpetas · búsqueda FTS · export PDF/JPEG/TXT · cifrado con contraseña · i18n · accesibilidad · builds reproducibles
+- Los cuatro paquetes Apache-2.0 (`byrsa_capture`, `byrsa_restore` + `byrsa_restore_onnx`, `byrsa_ocr`, `dart_searchable_pdf`).
+- Aplicación de referencia **Byrsa** (GPLv3) en **Android, iOS, Web (cero servidor/CDN) y macOS**.
+- **Entrenamiento y destilación de modelos abiertos compactos (Apache-2.0)** para detección de cuadrilátero/bordes, rectificación geométrica por grid 2D y restauración de iluminación/sombras ante defectos combinados, con scripts de entrenamiento reproducibles y dataset abierto.
+- Captura multipágina y por lotes · perspectiva homográfica · filtros (color, gris, B/N) · OCR en dispositivo · PDF buscable · biblioteca · carpetas · búsqueda FTS5 · exportación PDF/JPEG/TXT · cifrado local con contraseña · i18n · accesibilidad · builds reproducibles.
 
-**Fuera, backlog explícito:**
-firma y relleno de formularios · anotaciones · modo DNI · tarjetas de visita a contactos · QR · export DOCX/XLSX · sincronización WebDAV y Paperless-ngx · desktop · resumen con LLM
-
-Decláralo así en la propuesta. Un alcance recortado y consciente puntúa mejor que uno maximalista.
-
----
-
----
-
-## 9. Distribución
-
-**Verificación obligatoria de desarrollador de Google.** Desde el 30 de septiembre de 2026 se aplica en Brasil, Indonesia, Singapur y Tailandia: los Android certificados bloquean la instalación de apps de desarrolladores no verificados, venga de Play, de F-Droid o de descarga directa. Despliegue global previsto en 2027.
-
-- Regístrate en la Android Developer Console aunque solo pienses distribuir por F-Droid. ID gubernamental y ~25 $.
-- No apuestes toda la distribución a un canal. F-Droid lo ha calificado de amenaza existencial.
-- iOS: 99 €/año de Apple Developer Program. **No lo pagues todavía** — sin Mac no hay nada que subir, y la cuota corre desde que la pagas. Va en el presupuesto, se contrata cuando haya máquina.
-
-Canales: F-Droid · IzzyOnDroid · GitHub Releases · Play · App Store · Accrescent.
-
-Requisitos F-Droid desde el commit uno, no retrofiteados: build reproducible, sin binarios precompilados en el repo, sin Play Services en la build principal. **Pendiente de confirmar antes de M5:** el criterio exacto de F-Droid sobre descarga de modelos en runtime (§4.8) y la licencia concreta de cada modelo PaddleOCR que se distribuya.
+**Fuera, backlog explícito para después del proyecto:**
+- Firma criptográfica y relleno de formularios PDF · anotaciones a mano alzada · tarjetas de visita a contactos · lectura de códigos QR · exportación a DOCX/XLSX · sincronización WebDAV y subida directa a Paperless-ngx · resúmenes con LLM.
 
 ---
 
-## 10. Después de la ayuda
+## 8. Modelos abiertos de escaneo y extensión a Web y macOS
 
-Doce meses de financiación no son un modelo de negocio. Opciones honestas, en orden:
+Las mediciones de septiembre de 2026 demostraron dos hechos que definen la parte más innovadora de la propuesta:
 
-- **App de pago en Play y App Store** (3-6 €, una vez), gratis en F-Droid y GitHub. Modelo de KeePassDX, Organic Maps, Syncthing-Fork.
-- **Licencia dual** de los paquetes: Apache-2.0 para todos, licencia comercial para quien quiera integrarlos en producto cerrado sin atribución. Aquí está el dinero real.
-- **GitHub Sponsors / Open Collective.** Un proyecto financiado por la Comisión Europea atrae patrocinio de una forma que uno anónimo no.
-- **Segunda ayuda de Restack:** hasta 150.000 € en propuestas posteriores, tope vitalicio de 500.000 €. El programa va hasta 2030.
+1. **Por qué hacen falta modelos abiertos propios (Apache-2.0):**
+   En el ecosistema libre actual, o bien se usan heurísticas clásicas puras (que en nuestro banco de pruebas logran 0,39%–2,56% de CER con un defecto pero saltan a **29,09% en páginas curvas** y a **42,85%–63,90% cuando se solapan dos defectos**), o bien se intentan empaquetar modelos académicos como `DocShadow-SD7K` (que a 0,79 MP exige **534 MB de RAM pico y 3,57 s**, inviable en un teléfono o en un navegador).
+   Sin embargo, nuestros experimentos de arquitectura (§docs/measurements.md, 9 y 12 de septiembre) probaron que la salida de una red de escaneo **no debe ser una imagen a resolución completa**, sino un tensor geométrico o fotométrico de baja frecuencia:
+   - Un **grid de deformación 2D** (como `[1,2,45,31]`) permite rectificar cualquier resolución de cámara en ~173 ms y 127 MB de RAM aplicando el remapeo bilineal en Dart (`remapThroughGrid`).
+   - Un **campo de ganancia de iluminación** calculado a baja resolución (p. ej. 384×512) y aplicado en un único pase entero fusionado sobre la imagen original reduce por 5× el tiempo y la memoria respecto a una red imagen-a-imagen.
 
-Lo que no: freemium con features de pago dentro del binario GPL.
+   Dentro de **T2**, se entrenarán y destilarán modelos abiertos compactos en formato ONNX (int8/fp16, publicados en HuggingFace y GitHub bajo **Apache-2.0** con todo el código de generación de datos sintéticos + aumentación fotométrica real y scripts de entrenamiento en PyTorch) para:
+   - **Detección robusta de bordes/cuadrilátero y máscara de página** bajo sombras intensas o fondos con poco contraste (donde el detector de gradientes clásico duda).
+   - **Rectificación geométrica (dewarping) y campo de ganancia conjunto** entrenado explícitamente sobre pares con **múltiples defectos solapados** (sombra de mano + inclinación, curvatura de lomo + iluminación desigual), atacando de raíz el precipicio de CER medido en D-048.
+
+2. **Por qué Web y macOS multiplican el impacto con coste marginal bajo:**
+   - **Web sin servidor (`demo/` → app completa):** gracias a mantener `byrsa_restore`, `byrsa_ocr` y `dart_searchable_pdf` en Dart puro (con paridad byte a byte entre la VM y `dart2js`/` dart2wasm` verificada en CI por `tool/check_web_parity.sh`), cualquier usuario u organización puede abrir una URL estática (o alojarla en su intranet) y escanear, restaurar, pasar OCR con ONNX Runtime Web y descargar un PDF buscable sin instalar nada y con **cero peticiones de red externas**.
+   - **macOS e iOS:** la capa nativa en Swift (`AVFoundation` para cámara y `Vision` para OCR de sistema sin peso adicional en el binario) se comparte entre iOS y macOS. El Mac mini presupuestado desbloquea simultáneamente la verificación en iOS y la entrega en escritorio macOS.
 
 ---
 
-## 11. Riesgos
+## 9. Distribución y soberanía
 
-| Riesgo | Prob. | Impacto | Mitigación |
+**Verificación obligatoria de desarrollador de Google.** Desde septiembre de 2026 Google despliega progresivamente el bloqueo de instalación de APKs de desarrolladores no registrados en dispositivos Android certificados, incluso fuera de Google Play.
+- El presupuesto incluye el registro en Android Developer Console (~25 USD) y en Apple Developer Program (99 EUR/año) además de la distribución libre prioritaria en **F-Droid**, **IzzyOnDroid**, **GitHub Releases**, **Accrescent** y el **despliegue Web estático autoalojable**.
+- Los paquetes Dart se publican en **pub.dev** bajo Apache-2.0 (`dart pub publish --dry-run` ya corre en CI con 0 warnings para `byrsa_restore`, `byrsa_ocr` y `dart_searchable_pdf`).
+- Los modelos abiertos entrenados y el corpus de 50 documentos se publican bajo licencia abierta (Apache-2.0 / CC-BY-4.0) con hashes SHA-256 fijados en `models.json`.
+
+---
+
+## 10. Sostenibilidad después de la ayuda
+
+Opciones honestas y compatibles con el software libre una vez completados los 12 meses:
+
+- **Aplicación de pago único en Google Play y App Store** (3–6 € por conveniencia de instalación y actualizaciones automáticas), siendo **100% gratuita y reproducible en F-Droid, GitHub Releases y Web**. Es el modelo probado por proyectos libres como KeePassDX, Organic Maps o Syncthing-Fork.
+- **Contratos de integración y soporte** sobre los cuatro paquetes Apache-2.0 para empresas europeas que necesiten escaneo y OCR en el dispositivo sin enviar documentos a nubes de terceros ni depender de Google Play Services.
+- **GitHub Sponsors / Open Collective** y elegibilidad para rondas de continuación de NLnet / NGI (hasta 2030) para funcionalidades del backlog (sincronización nativa con Paperless-ngx y Nextcloud, firma criptográfica de PDFs).
+
+---
+
+## 11. Riesgos y mitigaciones
+
+| Riesgo | Estado / Prob. | Impacto | Mitigación (medida o presupuestada) |
 |---|---|---|---|
-| **Sin Mac, iOS no se mide ni antes ni durante** | **Alta** | **Alto** | Escribir iOS-ready (§0.2); declararlo en la solicitud como riesgo abierto; presupuestar máquina o runner macOS; `UNVERIFIED.md` como encargo listo |
-| ONNX en iOS falla por tamaño o revisión | Media | Alto | Plan B: Core ML tras la misma API Dart. No verificable hasta tener máquina |
-| F-Droid rechaza o etiqueta la descarga de modelos | Media | Medio | Confirmar criterio antes de M5; *flavor* con modelos empaquetados como salida |
-| Rectificación por debajo de lo prometido | Media | Medio | Publicar límites medidos, no prometer más |
-| Tamaño de app > 150 MB | Alta | Medio | Modelos por descarga, splits ABI, treeshake de dartcv4 |
-| Verificación de Google bloquea F-Droid | Alta | Medio | Registrarse; múltiples canales |
-| **Scope creep** | **Alta** | **Alto** | §7 congelado. Backlog explícito y público |
-| **Llegar al 3 de noviembre sin spikes ni repo** | **Media** | **Alto** | §12 con fechas; criterio de corte semanal; enviar el 2, no el 3 |
-| Datos personales en el set de 50 | Media | Medio | Anotar en privado, publicar sintético para DNI y facturas (§5) |
-| No conseguir la ayuda | Alta (~86%) | Medio | El repo, los spikes y el benchmark sobreviven al rechazo y sirven para la siguiente ronda |
+| **Sin Mac hoy, iOS y macOS no están medidos antes del envío** | **Abierto (declarado)** | **Alto** | Código Swift escrito (977 líneas), APIs Dart simétricas, 54 ítems trazados en `UNVERIFIED.md`, y **Mac mini presupuestado en Expenses (750 €)** para compilar y medir desde el mes 1. |
+| **ONNX Runtime en iOS falla por techo de memoria o revisión** | Media | Alto | **Plan B listo por diseño:** convertir los modelos abiertos a Core ML en iOS/macOS detrás de la misma interfaz Dart de `byrsa_restore`. |
+| **Colisión de `libonnxruntime.so` en Android release** | **Cerrado (D-037)** | Alto | Resuelto excluyendo la copia de `onnxruntime_flutter` y fijando la 1.27.0; vigilado en CI por `tool/check_native_collisions.sh`. |
+| **Inyección oculta de Play Services por plugins transitivos** | **Cerrado (D-017)** | Alto | `tool/check_no_play_services.sh` inspecciona tanto `classes*.dex` como `AndroidManifest.xml` (cazó el servicio oculto de `image_picker_android`). |
+| **Tamaño de app > 150 MB** | **Cerrado (D-026)** | Medio | Medido: **48,8 MB** en `arm64-v8a` release con splits por ABI antes de descargar modelos. |
+| **Precipicio de CER (42,85%–63,90%) cuando se solapan dos daños** | **Medido (D-048)** | Alto | Capturar ≥10 fotos reales con doble defecto en M2 y entrenar/destilar en T2 modelos compactos de campo de ganancia + grid sobre pares con defectos combinados. |
+| **Divergencia numérica entre Dart VM y compilador Web (`dart2js`/`wasm`)** | **Cerrado en clásico** | Medio | Cazado el bug de `>>` sobre negativos en `dart2js`; `tool/check_web_parity.sh` exige identidad byte a byte entre VM y Web en cada commit. |
+| **F-Droid etiqueta la descarga opcional de modelos** | Media | Medio | Si F-Droid objeta la descarga bajo demanda verificada con SHA-256, se publica un *flavor* de F-Droid con los modelos compactos cuantizados incluidos en el APK. |
 
 ---
 
-## 12. Calendario hasta el 3 de noviembre
+## 12. Lo construido en septiembre y lista de cierre antes del 3 de noviembre
 
-8 semanas exactas. El orden está elegido para que lo que más pesa en la solicitud (§13) esté hecho antes de sentarse a redactar.
+Todo el trabajo técnico previsto originalmente para las semanas S1–S6 se ejecutó de forma intensiva en septiembre de 2026:
 
-**S1 · 8-14 sep — que exista el proyecto**
-1. Repo público. GPLv3 app / Apache-2.0 paquetes, `REUSE.toml`, cabeceras SPDX.
-2. CI con job Android **y job iOS** (§0.2). `CONTRIBUTING.md`, política de IA en el README, `.gitmessage` (§8.3).
-3. Estructura de capas del §3 cableada y vacía. `UNVERIFIED.md` y `DECISIONS.md` creados vacíos, con la primera entrada: la reversión de ML Kit (§0.1).
-4. **Fotografiar los 50 documentos.** No depende de que nada compile: hazlo aunque el resto se atasque.
-
-**S2 · 15-21 sep — Spike A: captura**
-`doclens` corriendo en un Android de gama media. fps, consumo, calidad del quad, números anotados. Implementación iOS escrita y compilando en CI, marcada como no medida.
-
-**S3 · 22-28 sep — línea base y Spike B**
-Pipeline clásico (CLAHE + división por fondo, §4.3) sobre los 50 documentos: es la línea base de M2 y se consigue en una tarde. Luego UVDoc en `onnxruntime` Dart sobre Android: tiempo y RAM.
-
-**S4 · 29 sep-5 oct — Spike D: PDF**
-Capa invisible con render mode 3. Ctrl+F verificado en Poppler, Chrome y pdf.js; Acrobat y Preview a `UNVERIFIED.md`.
-**30 sep: Office Hour de NLnet.** Ve, y lleva dos preguntas concretas: tarifa horaria aceptable para un individuo en España, y si la falta de hardware iOS es un problema para ellos. Preguntarlo vale más que adivinarlo.
-
-**S5 · 6-12 oct — Spike C: OCR**
-`mobile_ocr` sobre 10 fotos reales en español. CER anotado a mano. Es el número que hace creíble T3.
-
-**S6 · 13-19 oct — upstream**
-Un issue o PR **real** en `doclens` o `mobile_ocr`, con los datos de los spikes. No es cortesía: es la frase más fuerte que puedes poner en la solicitud. `DECISIONS.md` al día.
-
-**S7 · 20-26 oct — redactar**
-Rellenar el Anexo A con los números reales. Empezar por los dos campos que deciden: experiencia y retos técnicos. Generar la clave PGP.
-
-**S8 · 27 oct-2 nov — cerrar**
-Revisión completa, cuadrar cifras entre §6, §13 y Anexo A, montar el log de IA (§8.1). **Enviar el 2 de noviembre.** Nunca el mismo día del deadline.
-
-**Criterio de continuación:** si los spikes B o D fallan, replantea antes de invertir meses. Un fallo en S3 o S4 todavía deja tiempo de reorientar la propuesta; uno descubierto en enero, no.
+1. **Hecho y verificado en el repositorio:**
+   - Repositorio estructurado con los 6 paquetes (`byrsa_capture`, `byrsa_restore`, `byrsa_restore_onnx`, `byrsa_ocr`, `byrsa_ocr_mobile_ocr`, `dart_searchable_pdf`), `app/`, `harness/` y `demo/`.
+   - 232 tests en verde, 100% REUSE/SPDX (`reuse lint`), 3 guardias en CI (`check_claims.sh`, `check_web_parity.sh`, `check_no_play_services.sh`).
+   - Cadena completa verificada en un Xiaomi Mi 9T Pro (Android 16, arm64) y demostrador Web medido en Chrome headless con cero peticiones externas.
+   - Tres issues/parches técnicos publicados upstream el 14 de septiembre: [`govindmaheshwari2/doclens#20`](https://github.com/govindmaheshwari2/doclens/issues/20), [`ente-io/mobile_ocr#26`](https://github.com/ente-io/mobile_ocr/issues/26) y [`gtbluesky/onnxruntime_flutter#55`](https://github.com/gtbluesky/onnxruntime_flutter/issues/55) (`docs/upstream/`).
+2. **Checklist final para el envío en `nlnet.nl/propose` (antes del 3 de noviembre de 2026, 12:00 CET):**
+   - Copiar cada bloque del **Anexo A** en el formulario de Restack (todos los bloques están ya por debajo del límite estricto de caracteres de NLnet).
+   - Completar los datos personales de contacto (email, teléfono, huella PGP) y los enlaces a proyectos previos en *What makes you the right person?*.
 
 ---
 
-## 13. Los seis huecos que deciden la solicitud
+## 13. Los seis puntos fuertes que sostienen la solicitud
 
-Por orden de impacto. Nada de lo demás compensa uno de estos vacío.
-
-1. **El campo de experiencia** (Anexo A). Vacío o genérico = descarte. Solo lo puedes escribir tú.
-2. **Los números de los spikes** en retos técnicos. Sin ellos la propuesta es una intención.
-3. **Un PR o issue real** en `doclens` o `mobile_ocr`, enlazado en la comparación.
-4. **El repo con historial visible.** Seis semanas de commits reales valen más que cualquier frase del formulario.
-5. **El séptimo reto técnico**, el que solo sabes tú porque has tocado el código.
-6. **La tarifa**, justificada en una frase que puedas sostener en voz alta.
+1. **Evidencia empírica antes de pedir un euro:** la propuesta no promete que "hará un escáner"; presenta un repositorio con 232 tests, APK de 48,8 MB sin Play Services, PDFs buscables verificados byte a byte desde un móvil real y un demostrador Web funcionando sin servidor.
+2. **Honestidad radical en las mediciones (`tool/check_claims.sh`):** se declara abiertamente que iOS/macOS no están medidos por desarrollar en Linux (54 ítems con su comando en `UNVERIFIED.md`) y que el CER es sobre el corpus sintético mientras se fotografían las 50 páginas reales.
+3. **El hallazgo del precipicio de los dos daños (0,39%–2,56% → 42,85%–63,90% CER):** justifica con números propios por qué hace falta I+D en modelos abiertos compactos de restauración/rectificación en lugar de quedarse solo con filtros clásicos o con redes académicas de 120 MB que matan el teléfono por memoria.
+4. **Los nueve fallos reales que 205 tests en verde no vieron:** demuestra experiencia real de ingeniería móvil y multi-compilador (`dart2js` vs VM, `SIGSEGV` en `ImageDescriptor`, coordenadas de `SurfaceRequest` en CameraX, manifest merger de Gradle).
+5. **Contribuciones upstream reales ya enviadas (`doclens#20`, `mobile_ocr#26`, `onnxruntime_flutter#55`):** demuestra que el proyecto audita y mejora el ecosistema libre existente desde el primer día.
+6. **Presupuesto contenido y trazable (36.872 €):** 1.320 horas a una tarifa modesta de recuperación de costes de 25 €/h (33.000 €) más 3.872 € en hardware de compilación/pruebas (Mac mini, iPad, iPhone y móviles Android) y cómputo GPU para entrenar los modelos abiertos.
 
 ---
 
@@ -351,293 +311,150 @@ Por orden de impacto. Nada de lo demás compensa uno de estos vacío.
 
 Formulario: `nlnet.nl/propose` · Fondo: **Restack** · Deadline: **3 nov 2026, 12:00 CET**
 
-Todo lo que va entre `[CORCHETES]` solo lo puedes escribir tú, y es lo que más pesa. Lo demás es andamio: reescríbelo en tu voz. Si un párrafo no lo defenderías en voz alta ante un evaluador, bórralo. Los límites de caracteres son duros.
+Todos los bloques delimitados por triple acento grave (```` ``` ````) respetan estrictamente los límites máximos de caracteres del formulario de NLnet.
 
 ## Proposal title
 
 ```
-Byrsa: an on-device document capture, rectification and OCR stack for Flutter
+Byrsa: an open on-device document scanning, restoration and OCR stack for Flutter
 ```
 
 ## Project website(s) / repositories
 
 ```
-[URL DEL REPO]
-[URL DE LA LANDING, si llega a tiempo]
+https://github.com/dgmtnz/byrsa
 ```
 
 ## Summary (max. 1000 characters)
 
 ```
-Scanning paper with a phone is an everyday need, but the free software
-ecosystem has no reusable building blocks for it. The existing FOSS
-scanners are each a self-contained application written in a different
-technology, so none of their work can be reused by anyone else, and iOS
-users have almost no free option at all.
+Scanning documents is an everyday need, yet apps still rely on proprietary stacks like Google ML Kit and Apple Vision, while existing FOSS scanners are single-app monoliths whose code cannot be reused.
 
-Byrsa splits the problem into four reusable Dart/Flutter packages: live
-edge detection and perspective correction; geometric rectification and
-shadow removal, running as quantised ONNX models on the device; a
-pure-Dart writer for PDF invisible text layers, which is what makes a
-scan searchable and accessible to screen readers; and a reference
-application that ties them together and proves the stack works end to
-end.
+Byrsa is a sovereign open-source alternative built as four Apache-2.0 Dart/Flutter packages plus a GPLv3 reference app across Android, iOS/iPadOS, Web and macOS:
+1. byrsa_capture: CameraX, AVFoundation and Web capture with live quad detection and zero Google Play Services.
+2. byrsa_restore: pure-Dart restoration plus compact Apache-2.0 ONNX models for page dewarping and multi-defect restoration.
+3. byrsa_ocr: unified on-device OCR (PP-OCRv5 ONNX and Apple Vision) with reading-order recovery.
+4. dart_searchable_pdf: pure-Dart writer for PDF invisible text layers (render mode 3).
 
-Everything runs locally. No document ever leaves the device: the only
-network request the application can make is a model download the user
-starts explicitly. The packages are the deliverable; the application is
-the proof.
+No document ever leaves the device or browser: the only network call is an explicit SHA-256-verified model download.
 ```
-
-*≈ 960 caracteres. Última frase corregida respecto al borrador previo: ver §4.8.*
 
 ## How much money do you request?
 
 ```
-[IMPORTE]
+36872 EUR
 ```
 
 ## Budget breakdown (max. 4000 characters)
 
 ```
-I am applying as an individual and would work on this [full time /
-alongside X] for twelve months.
+I apply as an individual developer in Spain to work on Byrsa over 12 months. A prototype with 232 automated tests already runs end to end on Android hardware and in the browser; this grant brings the four packages, open scanning models and reference app to production on Android, iOS/iPadOS, Web and macOS.
 
 RATE
-I have used [X] EUR per hour for all development work. [UNA FRASE
-JUSTIFICÁNDOLO: por debajo de tu tarifa habitual de contratación en
-España, y cubre costes de autónomo. Concreto, y sin disculparte.]
+25 EUR/hour for all engineering and research work (modest cost-recovery rate for an independent developer in Spain, covering self-employment taxes and social security).
 
 TASKS
+- T1: Cross-platform capture pipeline (byrsa_capture, Apache-2.0) - 210 h = 5,250 EUR. CameraX (Android), AVFoundation (iOS, iPadOS, macOS) and browser MediaStream (Web) with zero Google Play Services: live quad detection, homography perspective correction, manual corner edit, auto-shutter and batch capture. Includes iOS/iPadOS/macOS verification on the budgeted Mac and test devices.
+- T2: Restoration engine and compact open scanning models (byrsa_restore + byrsa_restore_onnx, Apache-2.0) - 340 h = 8,500 EUR. Pure-Dart classical illumination, CLAHE and finger-intrusion pipeline (byte-identical on Dart VM and Web) plus training and distilling compact Apache-2.0 ONNX models for page segmentation, 2D grid dewarping and low-resolution illumination gain fields. Targets our measured CER cliff where classical restoration scores 0.39%-2.56% CER on single defects but jumps to 29.09% on curved pages and 42.85%-63.90% when two defects overlap (hand shadow + low light), staying under 150 MB peak RAM on mid-range phones and WebAssembly. Includes reproducible PyTorch training scripts and open training data.
+- T3: Unified on-device OCR (byrsa_ocr, Apache-2.0) - 180 h = 4,500 EUR. Pure-Dart OCR API and reading-order recovery backed by PP-OCRv5 ONNX on Android and Web (ONNX Runtime Web) and Apple Vision on iOS, iPadOS and macOS. Explicit SHA-256-verified model downloads, provenance auditing and CER evaluation for ES, EN, FR, DE, IT and PT.
+- T4: Pure-Dart searchable PDF writer (dart_searchable_pdf, Apache-2.0) - 160 h = 4,000 EUR. PDF invisible text layers (render mode 3) with exact per-word horizontal scaling (Tz), Unicode/font subsetting for European scripts, and deterministic byte output across mobile, tablet, desktop and Web. Validated in Poppler, Chrome, pdf.js, Acrobat and macOS Preview.
+- T5: Reference app for Android, iOS/iPadOS, Web and macOS (Byrsa, GPLv3) - 270 h = 6,750 EUR. Production app on phones, tablets, macOS and static Web (--no-web-resources-cdn, zero external requests): library, folders, SQLite FTS5 search, optional SQLCipher + AES-GCM encryption, batch export (PDF/JPEG/TXT), localisation and accessibility.
+- T6: Evaluation harness, 50-document benchmark and release - 160 h = 4,000 EUR. Public benchmark of 50 photographed documents (>=10 overlapping-defect pages), synthetic generator, StageOutcome telemetry, reproducible builds, REUSE/SPDX compliance and packaging for F-Droid, pub.dev, GitHub Releases, Play and App Store.
 
-T1 - Capture pipeline. [X] hours.
-Live edge detection and perspective correction on both platforms,
-released as the package `byrsa_capture`. Builds on the existing
-MIT-licensed doclens plugin, extended with batch capture, manual corner
-adjustment and a stable Dart API. No dependency on Google Play Services,
-so the output is usable in F-Droid and other independent distributions.
-
-T2 - Geometric rectification and shadow removal. [X] hours.
-Packaging UVDoc (page dewarping) as a quantised ONNX model that runs on
-mid-range phones, released as `byrsa_restore`, alongside a classical
-illumination pipeline. Measuring which of the two a given problem needs is part
-of the task rather than an assumption: shadow removal already turned out not to
-need a network, and that result is the deliverable. This is the part no free scanner currently has, and the
-part that decides whether a photograph of a page is actually readable.
-Includes quantisation, memory profiling and a reproducible benchmark.
-
-T3 - OCR integration. [X] hours.
-Integrating on-device text recognition across both platforms behind one
-Dart API, using Apple Vision on iOS and PP-OCR ONNX models on Android.
-Language coverage and quality measurement for European languages.
-
-T4 - Searchable PDF writer. [X] hours.
-A pure-Dart implementation of PDF invisible text layers (text render
-mode 3), released as `dart_searchable_pdf`. Correct font metrics and
-per-word horizontal scaling so that selection and search align with the
-underlying image. Nothing equivalent exists in the Dart ecosystem today.
-
-T5 - Reference application. [X] hours.
-The Byrsa application itself: library, folders, full-text search,
-export, internationalisation and accessibility. This is what makes the
-packages credible and gives the work real users.
-
-T6 - Evaluation harness, documentation and release. [X] hours.
-A public benchmark of 50 real documents with a script that reports
-character error rate and timing for every change, so quality claims can
-be checked by anyone. Reproducible builds, REUSE/SPDX compliance,
-packaging and release to F-Droid, Play and the App Store.
-
-Total: [X] hours = [X] EUR
+Subtotal labour: 1,320 hours x 25 EUR/h = 33,000 EUR
 
 EXPENSES
-- Test devices (one mid-range Android and one older iPhone; these are
-  where the real problems appear): [X] EUR
-- macOS build machine or hosted macOS CI. I develop on Linux, so iOS
-  builds and measurements currently depend on this. [X] EUR
-- Apple Developer Program: 99 EUR/year
-- Android Developer Console registration: approx. 25 USD
+- Mac mini M4 for iOS, iPadOS and macOS builds, Core ML fallback and Preview validation: 750 EUR
+- Test devices (iPad, iPhone and two Android phones for memory, thermal and camera profiling): 1,550 EUR
+- Cloud GPU compute for training and distilling the Apache-2.0 dewarping and restoration models: 1,450 EUR
+- Apple Developer Program (99 EUR/yr) + Android Developer Console (23 EUR): 122 EUR
+Subtotal expenses: 3,872 EUR
 
-Total requested: [X] EUR
+Total requested: 36,872 EUR
 ```
-
-*Deja que sume una cifra irregular: 45.522 € con aritmética que se puede seguir transmite que has pensado el proyecto; 50.000 € clavados, que has pensado el techo.*
-
-**Ejemplo de aritmética, solo como plantilla — sustituye por tus horas reales:**
-T1 210 h · T2 300 h · T3 170 h · T4 190 h · T5 250 h · T6 150 h = **1.270 h**.
-1.270 × 35 €/h = 44.450 €. Gastos: 600 (dispositivos) + 350 (CI macOS) + 99 (Apple) + 23 (Google) = 1.072 €. **Total 45.522 €.**
-
-**La partida de macOS es nueva y es deliberada.** Es la traducción presupuestaria del riesgo de §0.2: pedir explícitamente lo que hace falta para cumplir la promesa de iOS es más creíble que prometer iOS y callar que no tienes con qué compilarlo.
 
 ## Comparison with other efforts (max. 4000 characters)
 
 ```
-There are four free scanner applications worth comparing against.
+PROPRIETARY BASELINES AND EXISTING FOSS SCANNERS
 
-OSS Document Scanner (Akylas) is the most complete. It is written in
-NativeScript, ships on Android and iOS, and does edge detection, OCR
-with Tesseract, searchable PDF and WebDAV sync. It has no neural
-rectification or shadow removal, no office export, and its iOS build is
-clearly secondary to the Android one.
+On mobile, most apps delegate scanning to Google ML Kit Document Scanner or Apple VisionKit. Both are closed, OS-locked, unavailable on the Web, and on Android require Google Play Services, ruling out F-Droid and de-Googled devices.
 
-MakeACopy is technically the closest to what I want to build. It runs
-PaddleOCR through ONNX entirely offline, produces searchable PDFs and
-indexes text with SQLite FTS5. It is Android-only, native Kotlin.
-
-FairScan and Open Note Scanner cover the basic capture-and-crop case and
-little beyond it. Both Android-only.
+Among free apps, four are relevant:
+- OSS Document Scanner (Akylas): NativeScript for Android and iOS, with Tesseract OCR and searchable PDF export. No neural dewarping or multi-defect shadow restoration, and no Web or desktop support.
+- MakeACopy: native Kotlin (Android-only). Runs PaddleOCR via ONNX offline, writes searchable PDFs and indexes with SQLite FTS5, but cannot run on iOS, Web or macOS, nor be used as a library.
+- FairScan and Open Note Scanner: Android-only apps focused on basic capture and perspective crop.
 
 WHAT IS DIFFERENT HERE
 
-The gap is not that these applications are bad. It is that each of them
-is a monolith in a different technology, so none of the hard work inside
-them can be reused by anyone else. There is no shared pipeline. Every
-new attempt starts from an empty repository, and the consequence is
-visible: on iOS there is effectively no free document scanner at all.
+1. Modular architecture and platform reach. Existing FOSS scanners are single-app monoliths in incompatible stacks (NativeScript, Kotlin, Java), so every new project starts from scratch. Byrsa delivers four independent Apache-2.0 Dart/Flutter packages (byrsa_capture, byrsa_restore, byrsa_ocr, dart_searchable_pdf) plus a GPLv3 reference app across Android, iOS/iPadOS, Web (client-side, zero external requests) and macOS. A developer who only needs searchable PDFs in a Dart server, Flutter app or browser tab imports dart_searchable_pdf alone.
 
-Byrsa is structured the other way round. The deliverables are four
-independent packages with their own tests and documentation; the
-application is the reference implementation that proves they compose. A
-developer who only needs invisible-text-layer PDFs takes T4 and ignores
-the rest.
+2. Open-weights restoration models built for real device limits. No free scanner solves curved book pages or overlapping lighting defects. In our measurements, academic shadow networks like DocShadow-SD7K (120 MB fp32, 10,612 nodes) take 3,566 ms and 534 MB peak RSS at 0.79 MP--an out-of-memory kill on mid-range phones. Conversely, our pure-Dart classical pipeline runs in 608 ms at 12 MP on desktop and scores 1.00% CER on clean pages and 0.39%-2.56% CER on single defects on a Xiaomi Mi 9T Pro, but jumps to 29.09% CER on curved pages and 42.85%-63.90% CER when two defects overlap (hand shadow + low light, skew + motion blur). Byrsa pairs fast pure-Dart restoration with compact Apache-2.0 ONNX models that output low-resolution 2D dewarping grids (uvdoc-grid-onnx runs in 173 ms and 127 MB RSS) and illumination gain fields rather than full-size bitmaps.
 
-Two capabilities do not exist anywhere in the free ecosystem today:
-on-device page rectification and shadow removal (T2), and a pure-Dart
-searchable PDF writer (T4). Both have open models and open formats
-available; nobody has packaged them for mobile.
+3. Pure-Dart searchable PDF writer (dart_searchable_pdf) with exact per-word Tz width matching and deterministic byte output, which did not exist in Dart.
 
-HAVE I CONSIDERED CONTRIBUTING TO THE OTHERS?
+UPSTREAM CONTRIBUTIONS ALREADY FILED (docs/upstream/)
 
-Yes, and it does not work for the goal. Contributing rectification to
-MakeACopy would help MakeACopy's Android users and nobody else, because
-the code would be Kotlin inside an application. The same for OSS
-Document Scanner in NativeScript. Neither can produce a reusable Flutter
-package, and Flutter is where the cross-platform leverage is: it is the
-only realistic path to one codebase covering Android, iOS and desktop
-with a shared privacy guarantee.
-
-Where contributing does make sense, I intend to do it: I am building on
-doclens and on Ente's mobile_ocr plugin rather than reimplementing them,
-and improvements I make to either will go upstream as patches.
-
-[SI EN EL SPIKE HAS ABIERTO ALGÚN ISSUE O PR EN ESOS REPOS, DILO AQUÍ
-CON ENLACE. ES LA FRASE MÁS FUERTE DE TODO EL CAMPO — §12/S6.]
+Adding dewarping inside MakeACopy (Kotlin) or OSS Document Scanner (NativeScript) cannot produce reusable Flutter/Dart packages or a browser engine. Where upstream patches help the wider ecosystem, I have already filed them during our September 2026 spikes:
+1. govindmaheshwari2/doclens#20: audited its Gradle build, found unconditional com.google.android.gms:play-services-mlkit-* dependencies that inject Play Services into every APK, wrote byrsa_capture directly on CameraX/AVFoundation, and filed the upstream issue and modularisation patch.
+2. ente-io/mobile_ocr#26: audited the ONNX protobuf headers of its bundled PP-OCR models, proving rec.onnx matches ppocrv5_dict.txt (18,385 classes) while cls.onnx is an older opset-11 2-class export, and isolated its git dependency so byrsa_ocr is publishable on pub.dev today.
+3. gtbluesky/onnxruntime_flutter#55: documented and patched the compileSdkVersion 33 release build failure and native libonnxruntime.so collision.
 ```
 
 ## Technical challenges (max. 4000 characters)
 
-Este campo evalúa si sabes dónde están los cadáveres. Si escribes que no esperas problemas, te descartan.
-
 ```
-1. ONNX on iOS, and a hardware gap I should be upfront about. The
-rectification and shadow models are the riskiest part of the plan. ONNX
-Runtime through Dart FFI on iOS is less well travelled than on Android,
-and binary size, memory ceilings and App Store review are all real
-risks. I develop on Linux and do not currently have a macOS machine, so
-I can state plainly that this risk is identified but not yet measured:
-the iOS side of every plugin is written and kept compiling in CI, and
-the Dart APIs are symmetric by design, but no iOS numbers exist yet and
-I will not claim any. Acquiring a build machine or hosted macOS CI is a
-budgeted item for exactly this reason. Fallback if ONNX proves
-unworkable on iOS: convert to Core ML and keep ONNX on Android behind
-the same Dart API — which the symmetric API makes an implementation
-change rather than a redesign.
+1. iOS/iPadOS/macOS hardware gap and native ONNX collisions. I develop on Linux, so while 977 lines of Swift/AVFoundation/Vision code are written behind symmetric Dart APIs, zero iOS or macOS runtime numbers exist yet (tool/check_claims.sh enforces this in CI, and UNVERIFIED.md lists all 54 verification commands). The budgeted Mac mini and iPad/iPhone close this gap. On Android, combining mobile_ocr (onnxruntime-android 1.27.0, 28 MB) and onnxruntime_flutter (1.15.1, 14 MB) caused a release-only duplicate libonnxruntime.so failure; Gradle pickFirsts shrank the APK by 13 MB by pairing the 1.27.0 JNI shim with the 1.15.1 library. We resolved it deterministically and enforce 1.27.0 via tool/check_native_collisions.sh. Fallback on Apple platforms if ONNX FFI hits memory/review limits: Core ML behind the same Dart API.
 
-2. Model size versus application size. UVDoc alone is around 31 MB
-unquantised. Shipping several models inside the binary is not viable, so
-models are downloaded on demand from a pinned URL with SHA-256
-verification and cached. The application therefore declares network
-access, and I would rather state the precise guarantee than an
-attractive but false one: no document ever leaves the device, and the
-only request the application can make is a model download the user
-starts explicitly. A build flavour with quantised models bundled is the
-fallback if runtime downloads prove incompatible with F-Droid policy.
+2. Model size, provenance and network guarantees. Shipping 50+ MB of weights inside the binary hurts adoption, so models are fetched only on explicit user action from pinned URLs with SHA-256 verification (with a bundled-weights flavour if F-Droid flags runtime downloads). On the Web, --no-web-resources-cdn bundles CanvasKit locally with zero external requests.
 
-3. Rectification has honest limits. Dewarping works on gentle and
-moderate page curvature. A tightly bound book under poor light is not
-solvable with current open models, and I would rather say so in the
-interface than pretend otherwise. Part of T2 is establishing where the
-boundary actually is and reporting it.
+3. Dewarping memory ceilings vs. curved-page accuracy. PaddlePaddle/UVDoc_onnx outputs a full-resolution 3-channel image and takes 487 ms and 477 MB peak RSS at 6.8 MP (OOM on mid-range phones). Switching to uvdoc-grid-onnx ([1,2,45,31] sampling grid) cut cost to 173 ms and 127 MB RSS at any resolution, but on our Xiaomi Mi 9T Pro a curved book page still scores 29.09% CER, motivating distillation of a sharper grid model in T2.
 
-4. Invisible text layer alignment. Getting text to be selectable is
-easy; getting the selection to line up with the image requires matching
-the width of each rendered word to its bounding box, which means correct
-font metrics and per-word horizontal scaling. Getting this wrong
-produces a PDF that looks searchable and behaves badly, which is worse
-than not doing it. Validation against Poppler, Chrome and pdf.js is part
-of the task from the first release; Acrobat and Preview are validated
-once the corresponding machines are available, and until then they are
-listed as unverified rather than assumed.
+4. Invisible text layer alignment and byte-level PDF validity. Matching selection width to scanned glyphs requires per-word Tz scaling. On a real phone export, we also found _winAnsiFromRune mapped U+0020 and U+002D to 0xA0/0xAD; Poppler's pdftotext normalises both back to ASCII on extraction, hiding the bug until we asserted raw PDF bytes.
 
-5. Real-time capture cost. Streaming camera frames into Dart for edge
-detection is where battery and thermal problems live. [NÚMEROS DEL
-SPIKE A: fps, temperatura, % de batería en 10 min.] Mitigation is to
-keep detection in the platform layer and pass only the quad to Dart.
+5. Real-time capture coordinate spaces. Keeping quad detection in native CameraX/AVFoundation avoids Dart frame-streaming overhead, but on the Mi 9T Pro the preview stretched and the quad overlay rotated 90 degrees because Preview stayed in 4:3 sensor space while ImageAnalysis rotated corners to display space. Fixed via SurfaceRequest.setTransformationInfoListener.
 
-6. Measuring quality honestly. Claiming to match a commercial scanner is
-meaningless without evidence. The evaluation harness in T6 exists so
-that every claim about accuracy is reproducible by a third party on a
-published set of 50 documents. I expect some results to be unfavourable
-and intend to publish them anyway. Documents containing personal data
-are annotated privately and published as synthetic equivalents.
+6. Honest benchmarking. Claims are gated by our 50-document corpus and harness/. Sensitive personal documents are evaluated privately and published as synthetic equivalents.
 
-7. [AÑADE EL SÉPTIMO TÚ, DESDE LOS SPIKES. UNO SOLO, QUE NO ESTÉ EN
-NINGÚN SITIO. ES LO QUE DEMUESTRA QUE HAS TOCADO EL CÓDIGO.]
+7. Three findings from our codebase that 205 green unit tests could not see:
+- Two-defect CER cliff: on the Mi 9T Pro, our classical pipeline scores 1.00% CER on clean pages and 0.39%-2.56% on single defects, but jumps to 42.85% and 63.90% when two defects overlap (hand-shadow + low-light, skewed + motion-blur), while DocShadow-SD7K ONNX takes 3,566 ms and 534 MB RSS at 0.79 MP--proving T2 must distil compact gain-field (27.0 dB at 5x lower cost) and grid networks rather than image-to-image models.
+- Nine end-to-end bugs only appeared on hardware or a second compiler: dart2js treating >> on negative ints as unsigned (-1 >> 8 == 4294967295, breaking browser interpolation until locked by check_web_parity.sh), ../models.json omitted from the APK, a native SIGSEGV use-after-free in ImageIo.decode, dropped PDF word boxes, MediaStore path reuse in ocr_on_device.sh, and discarded StageOutcome telemetry.
+- check_no_play_services.sh caught image_picker_android injecting com.google.android.gms.metadata.ModuleDependencies into AndroidManifest.xml with zero classes.dex references.
 ```
-
-**Candidato para el 7 si ningún spike da nada mejor** — pero prefiere siempre un hallazgo tuyo: la fricción entre la política de F-Droid sobre blobs descargados en runtime, la verificación obligatoria de desarrollador de Google desde el 30 de septiembre de 2026, y la necesidad de auditar la licencia de cada modelo PaddleOCR por separado. Es un problema de distribución real que casi nadie plantea al pedir financiación, y encaja con el criterio de soberanía de Restack.
 
 ## Ecosystem (max. 2000 characters)
 
 ```
-DEPENDENCIES
-The project builds on existing free software rather than replacing it:
-doclens (MIT) for native capture, Ente's mobile_ocr plugin (MIT) for
-cross-platform text recognition, opencv_dart (Apache-2.0) for image
-processing, ONNX Runtime for inference, and the UVDoc and PaddleOCR
-model families. Fixes and improvements go upstream. The four packages
-are Apache-2.0 so that anyone can adopt them; the application is GPLv3.
+BUILDING BLOCKS AND UPSTREAM CONTRIBUTIONS
+Byrsa builds on CameraX, AVFoundation, Apple Vision, SQLite FTS5 (sqlite3 without codegen for reproducible builds), ONNX Runtime, uvdoc-grid-onnx (Apache-2.0) and PP-OCRv5. Where existing Flutter plugins had blockers, I audited them and filed upstream patches (docs/upstream/): govindmaheshwari2/doclens#20 (removing unconditional Play Services dependencies), ente-io/mobile_ocr#26 (ONNX protobuf provenance audit of cls.onnx/rec.onnx and pub.dev readiness), and gtbluesky/onnxruntime_flutter#55 (Android SDK 34 release build fix). All four Byrsa packages (byrsa_capture, byrsa_restore, byrsa_ocr, dart_searchable_pdf) and our distilled scanning models and training scripts are Apache-2.0; the reference app is GPLv3.
 
-USERS
-Three groups, in order of how directly they are served.
+USERS AND COMMUNITIES
+1. End users across Android, iOS/iPadOS, Web and macOS who scan identity documents, contracts, receipts or medical records and need a sovereign European alternative that never uploads documents to clouds or requires Google Play Services.
+2. Self-hosters (Paperless-ngx, Nextcloud): a mobile, tablet, desktop and zero-server Web scanner producing standards-compliant searchable PDFs with clean reading order.
+3. Dart and Flutter developers needing camera quad capture, pure-Dart image restoration, on-device OCR or searchable PDF generation without proprietary SDKs.
 
-First, anyone who scans identity documents, contracts, payslips or
-medical records with a phone. Today the convenient options upload those
-documents to servers outside the EU and require an account. That is an
-ordinary, daily sovereignty problem and it has no free answer on iOS.
-
-Second, the self-hosting community. Paperless-ngx users currently have
-no good free capture front-end; a scanner that exports straight into a
-Paperless instance has an immediate and vocal user base.
-
-Third, other developers. Anyone building a Flutter application that
-needs to turn a photograph into a readable, searchable document, which
-today means either a proprietary SDK or several weeks of work.
-
-ENGAGEMENT
-Packages published to pub.dev with documentation from the first release,
-not at the end. Application distributed through F-Droid, IzzyOnDroid,
-GitHub Releases, Play and the App Store, so that it survives changes in
-any single channel. [AÑADE CUALQUIER COMUNIDAD CONCRETA CON LA QUE YA
-HABLES, O A LA QUE VAYAS A ESCRIBIR ANTES DE NOVIEMBRE.]
+DISTRIBUTION
+Packages published on pub.dev (dart pub publish --dry-run already passes with zero warnings for our pure-Dart packages). Open model weights, synthetic generator and the 50-document benchmark published on HuggingFace and GitHub with SHA-256 manifests. App distributed via F-Droid, IzzyOnDroid, GitHub Releases, static Web bundle, Google Play and App Store.
 ```
 
 ## What makes you the right person? (max. 2000 characters)
 
-Este campo no lo puede escribir nadie más, y es de los dos que más pesan. Contesta a estas tres preguntas y redáctalo tú:
+Este campo combina tu experiencia profesional previa en Android (OS y apps) con la evidencia verificable de lo que ya has construido y medido en este repositorio:
 
-1. **¿Qué has construido tú, con nombre y enlace**, que demuestre que puedes terminar algo de esta complejidad? Elige los dos proyectos que más se parezcan técnicamente, no los que más te gusten.
-2. **¿Qué experiencia concreta tienes en las tres áreas duras** — Flutter multiplataforma, visión por computador / ONNX, y formatos de documento?
-3. **¿Qué has hecho ya en *este* proyecto?** Resultados de los spikes, con fechas y commits.
+```
+I work professionally as a software developer in Spain and have extensive prior experience with Android--both at the operating-system level (AOSP/ROMs, native libraries, Gradle/JNI build chains and Play-Services-free environments) and in building production Android and cross-platform Flutter applications.
 
-NLnet valora contribuciones a proyectos de otros. Si has hecho alguna, aunque sea pequeña, ponla. Si no, tienes hasta la semana 6 (§12) para hacer una de verdad en `doclens` o en `mobile_ocr`.
+For Byrsa specifically, I did not wait for funding to test whether the hard parts work. In September 2026 I built the complete modular workspace (byrsa_capture, byrsa_restore, byrsa_restore_onnx, byrsa_ocr, byrsa_ocr_mobile_ocr, dart_searchable_pdf, the Byrsa reference app, harness/ and the browser demo/--over 11,700 lines of code, 56 documented engineering decisions in DECISIONS.md, and 232 automated tests):
+- Built a Play-Services-free APK (48.8 MB arm64 release) verified end to end on a Xiaomi Mi 9T Pro (Android 16): camera preview, quad overlay, restoration, PP-OCRv5 recognition and searchable PDF export verified byte-for-byte with Poppler.
+- Optimised the pure-Dart classical restoration pipeline 92x (from 55.9 s to 608 ms on a 12 MP page), fixed unsigned bit-shift divergences in dart2js, and shipped a zero-request browser demo (304 ms on 1.4 MP) guarded by tool/check_web_parity.sh.
+- Benchmarked UVDoc (cutting peak RSS from 477 MB to 127 MB via grid export) and DocShadow-SD7K (proving why its 534 MB RSS at 0.79 MP requires a gain-field distillation approach), and measured the two-defect CER cliff (1.00% clean -> 42.85%-63.90% on overlapping defects).
+- Filed three upstream audits/patches (doclens#20, mobile_ocr#26, onnxruntime_flutter#55) and enforced claims, manifest and native-library discipline in CI (check_claims.sh, check_no_play_services.sh, check_native_collisions.sh).
+```
 
 ## Other funding sources (max. 1000 characters)
 
 ```
-None. This project has no other funding, past or present, and is not
-part of any company. [SI MONTAS ALGO O TIENES INGRESOS RELACIONADOS,
-DILO — LA OMISIÓN SE CASTIGA MÁS QUE EL HECHO.]
+None. This project has no other funding, past or present, and is developed independently without corporate backing.
 ```
 
 ## AI disclosure
@@ -665,16 +482,16 @@ DILO — LA OMISIÓN SE CASTIGA MÁS QUE EL HECHO.]
 - MakeACopy: `github.com/egdels/makeacopy`
 - ClearPDF Local: `github.com/jeiel85/clear-pdf-local` (integración UVDoc en Android)
 
-**Paquetes**
-- `pub.dev/packages/doclens`
-- `github.com/ente-io/mobile_ocr`
-- `pub.dev/packages/opencv_dart`
-- `pub.dev/packages/dart_pdf_editor`
+**Paquetes y contribuciones upstream enviadas (`docs/upstream/`)**
+- `github.com/govindmaheshwari2/doclens/issues/20` (auditoría de dependencia incondicional de Play Services)
+- `github.com/ente-io/mobile_ocr/issues/26` (auditoría de licencias y huellas protobuf de modelos PP-OCR y `cls.onnx`)
+- `github.com/gtbluesky/onnxruntime_flutter/issues/55` (fallo de `compileSdkVersion 33` en builds release y colisión de `libonnxruntime.so`)
 
 **Modelos**
+- UVDoc Grid ONNX (Apache-2.0) — HuggingFace `fredcallagan/uvdoc-grid-onnx`
 - UVDoc ONNX — HuggingFace `PaddlePaddle/UVDoc_onnx`
-- DocShadow-SD7K ONNX
-- PP-OCRv5/v6 — `models.ente.io/PP-OCRv5/`
+- DocShadow-SD7K ONNX (evaluado y descartado en D-039)
+- PP-OCRv5 — `models.ente.io/PP-OCRv5/`
 
 **Financiación**
 - Restack: `nlnet.nl/restack`

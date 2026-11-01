@@ -96,7 +96,7 @@ va apagada por defecto y cuyo coste está en esa entrada. No se han vuelto a med
 
 ## Lo que NO está medido, y por tanto no se afirma
 
-- **Nada de iOS.** 983 líneas de Swift jamás compiladas. No hay Mac.
+- **Nada de iOS.** 977 líneas de Swift jamás compiladas. No hay Mac.
 - **Ninguna fotografía real.** Todo el CER es sobre páginas sintéticas
   renderizadas de una fuente. Es la entrada más fácil que este proyecto le dará
   nunca a un OCR.

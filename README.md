@@ -35,7 +35,7 @@ Saying "the build asks for no network permission" would be false, so we do not s
 
 ## No Google Play Services
 
-Capture is `doclens` (MIT) and our own pipeline; OCR on Android is PP-OCR through
+Capture is our own CameraX / AVFoundation plugin (`byrsa_capture`); OCR on Android is PP-OCR through
 ONNX Runtime. Nothing in the main build depends on Play Services, so the packages
 are usable in F-Droid and other independent distributions.
 
@@ -51,13 +51,11 @@ therefore:
   hardware lives in [`UNVERIFIED.md`](UNVERIFIED.md) together with the exact command
   that would verify it.
 
-
 ## Licensing
 
 Packages are Apache-2.0 so that anyone can adopt them; the application is
 GPL-3.0-or-later. The repository is [REUSE](https://reuse.software) compliant —
 every file carries an SPDX header or a `REUSE.toml` entry.
-
 
 ## Repository layout
 
